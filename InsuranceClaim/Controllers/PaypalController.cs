@@ -96,7 +96,7 @@ namespace InsuranceClaim.Controllers
 
             var re = response;
 
-          // var res = JsonConvert.DeserializeObject<SummaryDetailModel>(response.Content);
+            // var res = JsonConvert.DeserializeObject<SummaryDetailModel>(response.Content);
 
 
 
@@ -1090,10 +1090,10 @@ namespace InsuranceClaim.Controllers
             detail.customerLastName = customer.LastName;
 
 
-            if(vehicle.IsLicenseDiskNeeded==true)
+            if (vehicle.IsLicenseDiskNeeded == true)
             {
-                var licenseDelivery = InsuranceContext.LicenceDiskDeliveryAddresses.Single(where: "vehicleId="+vehicle.Id);
-                if(licenseDelivery!=null)
+                var licenseDelivery = InsuranceContext.LicenceDiskDeliveryAddresses.Single(where: "vehicleId=" + vehicle.Id);
+                if (licenseDelivery != null)
                 {
                     detail.addressLine1 = licenseDelivery.Address1;
                     detail.addressLine2 = licenseDelivery.Address2;
@@ -1109,39 +1109,47 @@ namespace InsuranceClaim.Controllers
                 detail.city = "Harare";
             }
 
-            
+
             detail.phoneNumber = customer.PhoneNumber;
             detail.policyID = policy.PolicyNumber;
             detail.policyTransactionDate = vehicle.TransactionDate.Value.ToShortDateString();
             detail.policyAmount = summaryDetail.TotalPremium.Value;
-            
+
+            bool IsCallCenterAgent = false;
+
             if (userLoggedin)
             {
                 detail.agentID = summaryDetail.CreatedBy.ToString();
                 var customerDetial = InsuranceContext.Customers.Single(summaryDetail.CreatedBy);
                 detail.agentName = customerDetial.FirstName + ' ' + customerDetial.LastName;
+
+                if (customerDetial.BranchId == (int)ALMBranch.GeneCallCentre)
+                    IsCallCenterAgent = true;
+
+
             }
 
             VehicleService vehicleService = new VehicleService();
             vehicleService.SaveDeliveryAddress(detail);
 
 
+            if (IsCallCenterAgent)
+            {
+                ReceiptAndPayment payment = new ReceiptAndPayment();
+                payment.Amount = (summaryDetail.TotalPremium.Value * -1);
+                payment.CreatedBy = Convert.ToInt32(summaryDetail.CreatedBy);
+                payment.Description = "";
+                payment.policyNumber = policy.PolicyNumber;
+                payment.policyId = policy.Id;
+                payment.CreatedOn = DateTime.Now;
+                payment.currency = "--";
+                payment.type = "invoice";
+                payment.reference = "--";
+                payment.paymentMethod = "--";
+                //InsuranceContext.ReceiptAndPayments.Insert(payment);
 
-            ReceiptAndPayment payment = new ReceiptAndPayment();
-            payment.Amount = (summaryDetail.TotalPremium.Value * -1);
-            payment.CreatedBy = Convert.ToInt32(summaryDetail.CreatedBy);
-            payment.Description = "";
-            payment.policyNumber = policy.PolicyNumber;
-            payment.policyId = policy.Id;
-            payment.CreatedOn = DateTime.Now;
-            payment.currency = "--";
-            payment.type = "invoice";
-            payment.reference = "--";
-            payment.paymentMethod = "--";
-            //InsuranceContext.ReceiptAndPayments.Insert(payment);
-
-            saveRecieptAndPayment(payment);
-
+                saveRecieptAndPayment(payment);
+            }
 
             if (!userLoggedin)
             {

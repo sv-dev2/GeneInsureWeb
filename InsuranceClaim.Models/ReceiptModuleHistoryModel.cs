@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Insurance.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,5 +39,31 @@ namespace InsuranceClaim.Models
         public string zoneName { get; set; }
 
 
+    }
+
+
+
+    public class ModelReceiptAndPayment
+    {
+
+        public int Id { get; set; } // Auto increment
+        public int policyId { get; set; } // policy reference
+        public string reference { get; set; }
+        public string policyNumber { get; set; } // policy reference check as invoice
+        public string type { get; set; } // reciept or invoice
+
+        public string paymentMethod { get; set; }
+        public string Description { get; set; } // Description
+        public decimal Amount { get; set; } // Amount - or +
+        public string currency { get; set; } // currency options
+        public string CreatedOn { get; set; }
+        public int CreatedBy { get; set; }
+    }
+
+
+    public class ReceiptCancelationModel
+    {
+        public List<ReceiptAndPayment> receiptAndPayments { get; set; }
+        public int CustomerId { get; set; }
     }
 }

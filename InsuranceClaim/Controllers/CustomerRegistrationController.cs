@@ -1565,7 +1565,6 @@ namespace InsuranceClaim.Controllers
                         if (System.Web.HttpContext.Current.User.Identity.GetUserId() != null)
                         {
                             role = UserManager.GetRoles(System.Web.HttpContext.Current.User.Identity.GetUserId()).FirstOrDefault();
-
                         }
 
                         var userDetials = UserManager.FindByEmail(customer.EmailAddress);
@@ -4030,16 +4029,12 @@ namespace InsuranceClaim.Controllers
             }
             catch (Exception ex)
             {
-
                 res.success = false;
                 res.message = "payment created failed ";
                 res.error = ex.ToString();
             }
 
-
             return Json(res, JsonRequestBehavior.AllowGet);
-
-
         }
 
         [Authorize(Roles = "Administrator,Finance")]
@@ -4048,7 +4043,16 @@ namespace InsuranceClaim.Controllers
             //var paymentMethod = InsuranceContext.PaymentMethods.All().ToList();
             //ViewBag.PaymentMethod = paymentMethod;
 
-            return View("NewReceiptModule");
+            ReceiptModuleModel model = new ReceiptModuleModel();
+
+            if (System.Web.HttpContext.Current.User.Identity.GetUserId() != null)
+            {
+                string userId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                var cusomerDetails = InsuranceContext.Customers.Single(where: "UserID='"+ userId+"'");
+                model.CustomerId = cusomerDetails.Id;
+            }
+
+            return View(model);
         }
 
         [HttpPost]
@@ -4506,6 +4510,46 @@ namespace InsuranceClaim.Controllers
             }
             return Json(new { IsError = false, error = TempData["ErrorMessage"].ToString() }, JsonRequestBehavior.AllowGet);
         }
+
+
+
+        public ActionResult ReceiptCancelation()
+        {
+            ReceiptCancelationModel model = new ReceiptCancelationModel();
+            List<ReceiptAndPayment> listReceipt = new List<ReceiptAndPayment>();
+            string querySQL = "select * from ReceiptAndPayment where type='reciept' ";
+            listReceipt = InsuranceContext.Query(querySQL).Select(x => new ReceiptAndPayment
+            {
+                Id = x.Id,
+                Amount = x.Amount,
+                policyId = x.policyId,
+                paymentMethod = x.paymentMethod,
+                policyNumber = x.policyNumber,
+                CreatedOn = x.CreatedOn,
+                reference = x.reference,
+                currency = x.currency
+
+
+            }).ToList();
+
+            
+
+            bool userLoggedin = (System.Web.HttpContext.Current.User != null) && System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
+            if (System.Web.HttpContext.Current.User.Identity.GetUserId() != null)
+            {
+                string userId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+                var customerDetail = InsuranceContext.Customers.Single(where: $"UserID='{userId}'");
+                if(customerDetail!=null)
+                {
+                    model.CustomerId = customerDetail.Id;
+                }
+            }
+
+            model.receiptAndPayments = listReceipt;
+            
+            return View(model); ;
+        }
+
 
         [HttpGet]
         public JsonResult PolicyStatusUpdate(string PolicyNo)

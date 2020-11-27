@@ -32,6 +32,8 @@ namespace InsuranceClaim.Models
         public string RenewPolicyNumber { get; set; }
         public decimal TenderedAmount { get; set; }
 
+     
+
     }
 
 

@@ -63,6 +63,8 @@ namespace InsuranceClaim.Models
 
         public string Agent { get; set; }
 
+        public string Location { get; set; }
+
     }
     public class ListReceiptModule
     {

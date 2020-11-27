@@ -6147,6 +6147,10 @@ namespace InsuranceClaim.Controllers
         {
             return InsuranceContext.PaymentMethods.All(where: "Id=1").ToList();
         }
+        
+
+        // why are using this method on this controller I think plesae use customer registration 
+        // controller
 
 
 
