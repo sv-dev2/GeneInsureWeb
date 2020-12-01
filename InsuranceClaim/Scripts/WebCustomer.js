@@ -284,7 +284,7 @@ function generateQuotewithICEcash() {
 
     var radioLicensePaymentTerm = $("#RiskDetail_RadioLicensePaymentTermId").val();
     var zinaraLicensePaymentTerm = $("#RiskDetail_ZinaraLicensePaymentTermId").val();
-
+    var VehicleValue = $("#RiskDetail_SuggestedValue").val();
 
 
     var vehilceUsage = $("#RiskDetail_VehicleUsage").val();
@@ -303,7 +303,7 @@ function generateQuotewithICEcash() {
         cache: false,
         type: "POST",
         url: "/WebCustomer/getPolicyDetailsFromICEcash",
-        data: { regNo: $("#RiskDetail_RegistrationNo").val(), PaymentTerm: $("#RiskDetail_PaymentTermId").val(), suminsured: $("#RiskDetail_SumInsured").val(), CoverTypeId: coverTypeId, VehicleType: $("#RiskDetail_ProductId").val(), VehilceLicense: isLicense, RadioLicense: isRadioLicense, firstName: Customer_FirstName, lastName: Customer_LastName, email: Customer_EmailAddress, address: AddressLine1, phone: Customer_PhoneNumber, nationalId: NationalId, radioLicensePaymentTerm: radioLicensePaymentTerm, zinaraLicensePaymentTerm: zinaraLicensePaymentTerm, vehilceUsage: vehilceUsage },
+        data: { regNo: $("#RiskDetail_RegistrationNo").val(), PaymentTerm: $("#RiskDetail_PaymentTermId").val(), suminsured: $("#RiskDetail_SumInsured").val(), CoverTypeId: coverTypeId, VehicleType: $("#RiskDetail_ProductId").val(), VehilceLicense: isLicense, RadioLicense: isRadioLicense, firstName: Customer_FirstName, lastName: Customer_LastName, email: Customer_EmailAddress, address: AddressLine1, phone: Customer_PhoneNumber, nationalId: NationalId, radioLicensePaymentTerm: radioLicensePaymentTerm, zinaraLicensePaymentTerm: zinaraLicensePaymentTerm, vehilceUsage: vehilceUsage, VehicleValue: VehicleValue },
         success: function (data) {
             debugger;
             if (data.result == 0) {

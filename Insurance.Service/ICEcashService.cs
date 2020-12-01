@@ -18,12 +18,12 @@ namespace Insurance.Service
     public class ICEcashService
     {
         // SendBox
-        //public static string PSK = "127782435202916376850511";
-        //public static string LiveIceCashApi = "http://api-test.icecash.com/request/20523588";
+        public static string PSK = "127782435202916376850511";
+        public static string LiveIceCashApi = "http://api-test.icecash.com/request/20523588";
 
         // Live
-        public static string PSK = "565205790573235453203546";
-        public static string LiveIceCashApi = "https://api.icecash.co.zw/request/20350763";
+        //public static string PSK = "565205790573235453203546";
+        //public static string LiveIceCashApi = "https://api.icecash.co.zw/request/20350763";
 
         private static string GetSHA512(string text)
         {
@@ -356,7 +356,7 @@ namespace Insurance.Service
             return json;
         }
 
-        public ResultRootObject RequestQuote(string PartnerToken, string RegistrationNo, string suminsured, string make, string model, int PaymentTermId, int VehicleYear, int CoverTypeId, int VehicleUsage, string PartnerReference, DateTime CoverStartDate, DateTime CoverEndDate, string TaxClass)
+        public ResultRootObject RequestQuote(string PartnerToken, string RegistrationNo, string suminsured, string make, string model, int PaymentTermId, int VehicleYear, int CoverTypeId, int VehicleUsage, string PartnerReference, DateTime CoverStartDate, DateTime CoverEndDate, string TaxClass, decimal VehicleValue)
         {
             //string PSK = "127782435202916376850511";
             string _json = "";
@@ -400,7 +400,7 @@ namespace Insurance.Service
 
             //  obj.Add(new VehicleObject { VRN = RegistrationNo, DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId), VehicleValue = Convert.ToInt32(suminsured), YearManufacture = Convert.ToInt32(VehicleYear), InsuranceType = Convert.ToInt32(CoverTypeId), VehicleType = Convert.ToInt32(VehicleUsage), Make = make, Model = model, EntityType = "", Town = CustomerInfo.City, Address1 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine1), Address2 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine2), CompanyName = "", FirstName = CustomerInfo.FirstName, LastName = CustomerInfo.LastName, IDNumber = CustomerInfo.NationalIdentificationNumber, MSISDN = CustomerInfo.CountryCode + CustomerInfo.PhoneNumber, TaxClass = TaxClass });
 
-            obj.Add(new VehicleObject { VRN = RegistrationNo, DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId), VehicleValue = Convert.ToInt32(suminsured), YearManufacture = Convert.ToInt32(VehicleYear), InsuranceType = Convert.ToInt32(CoverTypeId), VehicleType = Convert.ToInt32(VehicleUsage),  EntityType = "", Town = CustomerInfo.City, Address1 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine1), Address2 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine2), CompanyName = "", FirstName = CustomerInfo.FirstName, LastName = CustomerInfo.LastName, IDNumber = CustomerInfo.NationalIdentificationNumber, MSISDN = CustomerInfo.CountryCode + CustomerInfo.PhoneNumber, TaxClass = TaxClass });
+            obj.Add(new VehicleObject { VRN = RegistrationNo, DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId),  VehicleValue = Convert.ToInt32(VehicleValue), YearManufacture = Convert.ToInt32(VehicleYear), InsuranceType = Convert.ToInt32(CoverTypeId), VehicleType = Convert.ToInt32(VehicleUsage),  EntityType = "", Town = CustomerInfo.City, Address1 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine1), Address2 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine2), CompanyName = "", FirstName = CustomerInfo.FirstName, LastName = CustomerInfo.LastName, IDNumber = CustomerInfo.NationalIdentificationNumber, MSISDN = CustomerInfo.CountryCode + CustomerInfo.PhoneNumber, TaxClass = TaxClass });
 
 
             QuoteArguments objArg = new QuoteArguments();
@@ -504,7 +504,7 @@ namespace Insurance.Service
             return json;
         }
 
-        public ResultRootObject TPILICQuote(string PartnerToken, string RegistrationNo, string suminsured, string make, string model, int PaymentTermId, int VehicleYear, int CoverTypeId, int VehicleType, string PartnerReference, DateTime CoverStartDate, DateTime CoverEndDate, string taxClassId, bool VehilceLicense, bool RadioLicense, string licensePaymentTerm, string radioPaymentTerm)
+        public ResultRootObject TPILICQuote(string PartnerToken, string RegistrationNo, string suminsured, string make, string model, int PaymentTermId, int VehicleYear, int CoverTypeId, int VehicleType, string PartnerReference, DateTime CoverStartDate, DateTime CoverEndDate, string taxClassId, bool VehilceLicense, bool RadioLicense, string licensePaymentTerm, string radioPaymentTerm, string VehicleValue)
         {
             //string PSK = "127782435202916376850511";
             string _json = "";
@@ -550,6 +550,7 @@ namespace Insurance.Service
                 DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId).ToString(),
                 InsuranceType = CoverTypeId.ToString(),
                 VehicleType = VehicleType.ToString(),
+                VehicleValue = VehicleValue,
                 Address1 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine1),
                 Address2 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine2),
                 FirstName = CustomerInfo.FirstName,
@@ -665,7 +666,7 @@ namespace Insurance.Service
             return json;
         }
 
-        public ResultRootObject TPILICQuoteZinaraOnly(string PartnerToken, string RegistrationNo, string suminsured, string make, string model, int PaymentTermId, int VehicleYear, int CoverTypeId, int VehicleType, string PartnerReference, DateTime CoverStartDate, DateTime CoverEndDate, string taxClassId, bool VehilceLicense, bool RadioLicense, string licensePaymentTerm)
+        public ResultRootObject TPILICQuoteZinaraOnly(string PartnerToken, string RegistrationNo, string suminsured, string make, string model, int PaymentTermId, int VehicleYear, int CoverTypeId, int VehicleType, string PartnerReference, DateTime CoverStartDate, DateTime CoverEndDate, string taxClassId, bool VehilceLicense, bool RadioLicense, string licensePaymentTerm, string VehicleValue )
         {
             //string PSK = "127782435202916376850511";
             string _json = "";
@@ -708,6 +709,7 @@ namespace Insurance.Service
                 DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId).ToString(),
                 InsuranceType = CoverTypeId.ToString(),
                 VehicleType = VehicleType.ToString(),
+                VehicleValue = VehicleValue,
                 Address1 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine1),
                 Address2 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine2),
                 FirstName = CustomerInfo.FirstName,
@@ -715,6 +717,7 @@ namespace Insurance.Service
                 IDNumber = UserService.ReplaceSpecialChracter(CustomerInfo.NationalIdentificationNumber),
                 MSISDN = UserService.ReplaceSpecialChracter(CustomerInfo.CountryCode + CustomerInfo.PhoneNumber),
                 LicFrequency = LicFrequencyTerm.ToString(),
+               
                 //RadioTVUsage = RadioTVUsage,
                // RadioTVFrequency = RadioTVFreeQuency,
                 SuburbID = "1",
@@ -1909,6 +1912,8 @@ namespace Insurance.Service
 
         public string VehicleType { get; set; }
 
+        public string VehicleValue { get; set; }
+
         public string DurationMonths { get; set; }
         public string LicFrequency { get; set; }
         public string RadioTVUsage { get; set; }
@@ -1933,7 +1938,7 @@ namespace Insurance.Service
         public string TaxClass { get; set; }
 
         public string VehicleType { get; set; }
-
+       public string VehicleValue { get; set; } 
         public string DurationMonths { get; set; }
         public string LicFrequency { get; set; }
 

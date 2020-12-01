@@ -235,7 +235,8 @@
                                             <div class="form-group">
                                                 @Html.Label("Suggested Value", new { @class = "gender-label" })
                                                 @Html.TextBoxFor(m => m.SuggestedValue, new { @class = "form-control", @autocomplete = "off", @placeholder = "Suggested Value", @maxlength = "5" })
-                                            </div>
+                                                @Html.ValidationMessageFor(m => m.SuggestedValue, "", new { @class = "text-danger" })
+                                             </div>
                                         </div>
 
                                         <div class="col-sm-6 col-md-6 form-group-text" id="divSumInsured">
@@ -1563,15 +1564,20 @@
                 CalculatePremiumByCoverType();
             }, 1000);
 
-            //QuoteCalculation();
+        });
 
-            //if ($("#isVehicleRegisteredonICEcash").val() == 1) {
-            //    generateQuotewithICEcash();
-            //}
-            //else{
-            //    QuoteCalculation();
-            //}
 
+        $("#SuggestedValue").blur(function () {
+            var coverselected = $("#CoverTypeId option:selected").val();
+            var SuggestedValue = $("#SuggestedValue").val();
+            if (coverselected==4 && SuggestedValue>0) {
+                $(".loading-area").show();
+                setTimeout(function(){
+                    $(".loading-area").hide();
+                    CalculatePremiumByCoverType();
+                }, 1000);
+            }
+           
         });
 
         //$("#RegistrationNo").change(function(){
@@ -1817,7 +1823,7 @@
 
         var licensePaymentTerm = $("#ZinaraLicensePaymentTermId").val();
         var  radioPaymentTerm = $("#RadioLicensePaymentTermId").val();
-
+        var VehicleValue = $("#SuggestedValue").val();
 
         if(isLicense==true && licensePaymentTerm=="")
         {
@@ -1843,7 +1849,7 @@
             $.ajax({
                 type: "POST",
                 url: "@Url.Action("getPolicyDetailsFromICEcash", "CustomerRegistration")",
-                data: { regNo: $("#RegistrationNo").val(), PaymentTerm : $("#PaymentTermId").val(), suminsured : $("#SumInsured").val(), make: $("#MakeId option:selected").text(), model : $("#ModelId option:selected").text(), VehicleYear : $("#VehicleYear").val(), CoverTypeId : $("#CoverTypeId").val(), VehicleType : $("#ProductId").val(), CoverStartDate: $("#CoverStartDate").val() , CoverEndDate : $("#CoverEndDate").val(), VehilceLicense: isLicense, taxClassId: taxClass, RadioLicense: isRadioLicense, licensePaymentTerm:licensePaymentTerm, radioPaymentTerm:radioPaymentTerm },
+                data: { regNo: $("#RegistrationNo").val(), PaymentTerm : $("#PaymentTermId").val(), suminsured : $("#SumInsured").val(), make: $("#MakeId option:selected").text(), model : $("#ModelId option:selected").text(), VehicleYear : $("#VehicleYear").val(), CoverTypeId : $("#CoverTypeId").val(), VehicleType : $("#ProductId").val(), CoverStartDate: $("#CoverStartDate").val() , CoverEndDate : $("#CoverEndDate").val(), VehilceLicense: isLicense, taxClassId: taxClass, RadioLicense: isRadioLicense, licensePaymentTerm:licensePaymentTerm, radioPaymentTerm:radioPaymentTerm, VehicleValue:VehicleValue },
                 success: function (data) {
                     debugger;
                     if (data.result == 0) {

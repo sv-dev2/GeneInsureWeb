@@ -110,6 +110,7 @@ namespace InsuranceClaim.Models
         public string LicenseAddress2 { get; set; }
         public string LicenseCity { get; set; }
         public bool isWebUser { get; set; }
+        [Required(ErrorMessage = "Please Enter Vehicle Value")]
         public decimal SuggestedValue { get; set; }
         public decimal VehicleLicenceFee { get; set; }
         public string ArrearsAmt { get; set; }

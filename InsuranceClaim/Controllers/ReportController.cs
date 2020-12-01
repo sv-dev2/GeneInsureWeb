@@ -90,7 +90,6 @@ namespace InsuranceClaim.Controllers
             return View(model);
         }
 
-
         public ActionResult InsuredVehical()
         {
             var results = new List<RiskDetailModel>();
@@ -156,9 +155,6 @@ namespace InsuranceClaim.Controllers
 
             return View(results);
         }
-
-
-
 
         public ActionResult SearchZtscReports(ZTSCLevyReportSeachModels Model)
         {
@@ -4750,13 +4746,15 @@ namespace InsuranceClaim.Controllers
             //SendGWPExcelFile();
             CertSerialNoReportModel model = new CertSerialNoReportModel();
 
-            ViewBag.BranchList = InsuranceContext.Branches.All().ToList();
+            ViewBag.BranchList = InsuranceContext.Branches.All(where: "Id=" + (int)ALMBranch.GeneCallCentre).ToList();
+
 
             string query = "select Customer.FirstName + ' '+ Customer.LastName as AgentName, VRN, PolicyNumber,CertSerialNoDetail.CertSerialNo,ALMBranchId, Branch.BranchName, CertSerialNoDetail.CreatedOn from CertSerialNoDetail";
             query += " join PolicyDetail on CertSerialNoDetail.PolicyId = PolicyDetail.Id ";
             query += " join Customer on CertSerialNoDetail.CreatedBy = Customer.Id ";
             query += " join VehicleDetail on VehicleDetail.Id=CertSerialNoDetail.VehicleId ";
             query += "  join Branch on VehicleDetail.ALMBranchId= Branch.Id ";
+            query += " where [dbo].[fn_GetUserBranch] (CertSerialNoDetail.CreatedBy)='Gene Call Centre'";
             query += " order by CertSerialNoDetail.id desc";
 
             var list = InsuranceContext.Query(query).Select(c => new CertSerialNoModel()
@@ -4791,7 +4789,7 @@ namespace InsuranceClaim.Controllers
                 ViewBag.enddate = endDate.ToString("dd/MM/yyyy");
             }
 
-            ViewBag.BranchList = InsuranceContext.Branches.All().ToList();
+            ViewBag.BranchList = InsuranceContext.Branches.All(where: "Id=" + (int)ALMBranch.GeneCallCentre).ToList();
 
             string query = "select [dbo].[fn_GetUserBranch] (CertSerialNoDetail.CreatedBy) as CallCenterBranch, Customer.FirstName + ' '+ Customer.LastName as AgentName, ";
             query += " VRN, PolicyNumber,CertSerialNoDetail.CertSerialNo, CertSerialNoDetail.CreatedOn,ALMBranchId, Branch.BranchName from CertSerialNoDetail";
@@ -4805,8 +4803,8 @@ namespace InsuranceClaim.Controllers
                 query += " and [dbo].[fn_GetUserBranch] (CertSerialNoDetail.CreatedBy)='Gene Call Centre'";
 
 
-            if (model.BranchId > 0 && model.BranchId != 6)
-                query += " and ALMBranchId=" + model.BranchId;
+            //if (model.BranchId > 0 && model.BranchId != 6) // it's for alm
+            //    query += " and ALMBranchId=" + model.BranchId;
 
             query += " order  by CertSerialNoDetail.Id desc";
 
@@ -4828,7 +4826,83 @@ namespace InsuranceClaim.Controllers
         }
 
 
+        [Authorize(Roles = "Administrator,Reports,Finance,Team Leaders")]
+        public ActionResult ALMCertSerialNoReport()
+        {
+            //SendGWPExcelFile();
+            CertSerialNoReportModel model = new CertSerialNoReportModel();
 
+            ViewBag.BranchList = InsuranceContext.Branches.All(where: "Id<>" + (int)ALMBranch.GeneCallCentre).ToList();
+
+            string query = "select Customer.FirstName + ' '+ Customer.LastName as AgentName, VRN, PolicyNumber,CertSerialNoDetail.CertSerialNo,ALMBranchId, Branch.BranchName, CertSerialNoDetail.CreatedOn from CertSerialNoDetail";
+            query += " join PolicyDetail on CertSerialNoDetail.PolicyId = PolicyDetail.Id ";
+            query += " join Customer on CertSerialNoDetail.CreatedBy = Customer.Id ";
+            query += " join VehicleDetail on VehicleDetail.Id=CertSerialNoDetail.VehicleId ";
+            query += "  join Branch on VehicleDetail.ALMBranchId= Branch.Id ";
+            query += " where [dbo].[fn_GetUserBranch] (CertSerialNoDetail.CreatedBy)<>'Gene Call Centre'";
+            query += " order by CertSerialNoDetail.id desc";
+
+            var list = InsuranceContext.Query(query).Select(c => new CertSerialNoModel()
+            {
+                VRN = c.VRN,
+                AgentName = c.AgentName,
+                PolicyNumber = c.PolicyNumber,
+                CertSerialNo = c.CertSerialNo,
+                CreatedOn = c.CreatedOn == null ? "" : Convert.ToString(c.CreatedOn),
+                ALMBranchId = c.ALMBranchId,
+                BranchName = c.BranchName
+            }).ToList();
+
+            model.List = list;
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator,Reports,Finance,Team Leaders")]
+        public ActionResult ALMCertSerialNoSearchReport(CertSerialNoReportModel model)
+        {
+
+            DateTime fromDate = DateTime.Now.AddDays(-1);
+            DateTime endDate = DateTime.Now;
+
+            if (!string.IsNullOrEmpty(model.FromDate) && !string.IsNullOrEmpty(model.EndDate))
+            {
+                fromDate = Convert.ToDateTime(model.FromDate);
+                endDate = Convert.ToDateTime(model.EndDate);
+
+                ViewBag.fromdate = fromDate.ToString("dd/MM/yyyy");
+                ViewBag.enddate = endDate.ToString("dd/MM/yyyy");
+            }
+
+            ViewBag.BranchList = InsuranceContext.Branches.All(where: "Id<>" + (int)ALMBranch.GeneCallCentre).ToList();
+
+            string query = "select [dbo].[fn_GetUserBranch] (CertSerialNoDetail.CreatedBy) as CallCenterBranch, Customer.FirstName + ' '+ Customer.LastName as AgentName, ";
+            query += " VRN, PolicyNumber,CertSerialNoDetail.CertSerialNo, CertSerialNoDetail.CreatedOn,ALMBranchId, Branch.BranchName from CertSerialNoDetail";
+            query += " join PolicyDetail on CertSerialNoDetail.PolicyId = PolicyDetail.Id ";
+            query += " join Customer on CertSerialNoDetail.CreatedBy = Customer.Id ";
+            query += " join VehicleDetail on VehicleDetail.Id=CertSerialNoDetail.VehicleId ";
+            query += " join Branch on VehicleDetail.ALMBranchId= Branch.Id ";
+            query += " where  CertSerialNoDetail.CreatedOn>= '" + fromDate + "' And CertSerialNoDetail.CreatedOn<='" + endDate + "'";
+            if (model.BranchId > 0) 
+                query += " and ALMBranchId=" + model.BranchId;
+            query += " order  by CertSerialNoDetail.Id desc";
+
+            var list = InsuranceContext.Query(query).Select(c => new CertSerialNoModel()
+            {
+                VRN = c.VRN,
+                AgentName = c.AgentName,
+                PolicyNumber = c.PolicyNumber,
+                CertSerialNo = c.CertSerialNo,
+                CreatedOn = c.CreatedOn == null ? "" : Convert.ToString(c.CreatedOn),
+                BranchName = c.BranchName,
+                ALMBranchId = c.ALMBranchId
+            }).ToList();
+
+            model.List = list;
+
+            return View("ALMCertSerialNoReport", model);
+            // return View(model);
+        }
 
 
         #region gwp report sending email

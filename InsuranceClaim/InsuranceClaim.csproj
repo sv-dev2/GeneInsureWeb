@@ -1197,6 +1197,7 @@
     <Content Include="Views\Report\NewReconciliationReport.cshtml" />
     <Content Include="Views\Report\NewDailyReceiptsReport.cshtml" />
     <Content Include="Views\CustomerRegistration\ReceiptCancelation.cshtml" />
+    <Content Include="Views\Report\ALMCertSerialNoReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AgentLogo\" />

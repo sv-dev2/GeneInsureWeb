@@ -111,6 +111,13 @@
 
                                             <div class="col-xs-6 col-md-6 form-group-text" id="divSumInsured" style="display:none;">
                                                 <div class="form-group">
+                                                    @Html.Label("Suggested Value", new { @class = "gender-label" })
+                                                    @Html.TextBoxFor(m => m.RiskDetail.SuggestedValue, new { @class = "form-control", @autocomplete = "off", @placeholder = "Vehicle Value" })
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xs-6 col-md-6 form-group-text" id="divSumInsured" style="display:none;">
+                                                <div class="form-group">
                                                     @Html.Label("SumInsured", new { @class = "gender-label" })
                                                     @Html.TextBoxFor(m => m.RiskDetail.SumInsured, new { @class = "form-control", @autocomplete = "off", @placeholder = "SumInsured" })
                                                 </div>
