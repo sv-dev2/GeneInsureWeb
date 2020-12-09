@@ -180,7 +180,7 @@ namespace InsuranceClaim.Models
 
         public bool IsMobile { get; set; }
 
-
+        public DateTime ReceiptDate { get; set; }
 
     }
 

@@ -2061,7 +2061,7 @@ namespace InsuranceClaim.Controllers
 
             var paymentInformationList = InsuranceContext.PaymentInformations.All();
             var recieptList = InsuranceContext.ReceiptHistorys.All().ToList();
-
+            var summaryVehicleList = InsuranceContext.SummaryVehicleDetails.All().ToList();
 
             List<PolicyListViewModel> list = InsuranceContext.Query(query).Select(x => new PolicyListViewModel()
             {
@@ -2089,7 +2089,8 @@ namespace InsuranceClaim.Controllers
                 FacultativeCommission = x.ReinsuranceCommission == null ? 0 : Convert.ToDecimal(x.ReinsuranceCommission),
                 FacPremium = x.ReinsurancePremium == null ? 0 : Convert.ToDecimal(x.ReinsurancePremium),
                 FacReinsuranceAmount = x.ReinsuranceAmount == null ? 0 : Convert.ToDecimal(x.ReinsuranceAmount),
-                PaymentStatus = GetPaymentStatus(recieptList, x.RenewPolicyNumber, x.PolicyId, x.PaymentMethod)
+                PaymentStatus = GetPaymentStatus(recieptList, x.RenewPolicyNumber, x.PolicyId, x.PaymentMethod),
+                IsExistOnSummaryVehcile = CheckVehicleExistOnSummaryVehicle(summaryVehicleList, x.VehicleId)
             }).ToList();
 
 
@@ -2889,6 +2890,7 @@ namespace InsuranceClaim.Controllers
 
             var paymentInformationList = InsuranceContext.PaymentInformations.All();
             var recieptList = InsuranceContext.ReceiptHistorys.All().ToList();
+            var summaryVehicleList = InsuranceContext.SummaryVehicleDetails.All().ToList();
 
             string query = "select top 100 PolicyDetail.Id as PolicyId , PolicyDetail.PolicyNumber,Customer.Id as CustomerId, Customer.FirstName +' ' + Customer.LastName as CustomerName, PaymentMethod.Name as PaymentMethod, ";
             query += " SummaryDetail.TotalSumInsured, SummaryDetail.TotalPremium, SummaryDetail.CreatedOn, SummaryDetail.Id, VehicleDetail.RegistrationNo, ";
@@ -2938,7 +2940,8 @@ namespace InsuranceClaim.Controllers
                 FacultativeCommission = x.ReinsuranceCommission == null ? 0 : Convert.ToDecimal(x.ReinsuranceCommission),
                 FacPremium = x.ReinsurancePremium == null ? 0 : Convert.ToDecimal(x.ReinsurancePremium),
                 FacReinsuranceAmount = x.ReinsuranceAmount == null ? 0 : Convert.ToDecimal(x.ReinsuranceAmount),
-                PaymentStatus = GetPaymentStatus(recieptList, x.RenewPolicyNumber, x.PolicyId, x.PaymentMethod)
+                PaymentStatus = GetPaymentStatus(recieptList, x.RenewPolicyNumber, x.PolicyId, x.PaymentMethod),
+                IsExistOnSummaryVehcile = CheckVehicleExistOnSummaryVehicle(summaryVehicleList, x.VehicleId)
             }).ToList();
 
 
@@ -2956,6 +2959,19 @@ namespace InsuranceClaim.Controllers
 
             //FacultativeCommission
             return View("PolicyManagement", newList);
+        }
+
+        public bool CheckVehicleExistOnSummaryVehicle(List<SummaryVehicleDetail> list, int vehicleId)
+        {
+            bool result = false;
+            var details = list.FirstOrDefault(c => c.VehicleDetailsId == vehicleId);
+
+            if(details!=null)
+            {
+                 result = true;
+            }
+
+            return result;
         }
 
         // Setting Methods
@@ -3281,11 +3297,11 @@ namespace InsuranceClaim.Controllers
 
             var SummaryList = new List<SummaryDetail>();
 
-            if (role == "Staff")
+            if (role == "Staff" || role == "Team Leaders")
             {
                 SummaryList = InsuranceContext.SummaryDetails.All(where: $"CreatedBy={customerID} and isQuotation = '0'  ").OrderByDescending(x => x.Id).ToList();
             }
-            else if (role == "Administrator" || role == "Renewals")
+            else if (role == "Administrator" || role == "Renewals" )
             {
                 var query = " Select SD.* from SummaryDetail SD Join PaymentInformation pa on SD.Id =pa.SummaryDetailId where SD.isQuotation=0 ";
                 SummaryList = InsuranceContext.Query(query).Select(x => new SummaryDetail()
@@ -4704,6 +4720,7 @@ namespace InsuranceClaim.Controllers
                 var _user = UserManager.FindById(_customer.UserID);
 
                 _vehicle.IsActive = false;
+                _vehicle.isLapsed = false;
 
                 string DeActivePolicyPath = "/Views/Shared/EmaiTemplates/PolicyDeActivation.cshtml";
                 string EmailBody2 = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath(DeActivePolicyPath));

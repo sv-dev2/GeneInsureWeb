@@ -624,6 +624,8 @@ namespace Insurance.Domain
         public decimal AdministrationAmt { get; set; }
 
         public bool IsMobile { get; set; }
+
+   
     }
 
     public partial class VehicleMake : Entity<VehicleMake>
@@ -1238,6 +1240,7 @@ namespace Insurance.Domain
         public string Address2 { get; set; }
         public string City { get; set; }
         public int VehicleId { get; set; }
+        public DateTime ReceiptDate { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public int? ModifiedBy { get; set; }

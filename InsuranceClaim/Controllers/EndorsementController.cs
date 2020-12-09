@@ -2279,7 +2279,7 @@ namespace InsuranceClaim.Controllers
 
             foreach (var item in policyinfo)
             {
-                if (role == "Staff" || role == "Administrator")
+                if (role == "Staff" || role == "Administrator" || role == "Team Leaders")
                 {
                     var endorsementssummryinfo = InsuranceContext.EndorsementSummaryDetails.Single(where: $"CreatedBy ='{custome}'and IsCompleted = 'true'and EndorsementPolicyId = '{item.Id}'");
                     if (endorsementssummryinfo != null)

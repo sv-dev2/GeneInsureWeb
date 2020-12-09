@@ -121,12 +121,9 @@
                             <th>Payment Type</th>                          
                             <th>Created On</th>
                             <th>Branch</th>
-                            @*
-                                    <th>Amount Paid</th>
-
-                                    <th>Transaction Reference</th>
-                                    <th style="text-align:left;">Payment Type</th>
-                                </tr>*@
+                            <th> Payment Status</th>
+                            <th>Days Due</th>
+                            <th> Receipt No</th>
                     </thead>
                     <tbody>
                         @{
@@ -256,15 +253,33 @@
                                     <td>@item.CreatedOn.Value.ToString("hh:mm")</td>
                                 }
 
-                                <td>@item.BranchName</td>
+                                <td>@item.BranchName</td>       
+                                
+                                <td>
+                                    @if (item.PaymentMethodId == (int)InsuranceClaim.Models.paymentMethod.PayLater)
+                                    {
+                                        <span>PayLater</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Paid</span>
+                                    }
 
-                                @*
+                                </td>
+                                <td>
+                                    @if (item.PaymentMethodId == (int)InsuranceClaim.Models.paymentMethod.PayLater)
+                                    {
 
-                                    <td>@item.DatePosted</td>
-                                    <td>$ @item.AmountPaid</td>
-                                    <td>$@Math.Round(Convert.ToDecimal(item.Balance), 2)</td>
-                                    <td> @item.TransactionReference</td>
-                                    <td>@item.paymentMethodType</td>*@
+                                        <span>@DateTime.Today.Subtract(DateTime.Parse(item.TransactionDate.ToShortDateString())).TotalDays </span>
+                                    }
+                                    else
+                                    {
+                                        <span>Paid</span>
+                                    }
+                                </td>
+
+                               
+                                                   
                             </tr>
                         }
                     </tbody>
@@ -287,7 +302,7 @@
                             <td><strong>@balanceTotal</strong></td>
                             <td></td>
                             <td></td>
-                            <td></td>
+                            <td colspan="4"></td>
 
                         </tr>
                     </tfoot>

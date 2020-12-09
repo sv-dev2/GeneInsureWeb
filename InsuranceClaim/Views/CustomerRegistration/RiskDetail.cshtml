@@ -709,6 +709,23 @@
 
                                                     </div>
                                                 </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label"
+                                                           for="inputaddress2">Receipt Date</label>
+                                                    <div class="col-sm-10">
+                                                        <div class='input-group' id='receiptdatepicker'>
+                                                            @Html.TextBoxFor(x => x.ReceiptDate, new { @class = "form-control", @autocomplete = "off", @placeholder = "Receipt date" })
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-calendar"></span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+
+
                                                 <div class="form-group">
                                                     <div class="col-sm-offset-2 col-sm-10">
                                                         <div class="checkbox">
@@ -1137,6 +1154,12 @@
             $(this).data("DateTimePicker").hide();
             updateEndDate();
         });
+
+        $('#receiptdatepicker').datetimepicker({
+            format: 'MM/D/YYYY',
+            minDate: new Date()
+        });
+
 
         var data= '@Model.isUpdate';
         if (data == 'True') {

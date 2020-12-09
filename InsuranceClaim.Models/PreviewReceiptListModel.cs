@@ -65,6 +65,10 @@ namespace InsuranceClaim.Models
 
         public string Location { get; set; }
 
+        public decimal AdministrationAmt { get; set; }
+
+        public string ReceiptNumber { get; set; }
+
     }
     public class ListReceiptModule
     {

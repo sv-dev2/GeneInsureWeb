@@ -14,13 +14,6 @@
                     <h2>PolicyManagement</h2>
                 </div>
             </div>
-            @*<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 add-btn">
-                    <div class="text-right">
-                        <form>
-                            <input class="btn btn-primary" type="button" value="Add" onclick="window.location.href='@Url.Action("Index", "CustomerRegistration")'" />
-                        </form>
-                    </div>
-                </div*@
         </div>
 
         <br />
@@ -94,6 +87,8 @@
 
                         string policyNumber = "";
 
+                   
+
                         foreach (var item in Model)
                         {
                             if (item.PolicyNumber != policyNumber)
@@ -162,7 +157,23 @@
                                                     </div>
                                                 </td>
                                             }
-                                            else if (item.isLapsed && item.IsActive == false)
+
+                                            else if (!item.IsActive && item.isLapsed==false)
+                                            {
+                                                <td>Disabled</td>
+                                                <td colspan="3">
+                                                    <div class="tbl-btn-list">
+                                                        <ul class="list-inline">
+                                                            <li class="btn-width-auto"><button type="button" class="btn-sm btn-primary" onclick="ActivateVehicle('@item.VehicleDetailId')">Activate</button></li>
+                                                            <li class="btn-width-auto">@Html.ActionLink("View RenewPolicy", "customeRenew", "Renew", new { renewvehicle = item.VehicleDetailId }, new { @class = "btn-sm btn-primary" })</li>
+                                                            <li class="btn-width-auto"><a href="javascript:void(0)" class="btn-sm btn-primary" onclick="RsendPolicys(@item.VehicleDetailId)">Resend Policy </a></li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+
+                                            }
+
+                                            else if (item.isLapsed && item.IsActive == false && item.IsExistOnSummaryVehcile == true)
                                             {
                                                 <td>Renewed</td>
 
@@ -182,25 +193,9 @@
                                                     </div>
                                                 </td>
 
-
-
-
-
                                             }
-                                            else if (!item.IsActive)
-                                            {
-                                                <td>Disabled</td>
-                                                <td colspan="3">
-                                                    <div class="tbl-btn-list">
-                                                        <ul class="list-inline">
-                                                            <li class="btn-width-auto"><button type="button" class="btn-sm btn-primary" onclick="ActivateVehicle('@item.VehicleDetailId')">Activate</button></li>
-                                                            <li class="btn-width-auto">@Html.ActionLink("View RenewPolicy", "customeRenew", "Renew", new { renewvehicle = item.VehicleDetailId }, new { @class = "btn-sm btn-primary" })</li>
-                                                            <li class="btn-width-auto"><a href="javascript:void(0)" class="btn-sm btn-primary" onclick="RsendPolicys(@item.VehicleDetailId)">Resend Policy </a></li>
-                                                        </ul>
-                                                    </div>
-                                                </td>
 
-                                            }
+
                                             else if (DateTime.Now < Convert.ToDateTime(item.RenewalDate).AddMonths(-2))
                                             {
                                                 <td>In Force</td>
@@ -257,6 +252,12 @@
 
                                                 </td>
                                             }
+
+                                           
+
+                                           
+
+
                                         </tr>
                                     </table>
                                 </td>

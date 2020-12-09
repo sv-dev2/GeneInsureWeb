@@ -151,7 +151,8 @@
                             <th>Commission Detail</th>
                             <th>Radio Licence Cost</th>
                             <th>Zinara License Fee</th>
-                            <th>Grand Premium</th>
+                            <th>Admin fee</th>
+                            <th>Grand Premium</th>                        
                             <th>Status</th>
                             <th>Policy Status</th>
                             <th>
@@ -318,24 +319,15 @@
                                 <td>@item.CoverType</td>
                                 <td> @item.Currency </td>
                                 <td>@item.Sum_Insured</td>
-                                <td>
-                                    @item.Premium_due
-                                </td>
-
-                                
-
+                                <td>  @item.Premium_due </td>                            
                                 <td> @item.Stamp_duty</td>
                                 <td> @item.ZTSC_Levy</td>
-                                <td>
-                                    @item.Comission_Amount
-                                </td>
+                                <td> @item.Comission_Amount  </td>
                                 <td>@item.RadioLicenseCost</td>
                                 <td> @item.Zinara_License_Fee </td>
-
-
-                                <td>
-                                    @item.GrandPremium
-                                </td>
+                                <td> @item.AdministrationAmt</td>
+                                <td> @item.GrandPremium </td>
+                                
 
                                 @if (DateTime.Now > item.PolicyRenewalDate)
                                 {
@@ -443,6 +435,7 @@
                             </td>
                             <td><strong>@radioLicenseCostTotal</strong></td>
                             <td><strong> @ZinaraLicenseFee </strong> </td>
+                            <td></td>
                             <td><strong> @GrandPremiumtotal</strong> </td>
                             <td></td>
                             <td></td>
@@ -477,7 +470,7 @@
                             <td colspan="3"><strong>Amount</strong></td>
                             <td colspan="3"><strong>Count</strong></td>   
                             
-                            <td colspan="5"></td>  
+                            <td colspan="6"></td>  
                                       
                         </tr>
 
@@ -488,7 +481,7 @@
                             <td colspan="3">USD</td>
                             <td colspan="3">@ustotal</td>
                             <td colspan="3">@uscount</td>
-                            <td colspan="5"></td>
+                            <td colspan="6"></td>
                             
                         </tr>
                         <tr>
@@ -498,13 +491,13 @@
                             <td colspan="3">RTGS$</td>
                             <td colspan="3">@rtgstotal</td>
                             <td colspan="3">@rtgscount</td>
-                            <td colspan="5"></td>
+                            <td colspan="6"></td>
                           
                         </tr>
 
                         <tr>
                             <td colspan="19"></td>
-                            <td colspan="5"></td>
+                            <td colspan="6"></td>
                         </tr>
                         <tr>
                             <td colspan="10"><strong>Renewals</strong></td>
@@ -512,7 +505,7 @@
                             <td colspan="3">USD</td>
                             <td colspan="3">@Reustotal</td>
                             <td colspan="3">@Reuscount</td>
-                            <td colspan="5"></td>
+                            <td colspan="6"></td>
                             
                         </tr>
                         <tr>
@@ -523,13 +516,13 @@
                            
                             <td colspan="3" >@Rertgstotal</td>
                             <td colspan="3">@Rertgscount</td>
-                            <td colspan="5"></td>
+                            <td colspan="6"></td>
                        
                         </tr>
 
                         <tr>
                             <td colspan="19"></td>
-                            <td colspan="5"></td>
+                            <td colspan="6"></td>
                         </tr>
 
 
@@ -540,7 +533,7 @@
                             <td colspan="3"> USD</td>
                             <td colspan="3">@(ustotal + Reustotal)</td>
                             <td colspan="3"> @(uscount + Reuscount) </td>
-                            <td colspan="5"></td>
+                            <td colspan="6"></td>
                            
                         </tr>
                         <tr>
@@ -550,7 +543,7 @@
                             <td colspan="3">RTGS$</td>
                             <td colspan="3">@(rtgstotal + Rertgstotal)</td>
                             <td colspan="3">@(  rtgscount  + Rertgscount)</td>
-                            <td colspan="5"></td>
+                            <td colspan="6"></td>
                            
                         </tr>
                         <tr>
@@ -560,7 +553,7 @@
                             <td colspan="3">TOTAL RTGS$</td>
                             <td colspan="3">@(ustotal + Reustotal + rtgstotal + Rertgstotal)</td>
                             <td colspan="3">@( uscount + Reuscount + rtgscount  + Rertgscount)</td>
-                            <td colspan="5"></td>
+                            <td colspan="6"></td>
                            
                         </tr>
                     </tfoot>

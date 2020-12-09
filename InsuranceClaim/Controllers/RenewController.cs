@@ -1562,18 +1562,31 @@ namespace InsuranceClaim.Controllers
 
 
                                 // Delivery Address Save
-                                var LicenseAddress = new LicenceDiskDeliveryAddress();
-                                LicenseAddress.Address1 = _item.LicenseAddress1;
-                                LicenseAddress.Address2 = _item.LicenseAddress2;
-                                LicenseAddress.City = _item.LicenseCity;
-                                LicenseAddress.VehicleId = _item.Id;
-                                LicenseAddress.CreatedBy = customer.Id;
-                                LicenseAddress.CreatedOn = DateTime.Now;
-                                LicenseAddress.ModifiedBy = customer.Id;
-                                LicenseAddress.ModifiedOn = DateTime.Now;
 
-                                InsuranceContext.LicenceDiskDeliveryAddresses.Insert(LicenseAddress);
+                                try
+                                {
+                                    var LicenseAddress = new LicenceDiskDeliveryAddress();
+                                    LicenseAddress.Address1 = _item.LicenseAddress1;
+                                    LicenseAddress.Address2 = _item.LicenseAddress2;
+                                    LicenseAddress.City = _item.LicenseCity;
+                                    LicenseAddress.VehicleId = _item.Id;
+                                    LicenseAddress.CreatedBy = customer.Id;
+                                    LicenseAddress.CreatedOn = DateTime.Now;
+                                    LicenseAddress.ModifiedBy = customer.Id;
+                                    LicenseAddress.ModifiedOn = DateTime.Now;
 
+                                    if (_item.ReceiptDate.Year == 0001)
+                                    {
+                                        _item.ReceiptDate = DateTime.MinValue;
+                                    }
+                                    LicenseAddress.ReceiptDate = _item.ReceiptDate;
+
+                                    InsuranceContext.LicenceDiskDeliveryAddresses.Insert(LicenseAddress);
+                                }
+                                catch (Exception ex)
+                                {
+
+                                }
 
                                 ///Licence Ticket
                                 if (_item.IsLicenseDiskNeeded)
@@ -2667,6 +2680,7 @@ namespace InsuranceClaim.Controllers
                     detail.addressLine2 = licenseDelivery.Address2;
                     detail.zoneName = licenseDelivery.Address2;
                     detail.city = licenseDelivery.City;
+                    detail.edd = licenseDelivery.ReceiptDate.ToShortDateString();
                 }
             }
             else

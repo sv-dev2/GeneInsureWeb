@@ -1870,12 +1870,8 @@ namespace InsuranceClaim.Controllers
                                     item.IncludeRadioLicenseCost = true;
                                 }
 
-                                item.IsMobile = false;
-                               
-
+                                item.IsMobile = false;                           
                                 var _item = item;
-
-
 
 
                                 //List<RiskDetailModel> objVehicles = new List<RiskDetailModel>();
@@ -1918,31 +1914,41 @@ namespace InsuranceClaim.Controllers
                                     vehicles[Convert.ToInt32(_item.NoOfCarsCovered) - 1] = _item;
                                     Session["VehicleDetails"] = vehicles;
 
-
                                     // Delivery Address Save
-                                    var LicenseAddress = new LicenceDiskDeliveryAddress();
-                                    LicenseAddress.Address1 = _item.LicenseAddress1;
-                                    LicenseAddress.Address2 = _item.LicenseAddress2;
-                                    LicenseAddress.City = _item.LicenseCity;
-                                    LicenseAddress.VehicleId = _item.Id;
-                                    LicenseAddress.CreatedBy = customer.Id;
-                                    LicenseAddress.CreatedOn = DateTime.Now;
-                                    LicenseAddress.ModifiedBy = customer.Id;
-                                    LicenseAddress.ModifiedOn = DateTime.Now;
+                                    try
+                                    {
+                                        var LicenseAddress = new LicenceDiskDeliveryAddress();
+                                        LicenseAddress.Address1 = _item.LicenseAddress1;
+                                        LicenseAddress.Address2 = _item.LicenseAddress2;
+                                        LicenseAddress.City = _item.LicenseCity;
+                                        LicenseAddress.VehicleId = _item.Id;
+                                        LicenseAddress.CreatedBy = customer.Id;
+                                        LicenseAddress.CreatedOn = DateTime.Now;
+                                        LicenseAddress.ModifiedBy = customer.Id;
+                                        LicenseAddress.ModifiedOn = DateTime.Now;
+                                        if (_item.ReceiptDate.Year == 0001)
+                                        {
+                                            _item.ReceiptDate = DateTime.MinValue;
+                                        }
 
-                                    InsuranceContext.LicenceDiskDeliveryAddresses.Insert(LicenseAddress);
+                                        LicenseAddress.ReceiptDate = _item.ReceiptDate;
+                                        InsuranceContext.LicenceDiskDeliveryAddresses.Insert(LicenseAddress);
+                                    }
+                                    catch(Exception ex)
+                                    {
+
+                                    }
+                                    
 
 
                                     ///Licence Ticket
                                     if (_item.IsLicenseDiskNeeded)
                                     {
-
                                         var LicenceTicket = new LicenceTicket();
                                         var Licence = InsuranceContext.LicenceTickets.All(orderBy: "Id desc").FirstOrDefault();
 
                                         if (Licence != null)
                                         {
-
 
                                             string number = Licence.TicketNo.Substring(3);
 

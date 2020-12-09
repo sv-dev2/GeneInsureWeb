@@ -1099,6 +1099,7 @@ namespace InsuranceClaim.Controllers
                     detail.addressLine2 = licenseDelivery.Address2;
                     detail.zoneName = licenseDelivery.Address2;
                     detail.city = licenseDelivery.City;
+                    detail.edd = licenseDelivery.ReceiptDate.ToShortDateString();
                 }
             }
             else
@@ -1329,7 +1330,19 @@ namespace InsuranceClaim.Controllers
                 VehicleModel model = InsuranceContext.VehicleModels.Single(where: $"ModelCode='{item.ModelId}'");
                 VehicleMake make = InsuranceContext.VehicleMakes.Single(where: $" MakeCode='{item.MakeId}'");
 
-                string vehicledescription = model.ModelDescription + " / " + make.MakeDescription;
+                // string vehicledescription = model.ModelDescription + " / " + make.MakeDescription;
+
+                string vehicledescription = "";
+                string MakeDesc = "";
+                string ModelDesc = "";
+                if(make!=null)
+                    MakeDesc = make.MakeDescription;
+
+                if (model != null)
+                    ModelDesc = model.ModelDescription;
+
+                vehicledescription = MakeDesc + " " + ModelDesc;
+
 
                 var productDetail = InsuranceContext.Products.Single(Convert.ToInt32(item.ProductId));
 

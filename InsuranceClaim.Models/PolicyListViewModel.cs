@@ -78,6 +78,8 @@ namespace InsuranceClaim.Models
 
         public string ModifiedOn { get; set; }
 
+        public bool IsExistOnSummaryVehcile { get; set; }
+
     }
 
     public class ListPolicy

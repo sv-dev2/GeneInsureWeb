@@ -175,7 +175,6 @@
 
                                                     <div class='input-group' id='datetimepicker1'>
                                                         @Html.TextBoxFor(x => x.DateOfBirth, new { @class = "form-control", @autocomplete = "off", @placeholder = "DOB" })
-
                                                         <span class="input-group-addon">
                                                             <span class="glyphicon glyphicon-calendar"></span>
                                                         </span>
@@ -353,9 +352,6 @@
 
 
     function GetVehicleMake() {
-
-       
-
         $.ajax({
             type: "POST",
             contentType: "application/json; charset=utf-8",

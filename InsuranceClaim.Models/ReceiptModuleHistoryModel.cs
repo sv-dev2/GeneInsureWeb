@@ -38,7 +38,8 @@ namespace InsuranceClaim.Models
         public string agentName { get; set; }
         public string zoneName { get; set; }
 
-
+        public string edd { get; set; } // receipt date
+         
     }
 
 
