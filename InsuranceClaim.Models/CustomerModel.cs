@@ -20,8 +20,7 @@ namespace InsuranceClaim.Models
         public string EmailAddress { get; set; }
         [Display(Name = "Phone Number")]
         [Required(ErrorMessage = "Please Enter Country Code and Phone Number.")]
-        [RegularExpression(@"^[0-9]{9}$", ErrorMessage = "Enter Valid Phone Number")]
-        //[RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Not a valid phone number.")]
+        //[RegularExpression(@"^[0-9]{9}$", ErrorMessage = "Enter Valid Phone Number")]
         public string PhoneNumber { get; set; }
         [Display(Name = "First Name")]
         [Required(ErrorMessage = "Please Enter First Name.")]
@@ -119,5 +118,14 @@ namespace InsuranceClaim.Models
         public string WorkDesc { get; set; }
 
 
+    }
+
+
+    public class AreasModel
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public string zone { get; set; }
+        public int zoneID { get; set; }
     }
 }

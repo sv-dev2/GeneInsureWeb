@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using InsuranceClaim.Models;
 using RestSharp;
+using Newtonsoft.Json;
 
 namespace Insurance.Service
 {
@@ -69,16 +70,26 @@ namespace Insurance.Service
             var re = response;
 
             // var res = JsonConvert.DeserializeObject<SummaryDetailModel>(response.Content);
-
-
-
-
-
-
-
-
         }
 
+
+        public List<AreasModel> GetAreaList()
+        {
+            var client = new RestClient("http://41.190.32.215:4002/api/zoneareas/all");
+            var request = new RestRequest(Method.GET);
+            request.AddHeader("cache-control", "no-cache");
+            request.AddHeader("content-type", "application/json");
+            request.RequestFormat = DataFormat.Json;
+           // request.AddJsonBody(deliveryDetail);
+
+            //request.Timeout = 5000;
+            //request.ReadWriteTimeout = 5000;
+            IRestResponse response = client.Execute(request);
+
+             var res = JsonConvert.DeserializeObject <List<AreasModel>>(response.Content);
+
+            return res;
+        }
 
 
         public Product GetVehicleTypeByProductId(int productId)

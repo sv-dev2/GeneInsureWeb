@@ -5618,6 +5618,7 @@ namespace InsuranceClaim.Controllers
         public ActionResult NewDailyReceiptsReport()
         {
 
+            var customerList = InsuranceContext.Customers.All().ToList();
             NewReconcilationReportModel model = new NewReconcilationReportModel();
             string invoiceSQL = "select sum(Amount) as invoice, policyId , policyNumber , CreatedOn, CreatedBy from ReceiptAndPayment  where type='invoice' " +
                 //"AND CreatedOn BETWEEN '"+model.FromDate+"' AND '"+model.EndDate+"' " +
@@ -5667,14 +5668,21 @@ namespace InsuranceClaim.Controllers
                 recieptAndPaymentModel.ReceiptDate = AmountPaid.CreatedOn;
                 recieptAndPaymentModel.PaymentReference = "";
 
-                string agentNameSql = "select Customer.FirstName+' '+Customer.LastName as userName from PolicyDetail join Customer on Customer.Id =PolicyDetail.CreatedBy where PolicyDetail.id ='" + invoice.PolicyId + "'";
-                var AgentName = InsuranceContext.Query(agentNameSql).Select(x => new UserName
-                {
-                    UserNameValue = x.userName
+                //string agentNameSql = "select Customer.FirstName+' '+Customer.LastName as userName from PolicyDetail join Customer on Customer.Id =PolicyDetail.CreatedBy where PolicyDetail.id ='" + invoice.PolicyId + "'";
+                //var AgentName = InsuranceContext.Query(agentNameSql).Select(x => new UserName
+                //{
+                //    UserNameValue = x.userName
 
-                }).FirstOrDefault();
+                //}).FirstOrDefault();
 
-                recieptAndPaymentModel.PolicyCreatedBy = AgentName == null ? " " : AgentName.UserNameValue;
+                //recieptAndPaymentModel.PolicyCreatedBy = AgentName == null ? " " : AgentName.UserNameValue;
+
+                var customerDetail = customerList.FirstOrDefault(c => c.Id == invoice.CreatedBy);
+
+                if (customerDetail != null)
+                    recieptAndPaymentModel.PolicyCreatedBy = customerDetail == null ? " " : customerDetail.FirstName + " " + customerDetail.LastName;
+
+
 
                 string CustomerNameSql = "select Customer.FirstName+' '+Customer.LastName as userName , Currency.name as CurrrecyName from PolicyDetail  join Customer on Customer.Id = PolicyDetail.CustomerId  join Currency on PolicyDetail.CurrencyId = Currency.Id where PolicyDetail.id='" + invoice.PolicyId + "'";
                 var CustomerName = InsuranceContext.Query(CustomerNameSql).Select(x => new UserName
@@ -5705,13 +5713,11 @@ namespace InsuranceClaim.Controllers
         public ActionResult NewDailyReceiptsSearchReport(NewReconcilationReportModel model)
         {
 
+            var customerList = InsuranceContext.Customers.All().ToList();
             //NewReconcilationReportModel model = new NewReconcilationReportModel();
             string invoiceSQL = "select sum(Amount) as invoice, policyId , policyNumber , CreatedOn, CreatedBy from ReceiptAndPayment  where type='invoice' " +
                 "AND CreatedOn BETWEEN '" + model.FromDate + "' AND '" + model.EndDate + "' " +
                 "group by  policyId,policyNumber , CreatedOn, CreatedBy ";
-
-
-
 
             var InvoiceList = InsuranceContext.Query(invoiceSQL).Select(x => new PolicyInvoice
             {
@@ -5754,14 +5760,11 @@ namespace InsuranceClaim.Controllers
                 recieptAndPaymentModel.ReceiptDate = AmountPaid.CreatedOn;
                 recieptAndPaymentModel.PaymentReference = balance.Reference;
 
-                string agentNameSql = "select Customer.FirstName+' '+Customer.LastName as userName from PolicyDetail join Customer on Customer.CustomerId =PolicyDetail.CreatedBy where PolicyDetail.id ='" + invoice.PolicyId + "'";
-                var AgentName = InsuranceContext.Query(agentNameSql).Select(x => new UserName
-                {
-                    UserNameValue = x.userName
+                var customerDetail = customerList.FirstOrDefault(c => c.Id == invoice.CreatedBy);
 
-                }).FirstOrDefault();
+                if (customerDetail != null)
+                    recieptAndPaymentModel.PolicyCreatedBy = customerDetail == null ? " " : customerDetail.FirstName + " " + customerDetail.LastName;
 
-                recieptAndPaymentModel.PolicyCreatedBy = AgentName == null ? " " : AgentName.UserNameValue;
 
                 string CustomerNameSql = "select Customer.FirstName+' '+Customer.LastName as userName , Currency.name as CurrrecyName from PolicyDetail  join Customer on Customer.CustomerId = PolicyDetail.CustomerId  join Currency on PolicyDetail.CurrencyId = Currency.Id where PolicyDetail.id='" + invoice.PolicyId + "'";
                 var CustomerName = InsuranceContext.Query(CustomerNameSql).Select(x => new UserName

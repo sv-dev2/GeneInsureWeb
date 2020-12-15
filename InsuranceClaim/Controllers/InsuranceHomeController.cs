@@ -24,8 +24,15 @@ namespace InsuranceClaim.Controllers
             //Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
             //objEmailService.SendEmail("chandan.kumar@kindlebit.com", "", "", "Receipt Module", "test mail", _attachementss);
 
+            //VehicleService service = new VehicleService();
+            //service.GetAreaList();
+
+
+
             return View();
         }
+
+       
 
 
         private void CheckRecursive()

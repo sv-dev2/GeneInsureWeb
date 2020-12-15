@@ -4103,36 +4103,22 @@ namespace InsuranceClaim.Controllers
                 result.Add(model);
             }
 
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
 
 
-
-            //try
-            //{
-            //    result = (from Vehicle in InsuranceContext.VehicleDetails.All().ToList()
-            //              join Policylist in InsuranceContext.PolicyDetails.All().ToList()
-            //              on Vehicle.PolicyId equals Policylist.Id
-            //              join customer in InsuranceContext.Customers.All()
-            //              on Vehicle.CustomerId equals customer.Id
-            //              join paymentInfo in InsuranceContext.PaymentInformations.All().ToList()
-            //              on Vehicle.PolicyId equals paymentInfo.PolicyId
-            //              where Vehicle.IsActive == true
-            //              select new ReceiptModuleModel
-            //              {
-            //                  PolicyNumber = Policylist.PolicyNumber,
-            //                  PolicyId = Vehicle.PolicyId,
-            //                  CustomerName = customer.FirstName + " " + customer.LastName,
-            //                  VehicleId = Vehicle.Id,
-            //                  RegistrationNumber = Vehicle.RegistrationNo
-            //              }).OrderByDescending(c => c.PolicyId).Take(500).ToList();
-            //}
-            //catch (Exception ex)
-            //{
-
-            //}
+        [HttpPost]
+        public JsonResult GetAreasList()
+        {
+            VehicleService service = new VehicleService();
+            var result=   service.GetAreaList();
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+
+
 
         public JsonResult GetCustomername(string txtvalue)
         {

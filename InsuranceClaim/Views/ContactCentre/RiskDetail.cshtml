@@ -6,6 +6,8 @@
     var customerDetail = (InsuranceClaim.Models.CustomerModel)Session["CustomerDataModal"];
 }
 
+<link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />
+
 <style>
     /* Set the size of the div element that contains the map */
     #map {
@@ -801,6 +803,8 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8k7mxHV3-Md1VyrQluTgygCpkf2HrY7c&callback=initMap">
 </script>
 
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <script src="~/Scripts/googleMap.js"></script>
 
 
@@ -1043,6 +1047,7 @@
 <script type="text/javascript">
     var today;
     var isReinsuranceConfirmed = false;
+    var areasArray = [];
     function getVehicleList() {
         $.ajax({
             url: "@Url.Action("getVehicleList", "CustomerRegistration")",
@@ -1397,7 +1402,32 @@
         else {
             $("#divSumInsured").show();
         }
+
+
+        getAreas();
+
+        $("#inputaddress2").autocomplete({
+            source: areasArray
+        });
+
+
     });
+
+    function getAreas() {
+
+        $.ajax({
+            url: "/CustomerRegistration/GetAreasList",
+            type: "POST",
+            async: true,
+            dataType: "json",
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    areasArray.push(data[i].name);
+                }
+
+            }
+        })
+    };
 
 
     ////////////////////
