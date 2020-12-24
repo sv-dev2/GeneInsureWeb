@@ -422,6 +422,12 @@ namespace Insurance.Domain
         public string RenewPolicyNumber { get; set; }
 
         public decimal TenderedAmount { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public DateTime ModifiedOn { get; set; }
+
+        public int ModifiedBy { get; set; }
     }
     public partial class PaymentTerm : Entity<PaymentTerm>
     {
@@ -622,10 +628,9 @@ namespace Insurance.Domain
         public decimal ArrearsAmt { get; set; }
 
         public decimal AdministrationAmt { get; set; }
-
         public bool IsMobile { get; set; }
+        public string ReasonContent { get; set; }
 
-   
     }
 
     public partial class VehicleMake : Entity<VehicleMake>

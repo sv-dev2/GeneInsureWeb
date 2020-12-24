@@ -1198,6 +1198,7 @@
     <Content Include="Views\Report\NewDailyReceiptsReport.cshtml" />
     <Content Include="Views\CustomerRegistration\ReceiptCancelation.cshtml" />
     <Content Include="Views\Report\ALMCertSerialNoReport.cshtml" />
+    <Content Include="Views\Report\ActiveDeactiveReceipts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AgentLogo\" />

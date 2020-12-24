@@ -19,8 +19,8 @@ namespace InsuranceClaim.Controllers
             //obj.getToken();
             //obj.RequestQuote(objVehicles);
             //test    
-            //List<string> _attachementss = new List<string>();
 
+            //List<string> _attachementss = new List<string>();
             //Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
             //objEmailService.SendEmail("chandan.kumar@kindlebit.com", "", "", "Receipt Module", "test mail", _attachementss);
 

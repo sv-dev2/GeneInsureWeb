@@ -6,6 +6,8 @@
     var customerDetail = (InsuranceClaim.Models.CustomerModel)Session["ReCustomerDataModal"];
 }
 
+<link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />
+
 <div class="top-banner-section">
     <div class="container">
         <div class="car-insurance-content">
@@ -19,13 +21,8 @@
 
     <div class="form-section-top">
         <div class="container">
-
-
             <div class="row bs-wizard">
-
                 <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
-
-
 
                     <div class="Process-step-section process-block">
                         <div class="col-xs-2 bs-wizard-step complete">
@@ -751,7 +748,13 @@
     </div>
 </div>
 
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <script>
+
+    var areasArray = [];
+
     function gotoPeriviouse() {
         location.href = '@Url.Action("BackToCustomerDetail", "Renew", new { id=-1 })';
     }
@@ -780,12 +783,7 @@
             $("#myAddressModal").modal('show');
             return false;
         }
-
     });
-
-
-
-
 
 
     $("#inputcheckbox").click(function(){
@@ -1024,9 +1022,6 @@
         {
             //$("#RadioLicenseCost").removeClass("inputDisabled");
 
-
-            debugger;
-
             var RadioLicensePaymentTermId = $("#RadioLicensePaymentTermId").val();
 
             if(RadioLicensePaymentTermId!="")
@@ -1109,7 +1104,7 @@
 
     $(document).ready(function () {
 
-        debugger;
+
 
         if('@Model.CombinedID'!=null && '@Model.CombinedID'!='')
         {
@@ -1306,27 +1301,6 @@
                 CalculatePremiumByCoverType();
             }, 1000);
 
-
-
-            //if ($("fieldset").attr("disabled") != "disabled") {
-            //    if ($("#isVehicleRegisteredonICEcash").val() == 1) {
-            //        generateQuotewithICEcash();
-            //    }
-            //    else{
-            //        QuoteCalculation();
-            //    }
-            //}
-            //else
-            //{
-            //    if ($("#PaymentTermId").val() != "" && $("#ProductId").val() != "" && $("#RegistrationNo").val() != "") {
-            //        checkVRNwithICEcash();
-            //    }
-            //    else{
-            //        toastr.warning("Please Select Valid Payment Term And Vehicle Type And Vehicle Registeration Number.");
-            //    }
-            //}
-            //  GetRadioLicenseCost();
-
         });
 
 
@@ -1422,10 +1396,31 @@
 
         });
 
+        getAreas();
 
+        $("#inputaddress2").autocomplete({
+            source: areasArray
+        });
 
 
     });
+
+
+    function getAreas() {
+
+        $.ajax({
+            url: "/CustomerRegistration/GetAreasList",
+            type: "POST",
+            async: true,
+            dataType: "json",
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    areasArray.push(data[i].name);
+                }
+
+            }
+        })
+    };
 
 
     ////////////////////

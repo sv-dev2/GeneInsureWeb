@@ -1,6 +1,6 @@
 ﻿@model InsuranceClaim.Models.DailyReceiptsSearchReportModel
 @{
-    ViewBag.Title = "DailyReceiptsReport";
+    ViewBag.Title = "Active Deactive";
     Layout = "~/Views/Shared/_InsuranceMain.cshtml";
 }
 <div class="productsave-section DailyReceiptsReport">
@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 products-top">
                 <div class="head-title">
-                    <h2>Daily Receipts Report</h2>
+                    <h2> Receipts Report</h2>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 add-btn products-top">
@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-        @using (Html.BeginForm("DailyReceiptsSearchReport", "Report", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        @using (Html.BeginForm("ActiveDeactiveReceiptSearch", "Report", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
         {
             <div class="container-main">
                 <div class="form-group-section-date">
@@ -93,27 +93,17 @@
                             <th>Receipt No.</th>
                             <th>Receipting Agent/ Delivery Agent</th>
                             <th>Agent</th>
-                            <th>Location</th>
-                            <th>Customer Name</th>                        
+                            <th>Customer Name</th>
                             <th>Policy Number</th>
                             <th>Policy Created Date</th>
                             <th>Transaction Date</th>
                             <th>Receipt Number</th>
-                            <th>Currency</th>
-                            <th>Premium Due</th>                         
-                            <th>Premium</th>
-                            <th>Stamp Duty</th>
-                            <th>ZTSCLevy</th>
-                            <th>Radio License Cost</th>
-                            <th>Zinara License Cost</th>
-                            <th>Admin fee</th>
+                            <th>Premium Due</th>
+                            <th>Premium</th>                          
                             <th>Amount Paid</th>
                             <th>Balance</th>
-                            <th>Reference</th>
-                            <th>Payment Type</th>
-                            <th>TenderedAmount</th>
                             <th>Status</th>
-                           
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,37 +147,30 @@
                                 <td>@item.Id</td>
                                 <td>@item.PolicyCreatedBy </td>
                                 <td>@item.Agent </td>
-                                <td> @item.Location</td>
+                              
                                 <td>@item.CustomerName</td>
-                                @*<td>@item.Contact</td>*@
-                                @*<td>@item.Product</td>*@
+                          
                                 <td>
-                                
-                                @if(string.IsNullOrEmpty(item.RenewPolicyNumber))
-                                {
-                                    <span>@item.PolicyNumber</span>
-                                }
-                                else
-                                {
-                                    <span>@item.RenewPolicyNumber</span>
-                                }
+
+                                    @if (string.IsNullOrEmpty(item.RenewPolicyNumber))
+                                    {
+                                        <span>@item.PolicyNumber</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@item.RenewPolicyNumber</span>
+                                    }
                                 </td>
                                 <td>@item.TransactionDate.ToShortDateString()</td>
                                 <td>@item.DatePosted.ToShortDateString()</td>
                                 <td>@item.InvoiceNumber</td>
-                                <th> @item.Currency </th>
-                                <td> @item.AmountDue</td>                            
+                            
+                                <td> @item.AmountDue</td>
                                 <td> @item.Premium</td>
-                                <td> @item.StampDuty</td>
-                                <td> @item.ZTSCLevy</td>
-                                <td>@item.RadioCost</td>
-                                <td> @item.ZinaraFee</td> 
-                                <td> @item.AdministrationAmt</td>                         
+                              
                                 <td> @item.AmountPaid</td>
                                 <td>@Math.Round(Convert.ToDecimal(item.Balance), 2)</td>
-                                <td> @item.TransactionReference</td>
-                                <td>@item.paymentMethodType</td>
-                                <td>@item.TenderedAmount</td>
+                              
                                 <td>
                                     @if (item.RenewPolicyNumber == null)
                                     {
@@ -204,7 +187,18 @@
                                     }
                                     </td>
 
-                               
+                                    <td>
+
+                                        @if (item.IsActive != false)
+                                        {
+                                            <button onclick="disableReceipt('@item.Id')" class="btn-sm btn-danger">Disable </button>
+                                        }
+                                        else
+                                        {
+                                            <button onclick="activeReceipt('@item.Id')" class="btn-sm btn-success">Active </button>
+                                        }
+
+                                    </td>
 
                                 </tr>
                         }
@@ -215,18 +209,14 @@
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                           
                             <td colspan="3"></td>
                             <td colspan="2"><strong>@premiumDueTotal</strong></td>
-                            
+
                             <td colspan="3"></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                           
                             <td><strong>@amountPaidTotal</strong></td>
-                            
+
                             <td><strong>@balanceTotal</strong></td>
                             <td></td>
                             <td></td>
@@ -262,7 +252,7 @@
 
 
     function removeSearchBox() {
-        window.location.href = "/Report/DailyReceiptsReport";
+        window.location.href = "/Report/ActiveDeactiveReceipts";
     }
 
 
@@ -272,7 +262,7 @@
             // exclude CSS class
             exclude: ".noExl",
             name: "Worksheet Name",
-            filename: "DailyReceiptsReport" //do not include extension
+            filename: "ActiveDeactiveReceipts" //do not include extension
 
         });
     });
@@ -297,13 +287,61 @@
 
 
 
-    
+    function disableReceipt(Id) {
+
+        $(".loading-area").show();
+
+        $.ajax({
+            url: '/Account/DisableReceipt',
+            type: "GET",
+            data: { Id: Id },
+            success: function (result) {
+                if (result) {
+                    toastr.success("Vehicle De-Activated Successfully !!");
+
+                    $(".loading-area").show();
+                    setTimeout(function () {
+                        $(".loading-area").hide();
+                        location.reload();
+                    }, 500);
 
 
+                }
+                else {
+                    toastr.error("Unable To De-Activate, Please Try Again !!");
+                }
+            }
+        });
 
-   
+    }
 
-    
 
+    function activeReceipt(Id) {
+
+        $(".loading-area").show();
+
+        $.ajax({
+            url: '/Account/ActiveReceipt',
+            type: "GET",
+            data: { Id: Id },
+            success: function (result) {
+                if (result) {
+                    toastr.success("Vehicle De-Activated Successfully !!");
+
+                    $(".loading-area").show();
+                    setTimeout(function () {
+                        $(".loading-area").hide();
+                        location.reload();
+                    }, 500);
+
+
+                }
+                else {
+                    toastr.error("Unable To De-Activate, Please Try Again !!");
+                }
+            }
+        });
+
+    }
 
 </script>

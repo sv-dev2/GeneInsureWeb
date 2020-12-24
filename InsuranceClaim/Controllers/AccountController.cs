@@ -4750,7 +4750,7 @@ namespace InsuranceClaim.Controllers
                 {
                     var _User = UserManager.FindById(User.Identity.GetUserId().ToString());
 
-                    var customer = InsuranceContext.Customers.Single(where: "UserID='" + _user.Id + "'");
+                    var customer = InsuranceContext.Customers.Single(where: "UserID='" + _User.Id + "'");
                     _vehicle.ModifiedBy = customer.Id;
                 }
 
@@ -4764,6 +4764,135 @@ namespace InsuranceClaim.Controllers
             catch (Exception ex)
             {
 
+                return Json(false, JsonRequestBehavior.AllowGet);
+                throw;
+            }
+
+        }
+
+
+        [HttpGet]
+        public async Task<JsonResult> DisablePolicyWithReason(int VehicleId, string reason)
+        {
+            try
+            {
+                string filepath = System.Configuration.ConfigurationManager.AppSettings["urlPath"];
+                var _vehicle = InsuranceContext.VehicleDetails.Single(VehicleId);
+                var costomerId = _vehicle.CustomerId;
+                var _customer = InsuranceContext.Customers.Single(costomerId);
+
+                Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
+                var policylist = InsuranceContext.PolicyDetails.Single(where: $"CustomerId = {_customer.Id}");
+                var _user = UserManager.FindById(_customer.UserID);
+
+                _vehicle.IsActive = false;
+                _vehicle.isLapsed = false;
+                _vehicle.ReasonContent = reason;
+
+                string DeActivePolicyPath = "/Views/Shared/EmaiTemplates/PolicyDeActivation.cshtml";
+                string EmailBody2 = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath(DeActivePolicyPath));
+                var body = EmailBody2.Replace("##RenewDate##", _vehicle.RenewalDate.Value.ToString("dd/MM/yyyy")).Replace("##path##", filepath).Replace("##FirstName##", _customer.FirstName)
+                    .Replace("##LastName##", _customer.LastName).Replace("##Address1##", _customer.AddressLine1).Replace("##Address2##", _customer.AddressLine2)
+                    .Replace("##PolicyNumber##", policylist.PolicyNumber).Replace("##RegistrationNo##", _vehicle.RegistrationNo);
+
+                objEmailService.SendEmail(_user.Email, "", "", "Policy DeActivation", body, null);
+
+
+                string Body = "Hello " + _customer.FirstName + "\nYour Policy Number " + policylist.PolicyNumber + " And Vehicle  " + _vehicle.RegistrationNo + " has been DeActivated ." + "\nThank you .";
+                var result = await objsmsService.SendSMS(_customer.Countrycode.Replace("+", "") + _user.PhoneNumber, Body);
+
+                SmsLog objsmslog = new SmsLog()
+                {
+                    Sendto = _user.PhoneNumber,
+                    Body = Body,
+                    Response = result,
+                    CreatedBy = _customer.Id,
+                    CreatedOn = DateTime.Now
+                };
+
+                InsuranceContext.SmsLogs.Insert(objsmslog);
+
+                bool _userLoggedin = (System.Web.HttpContext.Current.User != null) && System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
+                if (_userLoggedin)
+                {
+                    var _User = UserManager.FindById(User.Identity.GetUserId().ToString());
+                    var customer = InsuranceContext.Customers.Single(where: "UserID='" + _User.Id + "'");
+                    _vehicle.ModifiedBy = customer.Id;
+                }
+
+
+                _vehicle.ModifiedOn = DateTime.Now;
+                //_vehicle.ModifiedBy=
+
+                InsuranceContext.VehicleDetails.Update(_vehicle);
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+
+                return Json(false, JsonRequestBehavior.AllowGet);
+                throw;
+            }
+
+        }
+
+
+
+        [HttpGet]
+        public async Task<JsonResult> DisableReceipt(int Id)
+        {
+            try
+            {
+                var receiptHistory = InsuranceContext.ReceiptHistorys.Single(Id);
+                if(receiptHistory!=null)
+                {
+                    receiptHistory.IsActive = false;
+                    receiptHistory.ModifiedOn = DateTime.Now;
+                    bool _userLoggedin = (System.Web.HttpContext.Current.User != null) && System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
+                    if (_userLoggedin)
+                    {
+                        var _User = UserManager.FindById(User.Identity.GetUserId().ToString());
+                        var customer = InsuranceContext.Customers.Single(where: "UserID='" + _User.Id + "'");         
+                        receiptHistory.ModifiedBy = customer.Id;
+                    }
+                    InsuranceContext.ReceiptHistorys.Update(receiptHistory);                              
+                }
+
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+                throw;
+            }
+
+        }
+
+       
+
+        public async Task<JsonResult> ActiveReceipt(int Id)
+        {
+            try
+            {
+                var receiptHistory = InsuranceContext.ReceiptHistorys.Single(Id);
+                if (receiptHistory != null)
+                {
+                    receiptHistory.IsActive = true;
+                    receiptHistory.ModifiedOn = DateTime.Now;
+                    bool _userLoggedin = (System.Web.HttpContext.Current.User != null) && System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
+                    if (_userLoggedin)
+                    {
+                        var _User = UserManager.FindById(User.Identity.GetUserId().ToString());
+                        var customer = InsuranceContext.Customers.Single(where: "UserID='" + _User.Id + "'");
+                        receiptHistory.ModifiedBy = customer.Id;
+                    }
+                    InsuranceContext.ReceiptHistorys.Update(receiptHistory);
+                }
+
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
                 return Json(false, JsonRequestBehavior.AllowGet);
                 throw;
             }
@@ -4785,6 +4914,7 @@ namespace InsuranceClaim.Controllers
 
 
                 vehicle.IsActive = true;
+                vehicle.isLapsed = false;
 
                 string ActivePolicyPath = "/Views/Shared/EmaiTemplates/PolicyActivation.cshtml";
                 string EmailBody2 = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath(ActivePolicyPath));

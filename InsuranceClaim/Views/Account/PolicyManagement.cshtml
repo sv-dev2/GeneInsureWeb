@@ -321,12 +321,13 @@
                 </div>
                 <div>
                 </div>
-
             </div>
+
             <div class="modal-footer">
                 <input type="button" id="documnet" value="Upload" class="btn btn-primary" />
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
+
         </div>
     </div>
     @Html.Hidden("PolicyNumber")
@@ -334,11 +335,58 @@
     @Html.Hidden("vehicleId")
 </div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="disableModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Disable Policy</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+             <div class="row">
+                 <input type="hidden" id="hdnVehicleId" />
+
+                    <div class="col-sm-6 col-md-6 form-group-select">
+                        <div class="form-group">
+                            @Html.Label("Reason", new { @class = "gender-label" })                         
+                           
+                            <select id="disableReason"  class="form-control">
+                                <option value="Client no longer interested">Client no longer interested</option>
+                                <option value="Late delivery">Late delivery</option>
+                                <option value="Client sold car"> Client sold car</option>  
+                                <option value="Policy redo">Policy redo</option>
+                                <option value="Client does not have money">Client does not have money</option>
+                                <option value="Client to change to comprehensive"> Client to change to comprehensive </option> 
+                                <option value="Policy does not have covenote number"> Policy does not have covenote number </option> 
+                                                     
+                            </select>
+
+
+                        </div>
+                    </div>
+                    
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="DisableVehicleWithReason();" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 <script>
 
     function uploadFile() {
-        debugger;
-
         if ($("#txt").val() == "") {
             toastr.error("No Title selected");
             return false;
@@ -346,8 +394,6 @@
         if (document.getElementById("file_Uploader").files.length == 0) {
             //alert("No files selected");
             toastr.error("No files selected");
-
-
             return false;
         }
         else {
@@ -425,12 +471,49 @@
 
     function disableVehicle(VehicleId) {
 
-        $(".loading-area").show();
+        $("#hdnVehicleId").val(VehicleId);
+        $("#disableModal").modal('show');
+
+        //$(".loading-area").show();
+
+        //$.ajax({
+        //    url: '/Account/DisablePolicy',
+        //    type: "GET",
+        //    data: { VehicleId: VehicleId },
+        //    success: function (result) {
+        //        if (result) {
+        //            toastr.success("Vehicle De-Activated Successfully !!");
+
+        //            $(".loading-area").show();
+        //            setTimeout(function () {
+        //                $(".loading-area").hide();
+        //                location.reload();
+        //            }, 500);
+
+
+        //        }
+        //        else {
+        //            toastr.error("Unable To De-Activate, Please Try Again !!");
+        //        }
+        //    }
+        //});
+
+    }
+
+    function DisableVehicleWithReason()
+    {
+      
+        var reasonContent  = $("#disableReason").val();
+        var VehicleId = $("#hdnVehicleId").val();
+
+        $("#disableModal").modal('hide');
+
+         $(".loading-area").show();
 
         $.ajax({
-            url: '/Account/DisablePolicy',
+            url: '/Account/DisablePolicyWithReason',
             type: "GET",
-            data: { VehicleId: VehicleId },
+            data: { VehicleId: VehicleId, reason:reasonContent },
             success: function (result) {
                 if (result) {
                     toastr.success("Vehicle De-Activated Successfully !!");
@@ -448,8 +531,8 @@
                 }
             }
         });
-
     }
+
 
     function ActivateVehicle(VehicleId) {
 

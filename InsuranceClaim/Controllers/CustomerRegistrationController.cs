@@ -808,10 +808,7 @@ namespace InsuranceClaim.Controllers
                             return RedirectToAction("RiskDetail", new { id = 0 });
                            // return Json("/CustomerRegistration/RiskDetail/id?0", JsonRequestBehavior.AllowGet);
                         }
-
                     }
-
-
                 }
                 catch (Exception ex)
                 {
@@ -1873,25 +1870,7 @@ namespace InsuranceClaim.Controllers
                                 item.IsMobile = false;                           
                                 var _item = item;
 
-
-                                //List<RiskDetailModel> objVehicles = new List<RiskDetailModel>();
-                                ////objVehicles.Add(new RiskDetailModel { RegistrationNo = regNo });
-                                //objVehicles.Add(new RiskDetailModel { RegistrationNo = _item.RegistrationNo, PaymentTermId = Convert.ToInt32(_item.PaymentTermId) });
-                                //var  tokenObject = (ICEcashTokenResponse)Session["ICEcashToken"];
-                                //ResultRootObject quoteresponse = ICEcashService.checkVehicleExists(objVehicles, tokenObject.Response.PartnerToken, tokenObject.PartnerReference);
-
-                                //if (quoteresponse.Response.Result == 0)
-                                //{
-                                //    response.message = quoteresponse.Response.Quotes[0].Message;
-                                //}
-                                //else
-                                //{
-                                //    response.Data = quoteresponse;
-                                //}
-
-
                                 var vehicelDetails = InsuranceContext.VehicleDetails.Single(where: $"policyid= '{policy.Id}' and RegistrationNo= '{_item.RegistrationNo}'");
-
                                 if (vehicelDetails != null)
                                 {
                                     item.Id = vehicelDetails.Id;
@@ -2286,7 +2265,26 @@ namespace InsuranceClaim.Controllers
                                     DbEntry.PayLaterStatus = true;
                                 }
 
-                                InsuranceContext.SummaryDetails.Insert(DbEntry);
+                                try
+                                {
+                                    InsuranceContext.SummaryDetails.Insert(DbEntry);
+                                }
+                                catch(Exception ex)
+                                {
+                                    LogDetailTbl log = new LogDetailTbl();
+                                    log.Request = "SummaryDetails " + ex.Message;
+                                    string vehicleInfo =  customer.EmailAddress ;
+                                    log.Response = vehicleInfo;
+                                    
+
+                                    InsuranceContext.LogDetailTbls.Insert(log);
+
+                                    throw;
+                                }
+                                
+
+
+
                                 model.Id = DbEntry.Id;
                                 Session["SummaryDetailed"] = model;
                             }
@@ -2341,7 +2339,24 @@ namespace InsuranceClaim.Controllers
                                     summarydata.PayLaterStatus = true;
                                 }
 
-                                InsuranceContext.SummaryDetails.Update(summarydata);
+
+                                try
+                                {
+                                    InsuranceContext.SummaryDetails.Update(summarydata);
+                                }
+                                catch(Exception ex)
+                                {
+                                    LogDetailTbl log = new LogDetailTbl();
+                                    log.Request = "Summarydetails " + ex.Message;
+                                    string vehicleInfo =  customer.EmailAddress;
+                                    log.Response = vehicleInfo;
+                                    InsuranceContext.LogDetailTbls.Insert(log);
+                                    throw;
+                                }
+
+                            
+
+
                             }
 
 
@@ -2360,7 +2375,7 @@ namespace InsuranceClaim.Controllers
 
 
 
-                        if (vehicle != null && vehicle.Count > 0 && summary.Id != null && summary.Id > 0)
+                        if (vehicle != null && vehicle.Count > 0  && summary.Id > 0)
                         {
                             var SummaryDetails = InsuranceContext.SummaryVehicleDetails.All(where: $"SummaryDetailId={summary.Id}").ToList();
 
@@ -2394,7 +2409,7 @@ namespace InsuranceClaim.Controllers
                                     log.Response = vehicleInfo;
                                     InsuranceContext.LogDetailTbls.Insert(log);
 
-
+                                    throw;
 
                                 }
                             }
@@ -3542,7 +3557,7 @@ namespace InsuranceClaim.Controllers
                             if (penaltiesAmt>0 && administrationAmt==0)
                             {
                                 // default administration amount
-                                decimal administratationAmt = 188;
+                                decimal administratationAmt = 450;  //188;
                                 quoteresponse.Response.Quotes[0].Licence.AdministrationAmt = administratationAmt.ToString();
                                 decimal ArrearsAmt = quoteresponse.Response.Quotes[0].Licence.ArrearsAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].Licence.ArrearsAmt);
                                 decimal transactionAmt = quoteresponse.Response.Quotes[0].Licence.TransactionAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].Licence.TransactionAmt);
@@ -4173,11 +4188,11 @@ namespace InsuranceClaim.Controllers
                 }).FirstOrDefault();
                 //   var receiptid=InsuranceContext.r
 
-                var query1 = "select top 1* from ReceiptModuleHistory where PolicyId=" + detail.Id + " order by id desc";
+                var query1 = "select top 1* from ReceiptModuleHistory where PolicyId=" + detail.Id + " and (IsActive is null or IsActive=1) order by id desc";
 
                 if (!string.IsNullOrEmpty(renewPolicyNumber))
                 {
-                    query1 = "select top 1* from ReceiptModuleHistory where RenewPolicyNumber='" + renewPolicyNumber +"' order by id desc";
+                    query1 = "select top 1* from ReceiptModuleHistory where RenewPolicyNumber='" + renewPolicyNumber + "' and (IsActive is null or IsActive=1) order by id desc";
                 }
 
                 var receiptDetail = InsuranceContext.Query(query1).Select(x => new ReceiptModuleHistory()
@@ -4266,7 +4281,7 @@ namespace InsuranceClaim.Controllers
 
             Receipthistory.Balance = model.Balance;
             Receipthistory.CustomerName = model.CustomerName;
-            Receipthistory.DatePosted = model.DatePosted;
+            Receipthistory.DatePosted = DateTime.Now;
             Receipthistory.InvoiceNumber = model.InvoiceNumber;
             Receipthistory.PaymentMethodId = model.PaymentMethodId;
             ViewBag.PaymentMethod = model.PaymentMethodId;
@@ -4274,6 +4289,7 @@ namespace InsuranceClaim.Controllers
             Receipthistory.PolicyId = model.PolicyId;
             Receipthistory.TransactionReference = model.TransactionReference;
             Receipthistory.SummaryDetailId = model.SummaryDetailId;
+            Receipthistory.ModifiedOn = DateTime.Now;
 
             Receipthistory.CreatedOn = DateTime.Now;
             Receipthistory.RenewPolicyNumber = model.RenewPolicyNumber;
