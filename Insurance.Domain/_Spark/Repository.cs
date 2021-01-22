@@ -149,6 +149,8 @@ namespace Insurance.Domain
 
         public static WorkTypes WorkTypes { get { return new WorkTypes(); } }
 
+        public static AccountPolices AccountPolices { get { return new AccountPolices(); } }
+
         public static Partners Partners { get { return new Partners(); } }
 
         public static PartnerCommissions PartnerCommissions { get { return new PartnerCommissions(); } }

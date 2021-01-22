@@ -27,7 +27,14 @@ namespace InsuranceClaim.Controllers
             //VehicleService service = new VehicleService();
             //service.GetAreaList();
 
+            //string am = "2.2737367544323206E-13";
 
+            //double x = Math.Pow(Convert.ToDouble(am), (1 / 12d));
+
+
+            //string Balance = Math.Round(Convert.ToDecimal(am), 2).ToString();
+
+            //var res = Balance;
 
             return View();
         }

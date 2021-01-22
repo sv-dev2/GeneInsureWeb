@@ -91,6 +91,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountPolicyModel.cs" />
     <Compile Include="AccountViewModels.cs" />
     <Compile Include="AgentCommissionModel.cs" />
     <Compile Include="AspNetUsersDetailModel.cs" />

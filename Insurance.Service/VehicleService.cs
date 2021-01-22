@@ -337,5 +337,104 @@ namespace Insurance.Service
         }
 
 
+        public void SaveAccountPolicy(AccountPolicyModel model)
+        {
+
+            try
+            {
+
+                AccountPolicy accPolicyPremium = new AccountPolicy();
+                accPolicyPremium.CreatedAt = DateTime.Now;
+                accPolicyPremium.RecieptAndPaymentId = model.RecieptAndPaymentId;
+                accPolicyPremium.PolicyId = model.PolicyId;
+                accPolicyPremium.PolicyNumber = model.PolicyNumber;
+                accPolicyPremium.AccountType = (int)PolicyAccountType.Premium;
+                accPolicyPremium.Amount = Math.Round(model.Premium.Value, 2) ;
+                accPolicyPremium.AccountName = PolicyAccountType.Premium.ToString();
+                accPolicyPremium.Status = model.Status;
+                InsuranceContext.AccountPolices.Insert(accPolicyPremium);
+
+
+                AccountPolicy accPolicyStamp = new AccountPolicy();
+                accPolicyStamp.CreatedAt = DateTime.Now;
+                accPolicyStamp.RecieptAndPaymentId = model.RecieptAndPaymentId;
+                accPolicyStamp.PolicyId = model.PolicyId;
+                accPolicyStamp.PolicyNumber = model.PolicyNumber;
+                accPolicyStamp.AccountType = (int)PolicyAccountType.StampDuty;
+                accPolicyStamp.Amount = Math.Round(model.StampDuty.Value,2);
+                accPolicyStamp.AccountName = PolicyAccountType.StampDuty.ToString();
+                accPolicyStamp.Status = model.Status;
+                InsuranceContext.AccountPolices.Insert(accPolicyStamp);
+
+
+                AccountPolicy accPolicyZtsc = new AccountPolicy();
+                accPolicyZtsc.CreatedAt = DateTime.Now;
+                accPolicyZtsc.RecieptAndPaymentId = model.RecieptAndPaymentId;
+                accPolicyZtsc.PolicyId = model.PolicyId;
+                accPolicyZtsc.PolicyNumber = model.PolicyNumber;
+                accPolicyZtsc.AccountType = (int)PolicyAccountType.ZtscLevy;
+                accPolicyZtsc.Amount = Math.Round(model.ZtscLevy.Value);
+                accPolicyZtsc.AccountName = PolicyAccountType.ZtscLevy.ToString();
+                accPolicyZtsc.Status = model.Status;
+                InsuranceContext.AccountPolices.Insert(accPolicyZtsc);
+
+                if (model.RadioLicenseCost > 0)
+                {
+                    AccountPolicy accPolicyRadioLic = new AccountPolicy();
+                    accPolicyRadioLic.CreatedAt = DateTime.Now;
+                    accPolicyRadioLic.RecieptAndPaymentId = model.RecieptAndPaymentId;
+                    accPolicyRadioLic.PolicyId = model.PolicyId;
+                    accPolicyRadioLic.PolicyNumber = model.PolicyNumber;
+                    accPolicyRadioLic.AccountType = (int)PolicyAccountType.RadioLicense;
+                    accPolicyRadioLic.Amount = Math.Round(model.RadioLicenseCost.Value,2);
+                    accPolicyRadioLic.AccountName = PolicyAccountType.RadioLicense.ToString();
+                    accPolicyRadioLic.Status = model.Status;
+                    InsuranceContext.AccountPolices.Insert(accPolicyRadioLic);
+                }
+
+                if (model.ZinaraLicenseCost > 0)
+                {
+                    AccountPolicy accPolicyZinaraLic = new AccountPolicy();
+                    accPolicyZinaraLic.CreatedAt = DateTime.Now;
+                    accPolicyZinaraLic.RecieptAndPaymentId = model.RecieptAndPaymentId;
+                    accPolicyZinaraLic.PolicyId = model.PolicyId;
+                    accPolicyZinaraLic.PolicyNumber = model.PolicyNumber;
+                    accPolicyZinaraLic.AccountType = (int)PolicyAccountType.ZinaraLicense;
+                    accPolicyZinaraLic.Amount = Math.Round(model.ZinaraLicenseCost.Value,2);
+                    accPolicyZinaraLic.AccountName = PolicyAccountType.ZinaraLicense.ToString();
+                    accPolicyZinaraLic.Status = model.Status;
+                    InsuranceContext.AccountPolices.Insert(accPolicyZinaraLic);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+
+
+
+
+    }
+
+
+    public static class CommonService
+    {
+        public static decimal GetTotalVehilePremium(int coverTypeId, decimal pemium, decimal stampDuty, decimal ztscLevy, decimal radioLicenseFee, decimal licenseFee)
+        {
+            decimal total = 0;
+
+            if(coverTypeId==(int)eCoverType.Comprehensive)
+                total = pemium + stampDuty + ztscLevy + radioLicenseFee;
+            else
+                total = pemium + stampDuty + ztscLevy + radioLicenseFee + licenseFee;
+
+            return total;
+        }
+
+
     }
 }

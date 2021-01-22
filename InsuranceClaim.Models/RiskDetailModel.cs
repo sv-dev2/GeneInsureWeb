@@ -182,6 +182,8 @@ namespace InsuranceClaim.Models
 
         public DateTime ReceiptDate { get; set; }
 
+        public decimal CompLicenseFee { get; set; }
+
     }
 
    

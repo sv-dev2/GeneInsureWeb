@@ -53,12 +53,13 @@ namespace InsuranceClaim.Controllers
 
             var data1 = (from p in InsuranceContext.BusinessSources.All().ToList()
                          join f in InsuranceContext.SourceDetails.All().ToList()
-                         on p.Id equals f.BusinessId where f.IsDeleted == true
+                         on p.Id equals f.BusinessId where f.IsDeleted == true 
                          select new
                          {
                              Value = f.Id,
-                             Text = p.Source
-                         }).ToList();
+                             Text = p.Source,
+                             IsActive= p.IsActive
+                         }).Where(c=>c.IsActive==true).ToList();
 
             List<SelectListItem> listdata = new List<SelectListItem>();
             foreach (var item in data1)

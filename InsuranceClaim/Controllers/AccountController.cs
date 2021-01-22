@@ -111,7 +111,7 @@ namespace InsuranceClaim.Controllers
                     int numberOfDays = CountDayPassword(_user);
                     //--end
                     var customer = InsuranceContext.Customers.All(where: $"UserId ='{_user.Id.ToString()}'").OrderByDescending(c => c.Id).FirstOrDefault();
-                    if (customer.IsActive == false)
+                    if (customer!=null && customer.IsActive == false)
                     {
                         ModelState.AddModelError("", "Your account is inactive, please contact to administrator.");
                         return View(model);
@@ -124,7 +124,7 @@ namespace InsuranceClaim.Controllers
                     }
 
 
-                    Session["firstname"] = customer.FirstName;
+                    Session["firstname"] =  customer.FirstName;
                     Session["lastname"] = customer.LastName;
 
                     if (role == "Administrator" || role == "SuperUser" || role == "Agent" || role == "AgentStaff" || role == "Reports" || role == "Finance" || role == "Claim" || role == "Team Leaders")
@@ -2874,7 +2874,6 @@ namespace InsuranceClaim.Controllers
         public ActionResult SearchPolicy(string searchText)
         {
 
-
             //string query = "select top 100 PolicyDetail.PolicyNumber,Customer.Id as CustomerId, Customer.FirstName +' ' + Customer.LastName as CustomerName, PaymentMethod.Name as PaymentMethod, ";
             //query += " SummaryDetail.TotalSumInsured, SummaryDetail.TotalPremium, SummaryDetail.CreatedOn, SummaryDetail.Id, VehicleDetail.RegistrationNo, ";
             //query += "   VehicleMake.MakeDescription as Make, VehicleModel.ModelDescription as Model, Currency.Name as currency, VehicleDetail.SumInsured, ";
@@ -2904,7 +2903,7 @@ namespace InsuranceClaim.Controllers
             query += " left join VehicleMake on VehicleDetail.MakeId = VehicleMake.MakeCode ";
             query += " left join VehicleModel on VehicleDetail.ModelId = VehicleModel.ModelCode ";
             query += " left join Currency on VehicleDetail.CurrencyId = Currency.Id left join ReinsuranceTransaction on SummaryDetail.Id=ReinsuranceTransaction.SummaryDetailId   ";
-            query += "  where PolicyDetail.PolicyNumber like '%" + searchText + "%' or Customer.FirstName like '%" + searchText + "%' or VehicleDetail.RegistrationNo like'%" + searchText + "%' and SummaryDetail.isQuotation=0  ";
+            query += "  where PolicyDetail.PolicyNumber like '%" + searchText + "%' or Customer.FirstName like '%" + searchText + "%' or Customer.LastName like '%" + searchText + "%' or VehicleDetail.RegistrationNo like'%" + searchText + "%' and SummaryDetail.isQuotation=0  ";
             query += " order by SummaryDetail.CreatedOn desc";
 
 

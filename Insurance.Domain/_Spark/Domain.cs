@@ -159,6 +159,7 @@ namespace Insurance.Domain
         public int? CreatedBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
         public int? ModifiedBy { get; set; }
+        public bool? IsActive { get; set; }
 
     }
 
@@ -630,6 +631,7 @@ namespace Insurance.Domain
         public decimal AdministrationAmt { get; set; }
         public bool IsMobile { get; set; }
         public string ReasonContent { get; set; }
+        public decimal CompLicenseFee { get; set; }
 
     }
 
@@ -785,6 +787,22 @@ namespace Insurance.Domain
         public DateTime? ModifiedOn { get; set; }
         public int? ModifiedBy { get; set; }
         public bool? IsActive { get; set; }
+    }
+
+    public partial class AccountPolicy: Entity<AccountPolicy>
+    {
+        public AccountPolicy() { }
+        public AccountPolicy(bool defaults) : base(defaults) { }
+        public int Id { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int RecieptAndPaymentId { get; set; }
+        public int AccountType { get; set; }
+        public int PolicyId { get; set; }
+        public string PolicyNumber { get; set; }
+        public decimal Amount { get; set; }
+        public string AccountName { get; set; }
+        public string Status { get; set; }
+
     }
 
     public partial class DomesticPayment : Entity<DomesticPayment>

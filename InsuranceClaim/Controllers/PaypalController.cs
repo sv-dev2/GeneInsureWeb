@@ -1150,6 +1150,44 @@ namespace InsuranceClaim.Controllers
                 //InsuranceContext.ReceiptAndPayments.Insert(payment);
 
                 saveRecieptAndPayment(payment);
+
+
+                // save account policy details to trac calculation
+                AccountPolicyModel accountPolicyModel = new AccountPolicyModel();
+                accountPolicyModel.PolicyId = policy.Id;
+                accountPolicyModel.PolicyNumber = policy.PolicyNumber;
+                accountPolicyModel.RecieptAndPaymentId = payment.Id;
+
+                List<VehicleDetail> listVehicle = InsuranceContext.VehicleDetails.All(where: "PolicyId = " + vehicle.PolicyId + "and IsActive=1").ToList();
+
+
+                decimal? accountPremium = 0;
+                decimal? StampDuty = 0;
+                decimal? ztscLevy = 0;
+                decimal? ZinaraLicenseCost = 0;
+                decimal? radioLicense = 0;
+
+                foreach (var item in listVehicle)
+                {
+                    accountPremium += item.Premium;
+                    StampDuty += item.StampDuty;
+                    ztscLevy += item.ZTSCLevy;
+                    ZinaraLicenseCost += item.VehicleLicenceFee;
+
+                    if (item.IncludeRadioLicenseCost == true)
+                        radioLicense += item.RadioLicenseCost;
+
+                }
+
+
+                accountPolicyModel.Premium = accountPremium;
+                accountPolicyModel.StampDuty = StampDuty;
+                accountPolicyModel.ZtscLevy = ztscLevy;
+                accountPolicyModel.ZinaraLicenseCost = ZinaraLicenseCost;
+                accountPolicyModel.RadioLicenseCost = radioLicense;
+                accountPolicyModel.Status = "New";
+                vehicleService.SaveAccountPolicy(accountPolicyModel);
+
             }
 
             if (!userLoggedin)
@@ -1335,7 +1373,7 @@ namespace InsuranceClaim.Controllers
                 string vehicledescription = "";
                 string MakeDesc = "";
                 string ModelDesc = "";
-                if(make!=null)
+                if (make != null)
                     MakeDesc = make.MakeDescription;
 
                 if (model != null)
@@ -1551,14 +1589,82 @@ namespace InsuranceClaim.Controllers
             return RedirectToAction("ThankYou");
         }
 
-
-
         private void saveRecieptAndPayment(ReceiptAndPayment receiptAndPayment)
         {
             InsuranceContext.ReceiptAndPayments.Insert(receiptAndPayment);
         }
 
 
+        //public void SaveAccountPolicy(AccountPolicyModel model)
+        //{
+
+        //    try
+        //    {
+
+        //        AccountPolicy accPolicyPremium = new AccountPolicy();
+        //        accPolicyPremium.CreatedAt = DateTime.Now;
+        //        accPolicyPremium.RecieptAndPaymentId = model.RecieptAndPaymentId;
+        //        accPolicyPremium.PolicyId = model.PolicyId;
+        //        accPolicyPremium.PolicyNumber = model.PolicyNumber;
+        //        accPolicyPremium.AccountType = (int)PolicyAccountType.Premium;
+        //        accPolicyPremium.Amount = model.Premium.Value;
+        //        accPolicyPremium.AccountName = PolicyAccountType.Premium.ToString();
+        //        InsuranceContext.AccountPolices.Insert(accPolicyPremium);
+
+
+        //        AccountPolicy accPolicyStamp = new AccountPolicy();
+        //        accPolicyStamp.CreatedAt = DateTime.Now;
+        //        accPolicyStamp.RecieptAndPaymentId = model.RecieptAndPaymentId;
+        //        accPolicyStamp.PolicyId = model.PolicyId;
+        //        accPolicyStamp.PolicyNumber = model.PolicyNumber;
+        //        accPolicyStamp.AccountType = (int)PolicyAccountType.StampDuty;
+        //        accPolicyStamp.Amount = model.StampDuty.Value;
+        //        accPolicyStamp.AccountName = PolicyAccountType.StampDuty.ToString();
+        //        InsuranceContext.AccountPolices.Insert(accPolicyStamp);
+
+
+        //        AccountPolicy accPolicyZtsc = new AccountPolicy();
+        //        accPolicyZtsc.CreatedAt = DateTime.Now;
+        //        accPolicyZtsc.RecieptAndPaymentId = model.RecieptAndPaymentId;
+        //        accPolicyZtsc.PolicyId = model.PolicyId;
+        //        accPolicyZtsc.PolicyNumber = model.PolicyNumber;
+        //        accPolicyZtsc.AccountType = (int)PolicyAccountType.ZtscLevy;
+        //        accPolicyZtsc.Amount = model.ZtscLevy.Value;
+        //        accPolicyZtsc.AccountName = PolicyAccountType.ZtscLevy.ToString();
+        //        InsuranceContext.AccountPolices.Insert(accPolicyZtsc);
+
+        //        if (model.RadioLicenseCost > 0)
+        //        {
+        //            AccountPolicy accPolicyRadioLic = new AccountPolicy();
+        //            accPolicyRadioLic.CreatedAt = DateTime.Now;
+        //            accPolicyRadioLic.RecieptAndPaymentId = model.RecieptAndPaymentId;
+        //            accPolicyRadioLic.PolicyId = model.PolicyId;
+        //            accPolicyRadioLic.PolicyNumber = model.PolicyNumber;
+        //            accPolicyRadioLic.AccountType = (int)PolicyAccountType.RadioLicense;
+        //            accPolicyRadioLic.Amount = model.RadioLicenseCost.Value;
+        //            accPolicyRadioLic.AccountName = PolicyAccountType.RadioLicense.ToString();
+        //            InsuranceContext.AccountPolices.Insert(accPolicyRadioLic);
+        //        }
+
+        //        if (model.ZinaraLicenseCost > 0)
+        //        {
+        //            AccountPolicy accPolicyZinaraLic = new AccountPolicy();
+        //            accPolicyZinaraLic.CreatedAt = DateTime.Now;
+        //            accPolicyZinaraLic.RecieptAndPaymentId = model.RecieptAndPaymentId;
+        //            accPolicyZinaraLic.PolicyId = model.PolicyId;
+        //            accPolicyZinaraLic.PolicyNumber = model.PolicyNumber;
+        //            accPolicyZinaraLic.AccountType = (int)PolicyAccountType.ZinaraLicense;
+        //            accPolicyZinaraLic.Amount = model.ZinaraLicenseCost.Value;
+        //            accPolicyZinaraLic.AccountName = PolicyAccountType.ZinaraLicense.ToString();
+        //            InsuranceContext.AccountPolices.Insert(accPolicyZinaraLic);
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
 
 
 

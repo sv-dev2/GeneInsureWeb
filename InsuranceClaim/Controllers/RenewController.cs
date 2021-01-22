@@ -1030,12 +1030,20 @@ namespace InsuranceClaim.Controllers
             //    }
             //    model.Discount += item.Discount;
             //}
-            model.TotalPremium = vehicle.Premium + vehicle.ZTSCLevy + vehicle.StampDuty + vehicle.VehicleLicenceFee;
+            
+
+            if(vehicle.CoverTypeId== (int)eCoverType.Comprehensive)
+                model.TotalPremium += vehicle.Premium + vehicle.ZTSCLevy + vehicle.StampDuty;
+            else
+                model.TotalPremium += vehicle.Premium + vehicle.ZTSCLevy + vehicle.StampDuty + vehicle.VehicleLicenceFee;
+
+
             if (vehicle.IncludeRadioLicenseCost)
             {
                 model.TotalPremium = model.TotalPremium + vehicle.RadioLicenseCost;
                 model.TotalRadioLicenseCost = vehicle.RadioLicenseCost;
             }
+
             model.Discount = vehicle.Discount;
             model.TotalRadioLicenseCost = Math.Round(Convert.ToDecimal(model.TotalRadioLicenseCost), 2);
             model.Discount = Math.Round(Convert.ToDecimal(model.Discount), 2);
@@ -1541,6 +1549,11 @@ namespace InsuranceClaim.Controllers
                                 else
                                     _item.RadioLicenseCost = 0;
 
+                                if (_item.CoverTypeId == (int)eCoverType.Comprehensive)
+                                {
+                                    _item.CompLicenseFee = _item.VehicleLicenceFee;
+                                    _item.VehicleLicenceFee = 0;
+                                }
 
 
                                 //   _item.InsuranceId = model.InsuranceId;
@@ -2177,12 +2190,18 @@ namespace InsuranceClaim.Controllers
                 {
                     return RedirectToAction("SummaryDetail");
                 }
-
             }
             catch (Exception ex)
             {
-                return RedirectToAction("SummaryDetail");
+                LogDetailTbl log = new LogDetailTbl();
+                log.Request = "SubmitPlan1 " + ex.Message;
+                string vehicleInfo = model.InvoiceNumber;
+                log.Response = vehicleInfo;
+                InsuranceContext.LogDetailTbls.Insert(log);
+                throw;
             }
+
+
         }
 
 
@@ -2727,6 +2746,43 @@ namespace InsuranceClaim.Controllers
                 payment.reference = "--";
                 payment.paymentMethod = "--";
                 InsuranceContext.ReceiptAndPayments.Insert(payment);
+
+
+                // save account policy details to trac calculation
+                AccountPolicyModel accountPolicyModel = new AccountPolicyModel();
+                accountPolicyModel.PolicyId = policy.Id;
+                accountPolicyModel.PolicyNumber = vehicle.RenewPolicyNumber;
+                accountPolicyModel.RecieptAndPaymentId = payment.Id;
+
+                List<VehicleDetail> listVehicle = InsuranceContext.VehicleDetails.All(where: "PolicyId = " + vehicle.PolicyId + "and IsActive=1").ToList();
+
+
+                decimal? accountPremium = 0;
+                decimal? StampDuty = 0;
+                decimal? ztscLevy = 0;
+                decimal? ZinaraLicenseCost = 0;
+                decimal? radioLicense = 0;
+
+                foreach (var item in listVehicle)
+                {
+                    accountPremium += item.Premium;
+                    StampDuty += item.StampDuty;
+                    ztscLevy += item.ZTSCLevy;
+                    ZinaraLicenseCost += item.VehicleLicenceFee;
+
+                    if (item.IncludeRadioLicenseCost == true)
+                        radioLicense += item.RadioLicenseCost;
+                }
+
+
+                accountPolicyModel.Premium = accountPremium;
+                accountPolicyModel.StampDuty = StampDuty;
+                accountPolicyModel.ZtscLevy = ztscLevy;
+                accountPolicyModel.ZinaraLicenseCost = ZinaraLicenseCost;
+                accountPolicyModel.RadioLicenseCost = radioLicense;
+                accountPolicyModel.Status = "Renew";
+                vehicleService.SaveAccountPolicy(accountPolicyModel);
+
             }
 
             Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
@@ -3733,7 +3789,6 @@ namespace InsuranceClaim.Controllers
                     {
                         var vehicleDetails = InsuranceContext.VehicleDetails.Single(where: $" Id='{item.VehicleDetailsId}'");
                         RiskDetailModel vehicleModel = Mapper.Map<VehicleDetail, RiskDetailModel>(vehicleDetails);
-
                         vehicleModel.ZTSCLevy = vehicleDetails.ZTSCLevy;
                         vehicleList.Add(vehicleModel);
                     }
@@ -3782,7 +3837,6 @@ namespace InsuranceClaim.Controllers
 
                         var calculationAmount = item.Premium + radioLicenseCost + item.VehicleLicenceFee + item.StampDuty + item.ZTSCLevy;
 
-
                         obj.total = calculationAmount.ToString();
                         obj.ZTSCLevy = item.ZTSCLevy == null ? "0" : Convert.ToString(item.ZTSCLevy);
 
@@ -3797,7 +3851,6 @@ namespace InsuranceClaim.Controllers
             }
             catch (Exception)
             {
-
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
 

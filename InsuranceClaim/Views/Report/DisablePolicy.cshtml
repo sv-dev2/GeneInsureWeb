@@ -89,6 +89,8 @@
                                     <th> Created On</th>
                                     <th> Cancelled Date  </th>
                                     <th>Agent Name</th>
+                                    <th>Cancel Reason</th>
+                                    <th>Created By</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -104,7 +106,8 @@
                                         <td>@item.createdOn.ToShortDateString() </td>
                                         <td> @item.ModifiedOn</td>
                                         <td style="text-align:center">@item.AgentName</td>
-
+                                        <td> @item.CancelReason </td>
+                                         <td> @item.CreatedBy</td>
                                     </tr>
                                 }
 

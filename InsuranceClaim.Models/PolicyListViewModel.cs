@@ -80,6 +80,10 @@ namespace InsuranceClaim.Models
 
         public bool IsExistOnSummaryVehcile { get; set; }
 
+        public string CancelReason { get; set; }
+
+        public string CreatedBy { get; set; }
+
     }
 
     public class ListPolicy

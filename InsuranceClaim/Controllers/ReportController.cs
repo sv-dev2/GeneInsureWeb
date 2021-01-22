@@ -5242,7 +5242,7 @@ namespace InsuranceClaim.Controllers
         public ActionResult DisablePolicy()
         {
 
-            string query = "select PolicyDetail.PolicyNumber, VehicleDetail.RegistrationNo, VehicleMake.MakeDescription, VehicleModel.ModelDescription, ";
+            string query = "select PolicyDetail.PolicyNumber,  VehicleDetail.RegistrationNo, VehicleDetail.ReasonContent, VehicleMake.MakeDescription, VehicleModel.ModelDescription, ";
             query += " Customer.FirstName + ' '+ Customer.LastName as CustomerName, VehicleDetail.Premium , VehicleDetail.StampDuty, VehicleDetail.ZTSCLevy ,VehicleDetail.VehicleLicenceFee,  ";
             query += " VehicleDetail.IncludeRadioLicenseCost, convert(varchar, VehicleDetail.ModifiedOn, 1) as ModifiedOn , VehicleDetail.RadioLicenseCost, VehicleDetail.TransactionDate, [dbo].[fn_GetUserCallCenterAgent] (SummaryDetail.CreatedBy) as CreatedBy from VehicleDetail ";
             query += " join PolicyDetail on PolicyDetail.Id=VehicleDetail.PolicyId ";
@@ -5269,7 +5269,9 @@ namespace InsuranceClaim.Controllers
                 TotalPremium = CalculatePremium(x.Premium, x.StampDuty, x.ZTSCLevy, x.VehicleLicenceFee, x.IncludeRadioLicenseCost, x.RadioLicenseCost),
                 createdOn = x.TransactionDate,
                 AgentName = x.CreatedBy,
-                ModifiedOn = x.ModifiedOn == null ? "" : Convert.ToString(x.ModifiedOn)
+                ModifiedOn = x.ModifiedOn == null ? "" : Convert.ToString(x.ModifiedOn),
+                CancelReason = x.ReasonContent,
+                CreatedBy = x.CreatedBy
             }).ToList();
 
             policylist.listpolicy = list;
@@ -5281,7 +5283,7 @@ namespace InsuranceClaim.Controllers
         public ActionResult SearchDisablePolicy(ListPolicy model)
         {
 
-            string query = "select PolicyDetail.PolicyNumber, VehicleDetail.RegistrationNo, VehicleMake.MakeDescription, VehicleModel.ModelDescription, ";
+            string query = "select PolicyDetail.PolicyNumber, VehicleDetail.RegistrationNo, VehicleDetail.ReasonContent, VehicleMake.MakeDescription, VehicleModel.ModelDescription, ";
             query += " Customer.FirstName + ' '+ Customer.LastName as CustomerName, VehicleDetail.Premium , VehicleDetail.StampDuty, VehicleDetail.ZTSCLevy ,VehicleDetail.VehicleLicenceFee,  ";
             query += " VehicleDetail.IncludeRadioLicenseCost, VehicleDetail.RadioLicenseCost,convert(varchar, VehicleDetail.ModifiedOn, 1) as ModifiedOn, VehicleDetail.TransactionDate, [dbo].[fn_GetUserCallCenterAgent] (SummaryDetail.CreatedBy) as CreatedBy from VehicleDetail ";
             query += " join PolicyDetail on PolicyDetail.Id=VehicleDetail.PolicyId ";
@@ -5312,7 +5314,9 @@ namespace InsuranceClaim.Controllers
                 TotalPremium = CalculatePremium(x.Premium, x.StampDuty, x.ZTSCLevy, x.VehicleLicenceFee, x.IncludeRadioLicenseCost, x.RadioLicenseCost),
                 createdOn = x.TransactionDate,
                 AgentName = x.CreatedBy,
-                ModifiedOn =x.ModifiedOn
+                ModifiedOn =x.ModifiedOn,
+                CancelReason = x.ReasonContent,
+                CreatedBy = x.CreatedBy
             }).ToList();
 
             policylist.listpolicy = list;

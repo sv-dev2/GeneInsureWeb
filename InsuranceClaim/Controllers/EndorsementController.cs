@@ -1430,9 +1430,10 @@ namespace InsuranceClaim.Controllers
                 ensummerydetail.EndorsementVehicleId = model.EndorsementVehicleId;
 
                 ensummerydetail.PayableAmount = model.PayableAmount; // for pro-amount
-
-
                 InsuranceContext.EndorsementSummaryDetails.Update(ensummerydetail);
+
+                
+
 
                 Session["EnsummaryId"] = ensummerydetail;
                 if (model.PaymentMethodId == 1)
@@ -1940,6 +1941,90 @@ namespace InsuranceClaim.Controllers
             }
             endorsementsummay.IsCompleted = true;
             InsuranceContext.EndorsementSummaryDetails.Update(endorsementsummay);
+
+
+
+            bool IsCallCenterAgent = false;
+          
+            if (userLoggedin)
+            {
+                var customerDetial = InsuranceContext.Customers.Single(endorsementsummay.CreatedBy);
+                if (customerDetial.BranchId == (int)ALMBranch.GeneCallCentre)
+                    IsCallCenterAgent = true;
+            }
+
+            VehicleService vehicleService = new VehicleService();
+            //vehicleService.SaveDeliveryAddress(detail); will confirm from wesly
+
+            if (IsCallCenterAgent)
+            {
+                ReceiptAndPayment payment = new ReceiptAndPayment();
+                payment.Amount = (endorsementsummay.TotalPremium.Value * -1);
+                payment.CreatedBy = Convert.ToInt32(endorsementsummay.CreatedBy);
+                payment.Description = "";
+                payment.policyNumber = endorsepolicy.PolicyNumber;
+                payment.policyId = endorsepolicy.Id;
+                payment.CreatedOn = DateTime.Now;
+                payment.currency = "--";
+                payment.type = "invoice";
+                payment.reference = "--";
+                payment.paymentMethod = "--";
+                InsuranceContext.ReceiptAndPayments.Insert(payment);
+
+
+                // save account policy details to trac calculation
+                AccountPolicyModel accountPolicyModel = new AccountPolicyModel();
+                accountPolicyModel.PolicyId = endorsepolicy.Id;
+                accountPolicyModel.PolicyNumber = endorsepolicy.PolicyNumber;
+                accountPolicyModel.RecieptAndPaymentId = payment.Id;
+
+                var query = " select EndorsementVehicleDetail.Premium, EndorsementVehicleDetail.StampDuty, EndorsementVehicleDetail.ZTSCLevy, EndorsementVehicleDetail.VehicleLicenceFee, EndorsementVehicleDetail.RadioLicenseCost  from EndorsementPolicyDetail join EndorsementVehicleDetail on EndorsementPolicyDetail.Id = EndorsementVehicleDetail.EndorsementPolicyId ";
+                query += " join EndorsementSummaryVehicleDetail on EndorsementVehicleDetail.Id = EndorsementSummaryVehicleDetail.EndorsementVehicleId";
+                query += " join EndorsementSummaryDetail on EndorsementSummaryDetail.Id = EndorsementSummaryVehicleDetail.EndorsementSummaryId ";
+                query += " where EndorsementSummaryDetail.IsCompleted = 1 and EndorsementSummaryDetail.id =" + endorsementsummay.Id;
+
+                // List<VehicleDetail> listVehicle = InsuranceContext.EndorsementVehicleDetails.All(where: "PolicyId = " + _Endorsepolicy.PolicyId ).ToList();
+
+                List<EndorsementVehicleDetail> listVehicle = InsuranceContext.Query(query).Select(c => new EndorsementVehicleDetail()
+                {
+                    Premium = c.Premium,
+                    StampDuty = c.StampDuty,
+                    ZTSCLevy = c.ZTSCLevy,
+                    VehicleLicenceFee = c.VehicleLicenceFee,
+                    RadioLicenseCost = c.RadioLicenseCost
+                }).ToList();
+
+
+
+                decimal? accountPremium = 0;
+                decimal? StampDuty = 0;
+                decimal? ztscLevy = 0;
+                decimal? ZinaraLicenseCost = 0;
+                decimal? radioLicense = 0;
+
+                foreach (var item in listVehicle)
+                {
+                    accountPremium += item.Premium;
+                    StampDuty += item.StampDuty;
+                    ztscLevy += item.ZTSCLevy;
+                    ZinaraLicenseCost += item.VehicleLicenceFee;
+
+                    if (item.IncludeRadioLicenseCost == true)
+                        radioLicense += item.RadioLicenseCost;
+                }
+
+
+                accountPolicyModel.Premium = accountPremium;
+                accountPolicyModel.StampDuty = StampDuty;
+                accountPolicyModel.ZtscLevy = ztscLevy;
+                accountPolicyModel.ZinaraLicenseCost = ZinaraLicenseCost;
+                accountPolicyModel.RadioLicenseCost = radioLicense;
+                accountPolicyModel.Status = "Endorsement";
+                vehicleService.SaveAccountPolicy(accountPolicyModel);
+
+            }
+
+
 
             //Update New Email
             // var data =  Session["Enuser"];

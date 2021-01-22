@@ -191,6 +191,7 @@
     <Compile Include="Domain\VehicleUsage.cs" />
     <Compile Include="DTO\InflationVehicleDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\AccountPolicy.cs" />
     <Compile Include="Repository\AgeExcesses.cs" />
     <Compile Include="Repository\AgentCommissions.cs" />
     <Compile Include="Repository\AgentLogos.cs" />

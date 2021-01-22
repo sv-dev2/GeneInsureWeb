@@ -162,6 +162,7 @@ namespace InsuranceClaim.Controllers
                     //else
                     //    quoteresponse = ICEcashService.RequestQuote(patnerToken, regNo, SumInsured, "", "", Convert.ToInt32(PaymentTerm), Convert.ToInt32(DateTime.Now.Year), CoverTypeId, vehilceUsage, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, "1");
 
+                    // need to update vehile usasge to vehile type
 
                     if (VehilceLicense && RadioLicense)
                         quoteresponse = ICEcashService.TPILICQuote(patnerToken, regNo, SumInsured, "", "", Convert.ToInt32(PaymentTerm), Convert.ToInt32(DateTime.Now.Year), CoverTypeId, vehilceUsage, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, "1", VehilceLicense, RadioLicense, zinaraLicensePaymentTerm, radioLicensePaymentTerm, VehicleValue);
