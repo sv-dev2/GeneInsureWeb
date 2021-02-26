@@ -25,7 +25,7 @@
                 <div class="form-group-section-date">
                     <div class="form-group-input">
                         <div class="row">
-                            <div class="col-sm-3 col-md-3 form-group-text">
+                            <div class="col-sm-2 col-md-2 form-group-text">
                                 <div class="form-group">
                                     <div class='input-group' id='datetimenew'>
                                         @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control", @placeholder = "Start Date" })
@@ -36,7 +36,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-3 col-md-3 form-group-text">
+                            
+                            <div class="col-sm-2 col-md-2 form-group-text">
                                 <div class="form-group">
                                     <div class='input-group' id='datetimenew12'>
                                         @Html.TextBoxFor(m => m.EndDate, new { @class = "form-control", @autocomplete = "off", @placeholder = "End Date" })
@@ -47,7 +48,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-6 form-group-btn">
+
+                            <div class="col-sm-2 col-md-2 form-group-select">
+                                <div class="form-group">
+
+                                    <div class='input-group'>
+                                        @Html.DropDownListFor(x => x.CurrencyId, new SelectList(ViewBag.Currency, "Id", "Name"), "All", new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-sm-3 col-md-3 form-group-btn">
                                 <div class="form-group">
                                     <ul class="list-inline">
                                         <li><button type="submit" class="btn btn-success">Search</button></li>

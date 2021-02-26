@@ -14,14 +14,7 @@
                 <div class="head-title">
                     <h2>Policy List</h2>
                 </div>
-            </div>
-            @*<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 add-btn">
-                <div class="text-right">
-                    <form>
-                        <input class="btn btn-primary" type="button" value="Add" onclick="window.location.href='@Url.Action(" Index", "CustomerRegistration" )'" />
-                    </form>
-                </div>
-                </div*@
+            </div>     
         </div>
         <br />
         <br />
@@ -130,8 +123,15 @@
                                         @if (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Administrator") || User.IsInRole("Team Leaders"))
                                         {
                                             @*<li>@Html.ActionLink("Endorsement", "EndorsementDetials", "Endorsement", new { sumaryid = item.SummaryId }, new { @class = "btn-sm btn-primary" })</li>*@
-                                            <li>@Html.ActionLink("Endorsement View", "EndorsementDetail", "Endorsement", new { Policynumber = item.PolicyNumber }, new { @class = "btn-sm btn-primary" })</li>
+                                           
+                                             <li>@Html.ActionLink("Endorsement View", "EndorsementDetail", "Endorsement", new { Policynumber = item.PolicyNumber }, new { @class = "btn-sm btn-primary" })</li>
                                         }
+
+                                        @if (User.IsInRole("Team Leaders") || User.IsInRole("Staff"))
+                                        {
+                                            <li>@Html.ActionLink("License only", "LicenseDetail", "License", new { summaryId = item.SummaryId }, new { @class = "btn-sm btn-primary" })</li>
+                                        }
+
 
                                     </ul>
                                 </div>

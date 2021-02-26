@@ -1,6 +1,6 @@
 ﻿@model InsuranceClaim.Models.VehicleRiskAboutSearchExpireModels
 @{
-    ViewBag.Title = "VehicleRiskAboutExpire";
+    ViewBag.Title = "Vehicle Report";
     Layout = "~/Views/Shared/_InsuranceMain.cshtml";
 }
 
@@ -12,49 +12,29 @@
         <div class="row">
             <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 products-top">
                 <div class="head-title">
-                    <h2>Vehicle Risk About To Expire</h2>
+                    <h5>Vehicles</h5>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 add-btn">
-                <div class="text-right">
-                    @*<button type="button" class="btn btn-primary">Add</button>*@
-                    @*<input class="btn btn-primary" type="button" value="Generate PDF" id="generatePdf" />*@
+                <div class="text-right">    
                     <input class="btn btn-primary" type="button" value="Generate Excel" id="generateExcel" />
                 </div>
             </div>
         </div>
 
-          @using (Html.BeginForm("VehicleRiskAboutSearchExpire", "Report", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        @using (Html.BeginForm("VehicleReportSearch", "Report", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
         {
             <div class="container-main">
                 <div class="form-group-section-date">
                     <div class="form-group-input">
                         <div class="row">
-                            <div class="col-sm-3 col-md-3 form-group-text">
+                            <div class="col-sm-5 col-md-5 form-group-text">
                                 <div class="form-group">
-                                    @*@Html.LabelFor(x => x.FromDate, new { @class = "gender-label" })*@
-                                    <div class='input-group' id='datetimenew'>
-                                        @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control", @placeholder = "Start Date" })
-                                        @Html.ValidationMessageFor(m => m.FromDate, "", new { @class = "text-danger" })
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-calendar"></span>
-                                        </span>
-                                    </div>
+                                    @Html.TextBox("searchText", null, new { @class = "form-control", @placeholder = "Registration Number" })
                                 </div>
                             </div>
-                            <div class="col-sm-3 col-md-3 form-group-text">
-                                <div class="form-group">
-                                    @*@Html.LabelFor(x => x.EndDate, new { @class = "gender-label" })*@
-                                    <div class='input-group' id='datetimenew12'>
-                                        @Html.TextBoxFor(m => m.EndDate, new { @class = "form-control", @autocomplete = "off", @placeholder = "End Date" })
-                                        @Html.ValidationMessageFor(m => m.EndDate, "", new { @class = "text-danger" })
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-calendar"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-6 form-group-btn">
+                           
+                            <div class="col-sm-5 col-md-5 form-group-btn">
                                 <div class="form-group">
                                     <ul class="list-inline">
                                         <li><button type="submit" class="btn btn-success">Search</button></li>
@@ -70,21 +50,10 @@
             </div>
         }
 
-        @*<div class="row">
-            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 add-btn">
-                <input type="text" id="txtdate" placeholder="Enter date" class="form-control" />
-            </div>
-            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 add-btn">
-                <button type="button" class="btn btn-primary pull-right" onclick="searchBydate()">Search</button>
-
-            </div>
-        </div>
-        <br />*@
+       
         <div class="product-table-grid">
             <table class="table table-striped tablesorter" id="report2excel">
                 <thead style='display:none;'>
-
-
                     <tr>
                         <td>
                             <p><b><u>Report Generated Date:</u></b> <span id="datetime"></span></p>
@@ -120,8 +89,8 @@
                         <th>vehicle make and model</th>
                         <th>Start Dates</th>
                         <th>End Dates</th>
-                        @*<th>vehicle/risk end date</th>
-                            <th>Transaction Date</th>*@
+                        <th>Transaction Date</th>
+                        <th>Renew PolicyNumber </th>
                         <th>Currency</th>
                         <th>Sum Insured</th>
                         <th style="width:130px; text-align: left;">Premium Due</th>
@@ -130,17 +99,17 @@
                 </thead>
                 <tbody>
 
-                    @{ 
+                    @{
                         decimal sumInsuredTotal = 0;
                         decimal premiumDueTotal = 0;
                     }
 
                     @foreach (var item in Model.ListVehicleRiskAboutExpiredata.ToList())
                     {
-                       
-                            sumInsuredTotal += item.Sum_Insured;
-                            premiumDueTotal += item.Premium_due;
-                       
+
+                        sumInsuredTotal += item.Sum_Insured;
+                        premiumDueTotal += item.Premium_due;
+
 
                         <tr>
                             <td><span class="customer_title" data-toggle="tooltip" data-placement="bottom" title="@item.Customer_Name">@item.Customer_Name</span></td>
@@ -148,19 +117,21 @@
                             <td>@item.Policy_Number</td>
                             <td> @item.RegistrationNumber </td>
                             <td>@item.Vehicle_makeandmodel</td>
-
                             <td>@item.Vehicle_startdate</td>
                             <td>@item.Vehicle_enddate</td>
+                            <td>@item.Transaction_date</td>
+                            <td> @item.RenewPolicyNumber</td>
                             <td>@item.Currency</td>
                             <td>@item.Sum_Insured</td>
                             <td>@item.Premium_due</td>
-
                         </tr>
                     }
                 </tbody>
                 <tfoot>
                     <tr>
                         <td><strong>Total:</strong></td>
+                        <td></td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>

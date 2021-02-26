@@ -134,8 +134,8 @@
                                             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                                                 <ul class="nav navbar-nav">
 
-                                                    <li><a href="/Individual/RegisterUser">Individual motor</a></li>
-                                                        <li><a href="/Domestic/RegisterUser">Domestic</a></li>
+                                                    @*<li><a href="/Individual/RegisterUser">Individual motor</a></li>
+                                                        <li><a href="/Domestic/RegisterUser">Domestic</a></li>*@
 
                                                     <li><a href="/InsuranceHome/Index">Home</a></li>
 
@@ -143,12 +143,12 @@
                                                     {
                                                         <li><a href="/CustomerRegistration/Index">Issue Quotation</a></li>
                                                         <li><a href="/Account/Dashboard">Dashboard</a></li>
+                                                        <li><a href="/Report/VehicleReport">Vehicles </a></li>
                                                     }
                                                     else if (userLoggedin == false)
                                                     {
                                                         <li><a onclick="RequestQuote();" href="javascript:void(0);">Request Quote</a></li>
                                                     }
-
 
                                                     <li><a href="#">Change Policy</a></li>
                                                     <li><a href="#">Register Claim</a></li>
@@ -157,7 +157,7 @@
 
                                                     @*<li><a href="/Paypal/IceCashPayment">IceCash</a></li>*@
 
-                                                    @if (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("AgentStaff"))
+                                                    @if (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("AgentStaff") || User.IsInRole("Team Leaders") )
                                                     {
                                                         @*<li><a href="/Account/PolicyList">Policy Management</a></li>*@
                                                         <li><a href="/Account/PolicyManagement">Policy Management</a></li>

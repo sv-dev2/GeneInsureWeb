@@ -36,7 +36,7 @@ namespace Insurance.Service
 
         public List<Currency> GetAllCurrency()
         {
-            return InsuranceContext.Currencies.All().ToList();
+            return InsuranceContext.Currencies.All(where: $"IsActive = 'True'").ToList();
         }
 
 

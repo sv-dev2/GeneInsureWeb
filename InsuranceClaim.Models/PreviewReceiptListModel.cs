@@ -71,6 +71,8 @@ namespace InsuranceClaim.Models
 
         public bool? IsActive { get; set; }
 
+        public int CurrencyId { get; set; }
+
     }
     public class ListReceiptModule
     {

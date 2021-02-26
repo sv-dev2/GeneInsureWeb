@@ -336,6 +336,52 @@ namespace Insurance.Service
             return result;
         }
 
+        public  int GetMonthKey(int monthId)
+        {
+            int licFreequency = 0;
+            switch (monthId)
+            {
+                case 1: // represent to 12 month
+                    licFreequency = 3;
+                    break;
+                case 2:
+                    Console.WriteLine("Case 2");
+                    break;
+                case 3:
+                    Console.WriteLine("Case 1");
+                    break;
+                case 4:
+                    licFreequency = 1;
+                    break;
+                case 5:
+                    licFreequency = 4;
+                    break;
+                case 6:
+                    licFreequency = 2;
+                    break;
+                case 7:
+                    licFreequency = 5;
+                    break;
+                case 8:
+                    licFreequency = 6;
+                    break;
+                case 9:
+                    licFreequency = 7;
+                    break;
+                case 10:
+                    licFreequency = 8;
+                    break;
+                case 11:
+                    licFreequency = 9;
+                    break;
+                default:
+                    licFreequency = 3;
+                    break;
+            }
+
+            return licFreequency;
+        }
+
 
         public void SaveAccountPolicy(AccountPolicyModel model)
         {
@@ -349,7 +395,7 @@ namespace Insurance.Service
                 accPolicyPremium.PolicyId = model.PolicyId;
                 accPolicyPremium.PolicyNumber = model.PolicyNumber;
                 accPolicyPremium.AccountType = (int)PolicyAccountType.Premium;
-                accPolicyPremium.Amount = Math.Round(model.Premium.Value, 2) ;
+                accPolicyPremium.Amount = model.Premium==null?  0: Math.Round(model.Premium.Value, 2) ;
                 accPolicyPremium.AccountName = PolicyAccountType.Premium.ToString();
                 accPolicyPremium.Status = model.Status;
                 InsuranceContext.AccountPolices.Insert(accPolicyPremium);
@@ -361,7 +407,7 @@ namespace Insurance.Service
                 accPolicyStamp.PolicyId = model.PolicyId;
                 accPolicyStamp.PolicyNumber = model.PolicyNumber;
                 accPolicyStamp.AccountType = (int)PolicyAccountType.StampDuty;
-                accPolicyStamp.Amount = Math.Round(model.StampDuty.Value,2);
+                accPolicyStamp.Amount = model.StampDuty==null? 0 : Math.Round(model.StampDuty.Value,2);
                 accPolicyStamp.AccountName = PolicyAccountType.StampDuty.ToString();
                 accPolicyStamp.Status = model.Status;
                 InsuranceContext.AccountPolices.Insert(accPolicyStamp);
@@ -373,7 +419,7 @@ namespace Insurance.Service
                 accPolicyZtsc.PolicyId = model.PolicyId;
                 accPolicyZtsc.PolicyNumber = model.PolicyNumber;
                 accPolicyZtsc.AccountType = (int)PolicyAccountType.ZtscLevy;
-                accPolicyZtsc.Amount = Math.Round(model.ZtscLevy.Value);
+                accPolicyZtsc.Amount = model.ZtscLevy==null? 0: Math.Round(model.ZtscLevy.Value);
                 accPolicyZtsc.AccountName = PolicyAccountType.ZtscLevy.ToString();
                 accPolicyZtsc.Status = model.Status;
                 InsuranceContext.AccountPolices.Insert(accPolicyZtsc);
@@ -386,7 +432,7 @@ namespace Insurance.Service
                     accPolicyRadioLic.PolicyId = model.PolicyId;
                     accPolicyRadioLic.PolicyNumber = model.PolicyNumber;
                     accPolicyRadioLic.AccountType = (int)PolicyAccountType.RadioLicense;
-                    accPolicyRadioLic.Amount = Math.Round(model.RadioLicenseCost.Value,2);
+                    accPolicyRadioLic.Amount = model.RadioLicenseCost==null? 0:  Math.Round(model.RadioLicenseCost.Value,2);
                     accPolicyRadioLic.AccountName = PolicyAccountType.RadioLicense.ToString();
                     accPolicyRadioLic.Status = model.Status;
                     InsuranceContext.AccountPolices.Insert(accPolicyRadioLic);
@@ -409,7 +455,7 @@ namespace Insurance.Service
             }
             catch (Exception ex)
             {
-                throw;
+                SummaryDetailService.WriteLog("", ex.Message, "SaveAccountPolicy");
             }
         }
 

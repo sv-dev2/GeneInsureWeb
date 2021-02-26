@@ -21,6 +21,8 @@ namespace InsuranceClaim.Models
         public string Currency { get; set; }
         public string RegistrationNumber { get; set; }
 
+        public string RenewPolicyNumber { get; set; }
+
     }
     public class ListVehicleRiskAboutExpireModels
     {
@@ -33,5 +35,7 @@ namespace InsuranceClaim.Models
         public string FromDate { get; set; }
         [Required(ErrorMessage = "Please Enter End Date.")]
         public string EndDate { get; set; }
+
+        
     }
 }

@@ -4,6 +4,8 @@
     Layout = "~/Views/Shared/_InsuranceMain.cshtml";
 }
 <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />
+
+
 <div class="body-content-section">
     <div class="form-section-top">
         <div class="container">
@@ -13,12 +15,22 @@
                         <div class="form-title">
                             <h4>Receipt Module</h4>
                         </div>
+
                         <div class="form-group-input">
                             @using (Html.BeginForm("ReceiptModule", "CustomerRegistration", FormMethod.Post, new { @class = "form-horizontal" }))
                             {
                                 @Html.HiddenFor(x => x.PolicyId, new { @Id = "hdnPolicyId" })
                                 @Html.HiddenFor(x => x.CustomerId, new { @Id = "hdnCustomerId" })
                                 @Html.HiddenFor(x => x.SummaryDetailId, new { @Id = "hdnSummaryDetailId" })
+
+                                if (Model!=null && Model.ErrorMsg != null && Model.ErrorMsg != "")
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        @Model.ErrorMsg
+                                    </div>
+                                }
+
+
                                 <div class="row">
                                     <div class="col-sm-12 col-md-12 form-group-text">
                                         <div class="form-group">
@@ -34,17 +46,14 @@
                                                 @Html.TextBoxFor(x => x.Id, new { @class = "form-control", @placeholder = "Receipt No.", @Id = "ReceiptNo", @readonly = "readonly" })
                                             </div>
                                         </div>
-                                        @*@Html.TextBoxFor(x => x.CoverEndDate, new { @class = "form-control", @autocomplete = "off", @placeholder = "Enter Cover End Date", @Id = "CoverEndDate" })*@
-                                  
-                                  
-                                
+                                        
+                                                         
                                     <div class="col-sm-6 col-md-4 form-group-text">
                                         <div class="form-group">
                                             @Html.LabelFor(x => x.CustomerName, "Customer Name", new { @class = "gender-label" })
                                             @Html.TextBoxFor(x => x.CustomerName, new { @class = "form-control", @placeholder = "Customer Name", @Id = "CustomerName", @readonly = "readonly" })
 
-                                        </div>
-                                        @*@Html.TextBoxFor(x => x.CoverEndDate, new { @class = "form-control", @autocomplete = "off", @placeholder = "Enter Cover End Date", @Id = "CoverEndDate" })*@
+                                        </div>                                    
                                     </div>
                                     <div class="col-sm-6 col-md-4 form-group-text">
                                         <div class="form-group">
@@ -52,23 +61,21 @@
                                             @Html.TextBoxFor(x => x.InvoiceNumber, new { @class = "form-control", @placeholder = "Invoice No.", @Id = "InvoiceNumber", @readonly = "readonly" })
 
                                         </div>
-                                        @*@Html.TextBoxFor(x => x.CoverEndDate, new { @class = "form-control", @autocomplete = "off", @placeholder = "Enter Cover End Date", @Id = "CoverEndDate" })*@
-                                    </div>
+
+                                     </div>
                                     <div class="col-sm-6 col-md-4 form-group-text">
                                         <div class="form-group">
-                                            <div class='input-group'>
-                                                @Html.LabelFor(x => x.PolicyNumber, "Policy No.", new { @class = "gender-label" })
-                                                @Html.TextBoxFor(x => x.PolicyNo, new { @class = "form-control", @placeholder = "Policy No.", @Id = "PolicyNo", @readonly = "readonly" })
-                                            </div>
+                                            @Html.LabelFor(x => x.PolicyNumber, "Policy No.", new { @class = "gender-label" })
+                                            @Html.TextBoxFor(x => x.PolicyNo, new { @class = "form-control", @placeholder = "Policy No.", @Id = "PolicyNo", @readonly = "readonly" })
                                         </div>
-                                        @*@Html.TextBoxFor(x => x.CoverEndDate, new { @class = "form-control", @autocomplete = "off", @placeholder = "Enter Cover End Date", @Id = "CoverEndDate" })*@
+                                 
                                     </div>
+
                                     <div class="col-sm-6 col-md-4 form-group-select">
                                         <div class="form-group">
-                                            <div class='input-group'>
-                                                @Html.LabelFor(x => x.PaymentMethodId, "Payment Method", new { @class = "gender-label" })
-                                                @*@Html.DropDownListFor(x => x.PaymentMethodId, new SelectList(ViewBag.PaymentMethod, "Id", "Name"), "Select Payment Method", new { @class = "form-control" })*@
-                                                @Html.DropDownListFor(x => x.PaymentMethodId, new SelectList(new List<SelectListItem> {
+                                            @Html.LabelFor(x => x.PaymentMethodId, "Payment Method", new { @class = "gender-label" })
+                                            @*@Html.DropDownListFor(x => x.PaymentMethodId, new SelectList(ViewBag.PaymentMethod, "Id", "Name"), "Select Payment Method", new { @class = "form-control" })*@
+                                            @Html.DropDownListFor(x => x.PaymentMethodId, new SelectList(new List<SelectListItem> {
              new SelectListItem { Text = "Cash", Value = "1"},
              new SelectListItem { Text = "Ecocash", Value = "2"},
               new SelectListItem { Text = "Swipe", Value = "3"},
@@ -76,68 +83,60 @@
          }, "Value", "Text"),
     "Select Payment Method",
      new { @class = "form-control" })
-                                            </div>
-                                        </div>
-                                        @*@Html.TextBoxFor(x => x.CoverEndDate, new { @class = "form-control", @autocomplete = "off", @placeholder = "Enter Cover End Date", @Id = "CoverEndDate" })*@
-                                    </div>
+                                        </div>                           
+                                     </div>
+
                                     <div class="col-sm-6 col-md-4 form-group-text">
                                         <div class="form-group">
-                                            <div class='input-group'>
-                                                @Html.LabelFor(x => x.AmountDue, "Amount Due", new { @class = "gender-label" })
-                                                @Html.TextBoxFor(x => x.AmountDue, new { @class = "form-control", @placeholder = "Amount Due", @Id = "AmountDue", @readonly = "readonly" })
-                                            </div>
-                                        </div>
-                                        @*@Html.TextBoxFor(x => x.CoverEndDate, new { @class = "form-control", @autocomplete = "off", @placeholder = "Enter Cover End Date", @Id = "CoverEndDate" })*@
-                                    </div>
+                                            @Html.LabelFor(x => x.AmountDue, "Amount Due", new { @class = "gender-label" })
+                                            <div class="row row-0">
+                                                <div class="col-xs-9 col-sm-9 plr-0">
+                                                    @Html.TextBoxFor(x => x.AmountDue, new { @class = "form-control", @placeholder = "Amount Due", @Id = "AmountDue", @readonly = "readonly" })
+                                                </div>
+                                                <div class="col-xs-3 col-sm-3 plr-0 form-group-select">
+                                                    @Html.DropDownListFor(x => x.CurrencyId, new SelectList(ViewBag.Currencies, "Id", "Name"), new { @class = "form-control", @disabled = "disabled" })
+                                                </div>
+                                            </div>                                     
+                                        </div>                               
+                                     </div>
+
+
                                     <div class="col-sm-6 col-md-4 form-group-text">
                                         <div class="form-group">
-                                            <div class='input-group'>
-                                                @Html.LabelFor(x => x.AmountPaid, "Receipt Amount", new { @class = "gender-label" })
-                                                @Html.TextBoxFor(x => x.AmountPaid, new { @class = "form-control", @placeholder = "Receipt Amount", @Id = "ReceiptAmount" })
-                                            </div>
-                                        </div>
-                                        @*@Html.TextBoxFor(x => x.CoverEndDate, new { @class = "form-control", @autocomplete = "off", @placeholder = "Enter Cover End Date", @Id = "CoverEndDate" })*@
-                                    </div>
+                                            @Html.LabelFor(x => x.AmountPaid, "Receipt Amount", new { @class = "gender-label" })
+                                            @Html.TextBoxFor(x => x.AmountPaid, new { @class = "form-control", @placeholder = "Receipt Amount", @Id = "ReceiptAmount" })
+                                        </div>                                  
+                                     </div>
+
                                     <div class="col-sm-6 col-md-4 form-group-text">
                                         <div class="form-group">
-                                            <div class='input-group'>
-                                                @Html.LabelFor(x => x.Balance, "Balance", new { @class = "gender-label" })
-                                                @Html.TextBoxFor(x => x.Balance, new { @class = "form-control", @placeholder = "Balance", @Id = "Balance", @readonly = "readonly" })
-                                            </div>
+                                            @Html.LabelFor(x => x.Balance, "Balance", new { @class = "gender-label" })
+                                            @Html.TextBoxFor(x => x.Balance, new { @class = "form-control", @placeholder = "Balance", @Id = "Balance", @readonly = "readonly" })
                                         </div>                                      
                                     </div>
 
                                     <div class="col-sm-6 col-md-4 form-group-text">
                                         <div class="form-group">
-                                            <div class='input-group'>
-                                                @Html.LabelFor(x => x.TransactionReference, "Transaction Reference", new { @class = "gender-label" })
-                                                @Html.TextBoxFor(x => x.TransactionReference, new { @class = "form-control", @placeholder = "Transaction Reference", @Id = "TransactionReference" })
-                                            </div>
+                                            @Html.LabelFor(x => x.TransactionReference, "Transaction Reference", new { @class = "gender-label" })
+                                            @Html.TextBoxFor(x => x.TransactionReference, new { @class = "form-control", @placeholder = "Transaction Reference", @Id = "TransactionReference" })
                                         </div>
                                     </div>
-
-
 
                                     <div class="col-sm-6 col-md-4 form-group-text">
                                         <div class="form-group">
-                                            <div class='input-group'>
-                                                @Html.LabelFor(x => x.TenderedAmount, "Tendered Amount", new { @class = "gender-label" })
-                                                @Html.TextBoxFor(x => x.TenderedAmount, new { @class = "form-control", @placeholder = "Tendered Amount" })                                                                  
-                                             </div>
+                                            @Html.LabelFor(x => x.TenderedAmount, "Tendered Amount", new { @class = "gender-label" })
+                                            @Html.TextBoxFor(x => x.TenderedAmount, new { @class = "form-control", @placeholder = "Tendered Amount" })
+                                            
                                         </div>
                                     </div>
-
-
-
                                     </div>
-                                <div class="col-sm-6 col-md-6">
+
                                     <div class="text-left">
                                         <button type="submit" id="btnSubmit" onclick="return" name="Submit" class="btn btn-success">Submit</button>
                                         @*<button type="submit" id="btnCancel" value="Cancel" name="Submit" class="btn btn-success">Cancel</button>*@
-                                   
-                                    
-                                     </div>
-                                </div>
+
+
+                                    </div>
                             }
                         </div>
                     </div>
@@ -250,6 +249,8 @@
                     $('#hdnCustomerId').val(data.CustomerId);
                     $('#PaymentMethodId').val(data.PaymentMethodId);
                     $('#hdnSummaryDetailId').val(data.SummaryDetailId);
+                    $('#CurrencyId').val(data.CurrencyId);
+                    //CurrencyId
                     //var currentDate = getCurrentDate();
                     //$("#DatePosted").val(currentDate);
 

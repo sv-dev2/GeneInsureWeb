@@ -262,15 +262,12 @@ namespace Insurance.Service
             List<VehicleTBAObject> obj = new List<VehicleTBAObject>();
 
             var CustomerInfo = (CustomerModel)HttpContext.Current.Session["CustomerDataModal"];
-
             if (CustomerInfo == null)
             {
                 CustomerInfo = (CustomerModel)HttpContext.Current.Session["ReCustomerDataModal"];
             }
 
             int durationMonth = 0;
-
-
             foreach (var item in listofvehicles)
             {
                 if (item.PaymentTermId == 1)
@@ -397,11 +394,15 @@ namespace Insurance.Service
             // int paymentTermId = GetMonthKey(PaymentTermId);
             //  TaxClass = 1,
 
+            if(RegistrationNo=="TBA")
+            {
+                obj.Add(new VehicleObject { VRN = RegistrationNo, DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId), VehicleValue = Convert.ToInt32(suminsured), YearManufacture = Convert.ToInt32(VehicleYear), InsuranceType = Convert.ToInt32(CoverTypeId), VehicleType = Convert.ToInt32(VehicleUsage), Make = make, Model = model, EntityType = "", Town = CustomerInfo.City, Address1 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine1), Address2 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine2), CompanyName = "", FirstName = CustomerInfo.FirstName, LastName = CustomerInfo.LastName, IDNumber = CustomerInfo.NationalIdentificationNumber, MSISDN = CustomerInfo.CountryCode + CustomerInfo.PhoneNumber, TaxClass = TaxClass });
 
-            //  obj.Add(new VehicleObject { VRN = RegistrationNo, DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId), VehicleValue = Convert.ToInt32(suminsured), YearManufacture = Convert.ToInt32(VehicleYear), InsuranceType = Convert.ToInt32(CoverTypeId), VehicleType = Convert.ToInt32(VehicleUsage), Make = make, Model = model, EntityType = "", Town = CustomerInfo.City, Address1 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine1), Address2 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine2), CompanyName = "", FirstName = CustomerInfo.FirstName, LastName = CustomerInfo.LastName, IDNumber = CustomerInfo.NationalIdentificationNumber, MSISDN = CustomerInfo.CountryCode + CustomerInfo.PhoneNumber, TaxClass = TaxClass });
-
-            obj.Add(new VehicleObject { VRN = RegistrationNo, DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId),  VehicleValue = Convert.ToInt32(VehicleValue), YearManufacture = Convert.ToInt32(VehicleYear), InsuranceType = Convert.ToInt32(CoverTypeId), VehicleType = Convert.ToInt32(VehicleUsage),  EntityType = "", Town = CustomerInfo.City, Address1 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine1), Address2 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine2), CompanyName = "", FirstName = CustomerInfo.FirstName, LastName = CustomerInfo.LastName, IDNumber = CustomerInfo.NationalIdentificationNumber, MSISDN = CustomerInfo.CountryCode + CustomerInfo.PhoneNumber, TaxClass = TaxClass });
-
+            }
+            else
+            {
+                obj.Add(new VehicleObject { VRN = RegistrationNo, DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId), VehicleValue = Convert.ToInt32(VehicleValue), YearManufacture = Convert.ToInt32(VehicleYear), InsuranceType = Convert.ToInt32(CoverTypeId), VehicleType = Convert.ToInt32(VehicleUsage), EntityType = "", Town = CustomerInfo.City, Address1 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine1), Address2 = UserService.ReplaceSpecialChracter(CustomerInfo.AddressLine2), CompanyName = "", FirstName = CustomerInfo.FirstName, LastName = CustomerInfo.LastName, IDNumber = CustomerInfo.NationalIdentificationNumber, MSISDN = CustomerInfo.CountryCode + CustomerInfo.PhoneNumber, TaxClass = TaxClass });
+            }
 
             QuoteArguments objArg = new QuoteArguments();
             objArg.PartnerReference = Guid.NewGuid().ToString(); ;
@@ -503,6 +504,72 @@ namespace Insurance.Service
             }
             return json;
         }
+
+        public ResultRootObject RequestQuoteForVrn(string PartnerToken, string RegistrationNo)
+        {
+            //string PSK = "127782435202916376850511";
+            string _json = "";
+
+            List<VehicleObject> obj = new List<VehicleObject>();
+            obj.Add(new VehicleObject { VRN = RegistrationNo });
+            
+
+            QuoteArguments objArg = new QuoteArguments();
+            objArg.PartnerReference = Guid.NewGuid().ToString(); ;
+            objArg.Date = DateTime.Now.ToString("yyyyMMddhhmmss");
+            objArg.Version = "2.0";
+            objArg.PartnerToken = PartnerToken;
+            objArg.Request = new QuoteFunctionObject { Function = "TPIQuote", Vehicles = obj };
+
+            _json = Newtonsoft.Json.JsonConvert.SerializeObject(objArg);
+
+            //string  = json.Reverse()
+            string reversejsonString = new string(_json.Reverse().ToArray());
+            string reversepartneridString = new string(PSK.Reverse().ToArray());
+
+            string concatinatedString = reversejsonString + reversepartneridString;
+
+            byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes(concatinatedString);
+
+            string returnValue = System.Convert.ToBase64String(toEncodeAsBytes);
+
+            string GetSHA512encrypted = SHA512(returnValue);
+
+            string MAC = "";
+
+            for (int i = 0; i < 16; i++)
+            {
+                MAC += GetSHA512encrypted.Substring((i * 8), 1);
+            }
+
+            MAC = MAC.ToUpper();
+
+            ICEQuoteRequest objroot = new ICEQuoteRequest();
+            objroot.Arguments = objArg;
+            objroot.MAC = MAC;
+            objroot.Mode = "SH";
+
+            var data = Newtonsoft.Json.JsonConvert.SerializeObject(objroot);
+
+            JObject jsonobject = JObject.Parse(data);
+
+            var client = new RestClient(LiveIceCashApi);
+            //   var client = new RestClient(LiveIceCashApi);
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("cache-control", "no-cache");
+            request.AddHeader("content-type", "application/x-www-form-urlencoded");
+            request.AddParameter("application/x-www-form-urlencoded", jsonobject, ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+
+            ResultRootObject json = JsonConvert.DeserializeObject<ResultRootObject>(response.Content);
+
+            SummaryDetailService.WriteLog(data, response.Content, "RequestQuoteForVrn", RegistrationNo);
+
+            return json;
+        }
+
+
+
 
         public ResultRootObject TPILICQuote(string PartnerToken, string RegistrationNo, string suminsured, string make, string model, int PaymentTermId, int VehicleYear, int CoverTypeId, int VehicleType, string PartnerReference, DateTime CoverStartDate, DateTime CoverEndDate, string taxClassId, bool VehilceLicense, bool RadioLicense, string licensePaymentTerm, string radioPaymentTerm, string VehicleValue)
         {
@@ -826,12 +893,6 @@ namespace Insurance.Service
             return json;
         }
 
-
-
-
-
-
-
         public ResultRootObject TPILICQuoteWebUser(string PartnerToken, string RegistrationNo, string suminsured, string make, string model, int PaymentTermId, int VehicleYear, int CoverTypeId, int VehicleType, string PartnerReference, DateTime CoverStartDate, DateTime CoverEndDate, string taxClassId, bool VehilceLicense, bool RadioLicense, string radioPaymentTerm, string zinaraPaymentTerm)
         {
             //string PSK = "127782435202916376850511";
@@ -996,7 +1057,6 @@ namespace Insurance.Service
             }
             return json;
         }
-
 
         public string RemoveSpecialChars(string str)
         {
@@ -1788,19 +1848,192 @@ namespace Insurance.Service
         }
 
 
+        public ResultRootObject ZineraAndRadioLICQuote(string RegistrationNo,  string ProductId, CustomerModel CustomerInfo, string zinaraPaymentTermId, string radioPaymentTermId, string parternToken)
+        {
+            
+            int RadioTVUsage = 1; // for private car
+            if (ProductId == null)
+                RadioTVUsage = 1;
+            else if (ProductId == "3" || ProductId == "11") // fr 
+                RadioTVUsage = 2;
+            
+            int licenseFreequency = GetMonthKey(Convert.ToInt32(zinaraPaymentTermId));
+
+            int radioFreequency = GetMonthKey(Convert.ToInt32(radioPaymentTermId));
+
+            string _clientIdType = "1";
+
+            //string PSK = "127782435202916376850511";
+            string _json = "";
+
+            List<VehicleLicObject> obj = new List<VehicleLicObject>();
+            //var CustomerInfo = (CustomerModel)HttpContext.Current.Session["CustomerDataModal"];
+
+            //foreach (var item in listofvehicles)
+            //{
+            obj.Add(new VehicleLicObject
+            {
+                VRN = RegistrationNo,
+                IDNumber = CustomerInfo.NationalIdentificationNumber,
+                ClientIDType = _clientIdType,
+                FirstName = CustomerInfo.FirstName,
+                LastName = CustomerInfo.LastName,
+                Address1 = CustomerInfo.AddressLine1,
+                Address2 = CustomerInfo.AddressLine2,
+                SuburbID = "2",
+                LicFrequency = licenseFreequency.ToString(),
+                RadioTVUsage = RadioTVUsage.ToString(),
+                RadioTVFrequency = radioFreequency.ToString()
+            });
+            //}
+
+            LICQuoteArguments objArg = new LICQuoteArguments();
+            objArg.PartnerReference = Guid.NewGuid().ToString();
+            objArg.Date = DateTime.Now.ToString("yyyyMMddhhmmss");
+            objArg.Version = "2.0";
+            objArg.PartnerToken = parternToken;
+            objArg.Request = new LICQuoteFunctionObject { Function = "LICQuote", Vehicles = obj };
+
+            _json = Newtonsoft.Json.JsonConvert.SerializeObject(objArg);
+
+            //string  = json.Reverse()
+            string reversejsonString = new string(_json.Reverse().ToArray());
+            string reversepartneridString = new string(PSK.Reverse().ToArray());
+
+            string concatinatedString = reversejsonString + reversepartneridString;
+
+            byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes(concatinatedString);
+
+            string returnValue = System.Convert.ToBase64String(toEncodeAsBytes);
+
+            string GetSHA512encrypted = SHA512(returnValue);
+
+            string MAC = "";
+
+            for (int i = 0; i < 16; i++)
+            {
+                MAC += GetSHA512encrypted.Substring((i * 8), 1);
+            }
+
+            MAC = MAC.ToUpper();
+
+            LICQuoteRequest objroot = new LICQuoteRequest();
+            objroot.Arguments = objArg;
+            objroot.MAC = MAC;
+            objroot.Mode = "SH";
+
+            var data = Newtonsoft.Json.JsonConvert.SerializeObject(objroot);
+            JObject jsonobject = JObject.Parse(data);
+     
+            var client = new RestClient(LiveIceCashApi);
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("cache-control", "no-cache");
+            request.AddHeader("content-type", "application/x-www-form-urlencoded");
+            request.AddParameter("application/x-www-form-urlencoded", jsonobject, ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            ResultRootObject json = JsonConvert.DeserializeObject<ResultRootObject>(response.Content);
+
+            SummaryDetailService.WriteLog(data, response.Content, "LICCertConf");
+            return json;
+        }
+
+        public ResultRootObject ZineraLICQuoteOnly(string RegistrationNo, string PaymentTermId, string ProductId, CustomerModel CustomerInfo, string parternToken)
+        {
+            
+            int RadioTVUsage = 1; // for private car
+
+            if (ProductId == null)
+                RadioTVUsage = 1;
+            else if (ProductId == "3" || ProductId == "11") // fr 
+                RadioTVUsage = 2;
+
+            string _clientIdType = "1";
 
 
+            int licenseFreequency = GetMonthKey(Convert.ToInt32(PaymentTermId));
+
+            //string PSK = "127782435202916376850511";
+            string _json = "";
+
+            List<VehicleLicOnlyObject> obj = new List<VehicleLicOnlyObject>();
+            //var CustomerInfo = (CustomerModel)HttpContext.Current.Session["CustomerDataModal"];
+
+          
+            obj.Add(new VehicleLicOnlyObject
+            {
+                VRN = RegistrationNo,
+                IDNumber = CustomerInfo.NationalIdentificationNumber,
+                ClientIDType = _clientIdType,
+                FirstName = CustomerInfo.FirstName,
+                LastName = CustomerInfo.LastName,
+                Address1 = CustomerInfo.AddressLine1,
+                Address2 = CustomerInfo.AddressLine2,
+                SuburbID = "2",
+                LicFrequency = licenseFreequency
+                //RadioTVUsage = RadioTVUsage,
+                //RadioTVFrequency = licenseFreequency
+            });
+         
+
+            LICOnlyQuoteArguments objArg = new LICOnlyQuoteArguments();
+            objArg.PartnerReference = Guid.NewGuid().ToString();
+            objArg.Date = DateTime.Now.ToString("yyyyMMddhhmmss");
+            objArg.Version = "2.0";
+            objArg.PartnerToken = parternToken;
+            objArg.Request = new LICOnlyQuoteFunctionObject { Function = "LICQuote", Vehicles = obj };
+
+            _json = Newtonsoft.Json.JsonConvert.SerializeObject(objArg);
+
+            //string  = json.Reverse()
+            string reversejsonString = new string(_json.Reverse().ToArray());
+            string reversepartneridString = new string(PSK.Reverse().ToArray());
+
+            string concatinatedString = reversejsonString + reversepartneridString;
+
+            byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes(concatinatedString);
+
+            string returnValue = System.Convert.ToBase64String(toEncodeAsBytes);
+
+            string GetSHA512encrypted = SHA512(returnValue);
+
+            string MAC = "";
+
+            for (int i = 0; i < 16; i++)
+            {
+                MAC += GetSHA512encrypted.Substring((i * 8), 1);
+            }
+
+            MAC = MAC.ToUpper();
+
+            LICOnlyQuoteRequest objroot = new LICOnlyQuoteRequest();
+            objroot.Arguments = objArg;
+            objroot.MAC = MAC;
+            objroot.Mode = "SH";
+
+            var data = Newtonsoft.Json.JsonConvert.SerializeObject(objroot);
+
+            JObject jsonobject = JObject.Parse(data);
+
+           
+            var client = new RestClient(LiveIceCashApi);
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("cache-control", "no-cache");
+            request.AddHeader("content-type", "application/x-www-form-urlencoded");
+            request.AddParameter("application/x-www-form-urlencoded", jsonobject, ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            ResultRootObject json = JsonConvert.DeserializeObject<ResultRootObject>(response.Content);
+
+            
+
+
+            return json;
+        }
 
         public static string GetMachineId()
         {
             string cpuInfo = System.Net.Dns.GetHostEntry("").HostName;
-
             return Convert.ToString(cpuInfo);
         }
-
-
-
-
 
     }
 
@@ -1855,8 +2088,8 @@ namespace Insurance.Service
         public int VehicleValue { get; set; }
         public int InsuranceType { get; set; }
         public int VehicleType { get; set; }
-       // public string Make { get; set; }
-       // public string Model { get; set; }
+        public string Make { get; set; }
+        public string Model { get; set; }
         public string TaxClass { get; set; }
         public int YearManufacture { get; set; }
 
@@ -2171,6 +2404,13 @@ namespace Insurance.Service
         public string LicExpiryDate { get; set; }
         public string TotalLicAmt { get; set; }
         public string TotalAmount { get; set; }
+
+        public string PenaltiesAmt { get; set; }
+        public string AdministrationAmt { get; set; }
+        public string ArrearsAmt { get; set; }
+        public string TransactionAmt { get; set; }
+
+        public string TotalRadioTVAmt { get; set; }
         public ResultPolicy Policy { get; set; }
         public ResultClient Client { get; set; }
         public ResultVehicle Vehicle { get; set; }

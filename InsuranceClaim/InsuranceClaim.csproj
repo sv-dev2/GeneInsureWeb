@@ -278,6 +278,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IndividualController.cs" />
     <Compile Include="Controllers\InsuranceHomeController.cs" />
+    <Compile Include="Controllers\LicenseController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MobileApiController.cs" />
     <Compile Include="Controllers\PayNowController.cs" />
@@ -1199,6 +1200,9 @@
     <Content Include="Views\CustomerRegistration\ReceiptCancelation.cshtml" />
     <Content Include="Views\Report\ALMCertSerialNoReport.cshtml" />
     <Content Include="Views\Report\ActiveDeactiveReceipts.cshtml" />
+    <Content Include="Views\License\LicenseDetail.cshtml" />
+    <Content Include="Views\License\LicenseSummaryDetail.cshtml" />
+    <Content Include="Views\Report\VehicleReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AgentLogo\" />

@@ -31,9 +31,8 @@ namespace InsuranceClaim.Models
         public string RegistrationNumber { get; set; }
         public string RenewPolicyNumber { get; set; }
         public decimal TenderedAmount { get; set; }
-
-     
-
+        public string ErrorMsg { get; set; }
+        public int CurrencyId { get; set; }
     }
 
 

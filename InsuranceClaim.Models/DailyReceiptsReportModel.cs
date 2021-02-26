@@ -36,5 +36,7 @@ namespace InsuranceClaim.Models
         public string EndDate { get; set; }
 
         public int? BranchId { get; set; }
+
+        public int CurrencyId { get; set; }
     }
 }
