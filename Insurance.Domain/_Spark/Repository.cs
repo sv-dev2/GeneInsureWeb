@@ -155,6 +155,13 @@ namespace Insurance.Domain
 
         public static PartnerCommissions PartnerCommissions { get { return new PartnerCommissions(); } }
 
+        public static CommissionPeriods CommissionPeriods { get { return new CommissionPeriods(); } }
+
+        public static PosInitializations PosInitializations { get { return new PosInitializations(); } }
+
+        public static USDConverters USDConverters { get { return new USDConverters(); } }
+
+
         //17/03/2020
         public static AspNetUsersDetails AspNetUsersDetails { get { return new AspNetUsersDetails(); } }
 

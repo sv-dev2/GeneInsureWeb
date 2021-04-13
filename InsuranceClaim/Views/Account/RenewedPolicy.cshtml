@@ -1,7 +1,8 @@
-﻿@using Insurance.Service;
+﻿
+@using Insurance.Service;
 @model InsuranceClaim.Models.ListPolicy
 @{
-    ViewBag.Title = "Policy List";
+    ViewBag.Title = "RenewedPolicy";
     Layout = "~/Views/Shared/_InsuranceMain.cshtml";
 }
 
@@ -23,7 +24,7 @@
 
 
         <br />
-        @using (Html.BeginForm("SearchRenewPolicyList", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        @using (Html.BeginForm("SearchRenewedPolicy", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
         {
             <div class="container-main">
                 <div class="form-group-section-date">
@@ -180,9 +181,9 @@
                             <td> @item.TotalPremium</td>
                             <td>
                                 @item.PolicyStatus
-                                </td>
+                            </td>
 
-                            </tr>
+                        </tr>
 
 
                     }
@@ -265,7 +266,6 @@
             format: 'MM/D/YYYY'
 
         });
-
     });
 
 
@@ -275,7 +275,7 @@
             // exclude CSS class
             exclude: ".noExl",
             name: "Worksheet Name",
-            filename: "RenewPolicy" //do not include extension
+            filename: "RenewedPolicy" //do not include extension
 
         });
     });

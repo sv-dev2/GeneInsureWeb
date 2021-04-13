@@ -111,7 +111,7 @@ namespace InsuranceClaim.Controllers
                     int numberOfDays = CountDayPassword(_user);
                     //--end
                     var customer = InsuranceContext.Customers.All(where: $"UserId ='{_user.Id.ToString()}'").OrderByDescending(c => c.Id).FirstOrDefault();
-                    if (customer!=null && customer.IsActive == false)
+                    if (customer != null && customer.IsActive == false)
                     {
                         ModelState.AddModelError("", "Your account is inactive, please contact to administrator.");
                         return View(model);
@@ -124,7 +124,7 @@ namespace InsuranceClaim.Controllers
                     }
 
 
-                    Session["firstname"] =  customer.FirstName;
+                    Session["firstname"] = customer.FirstName;
                     Session["lastname"] = customer.LastName;
 
                     if (role == "Administrator" || role == "SuperUser" || role == "Agent" || role == "AgentStaff" || role == "Reports" || role == "Finance" || role == "Claim" || role == "Team Leaders")
@@ -1722,8 +1722,6 @@ namespace InsuranceClaim.Controllers
                     lstUserModel.ListUsers = ListUserViewModel;
                     return View("CustomerManagementList", lstUserModel);
                 }
-
-
             }
             return View("UserManagementList", lstUserModel);
         }
@@ -2121,13 +2119,11 @@ namespace InsuranceClaim.Controllers
                 if (recieptDetail != null)
                     paymentStatus = "Paid";
 
-
-              
-                if(recieptDetail!=null && !string.IsNullOrEmpty(renewPolicyNum))
+                if (recieptDetail != null && !string.IsNullOrEmpty(renewPolicyNum))
                 {
                     var recieptDetailForRenew = recieptList.FirstOrDefault(c => c.RenewPolicyNumber == renewPolicyNum);
 
-                   if(recieptDetailForRenew!=null)
+                    if (recieptDetailForRenew != null)
                         paymentStatus = "Paid";
                 }
 
@@ -2151,13 +2147,21 @@ namespace InsuranceClaim.Controllers
 
         public string GetRenewalDate(string renewDate = "", string licExpDate = "")
         {
-            DateTime date = DateTime.Now;
+            try
+            {
+                DateTime date = DateTime.Now;
 
-            if (!string.IsNullOrEmpty(licExpDate))
-                date = Convert.ToDateTime(licExpDate);
-            else if (!string.IsNullOrEmpty(renewDate))
-                date = Convert.ToDateTime(renewDate);
-            return date.ToShortDateString();
+                if (!string.IsNullOrEmpty(licExpDate))
+                    date = Convert.ToDateTime(licExpDate);
+                else if (!string.IsNullOrEmpty(renewDate))
+                    date = Convert.ToDateTime(renewDate);
+                return date.ToShortDateString();
+
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
         }
 
 
@@ -2168,9 +2172,12 @@ namespace InsuranceClaim.Controllers
             ListPolicy policylist = new ListPolicy();
             policylist.listpolicy = new List<PolicyListViewModel>();
 
+            ViewBag.License = GetEnumList<LicenseType>();
+            ViewBag.BranchList = InsuranceContext.Branches.All().ToList();
 
+            //(int)ALMBranch.GeneCallCentre
 
-            var query = "   select top 500 PolicyDetail.PolicyNumber as Policy_Number,  Customer.PhoneNumber, ";
+            var query = "   select top 500 PolicyDetail.PolicyNumber as Policy_Number, VehicleDetail.ALMBranchId,  Customer.PhoneNumber, ";
             query += " case when VehicleDetail.ALMBranchId = 0  then[dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(VehicleDetail.ALMBranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as CustomerName, ";
             query += " VehicleDetail.CoverStartDate, VehicleDetail.CoverEndDate, VehicleDetail.LicExpiryDate, VehicleDetail.RegistrationNo, ";
             query += " VehicleMake.MakeDescription , VehicleModel.ModelDescription, SummaryDetail.TotalPremium, ";
@@ -2377,6 +2384,16 @@ namespace InsuranceClaim.Controllers
         }
 
 
+        public List<KeyValuePair<string, int>> GetEnumList<T>()
+        {
+            var list = new List<KeyValuePair<string, int>>();
+            foreach (var e in Enum.GetValues(typeof(T)))
+            {
+                list.Add(new KeyValuePair<string, int>(e.ToString(), (int)e));
+            }
+            return list;
+        }
+
         //[Authorize(Roles = "Staff,Administrator")]
         //[HttpGet]
         //public ActionResult SearchRenewPolicyList()
@@ -2391,12 +2408,14 @@ namespace InsuranceClaim.Controllers
         public ActionResult SearchRenewPolicyList(ListPolicy Model)
         {
 
-
             ListPolicy policylist = new ListPolicy();
             policylist.listpolicy = new List<PolicyListViewModel>();
 
+            ViewBag.BranchList = InsuranceContext.Branches.All().ToList();
 
-            var query = "   select  PolicyDetail.PolicyNumber as Policy_Number,  Customer.PhoneNumber, ";
+            ViewBag.License = GetEnumList<LicenseType>();
+
+            var query = "   select  PolicyDetail.PolicyNumber as Policy_Number, VehicleDetail.ALMBranchId, Customer.PhoneNumber, ";
             query += " case when VehicleDetail.ALMBranchId = 0  then[dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(VehicleDetail.ALMBranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as CustomerName, ";
             query += " VehicleDetail.CoverStartDate, VehicleDetail.CoverEndDate, VehicleDetail.LicExpiryDate, VehicleDetail.RegistrationNo, ";
             query += " VehicleMake.MakeDescription , VehicleModel.ModelDescription, SummaryDetail.TotalPremium, ";
@@ -2416,7 +2435,20 @@ namespace InsuranceClaim.Controllers
             query += " left join VehicleModel on VehicleDetail.ModelId= VehicleModel.ModelCode ";
             query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) ";
             query += " and SummaryDetail.isQuotation=0 and SummaryDetail.PaymentMethodId<>" + (int)paymentMethod.PayLater + "and  ";
-            query += "  (  CONVERT(date, VehicleDetail.RenewalDate) >= convert(date, '" + Model.FromDate + "', 101)  and CONVERT(date, VehicleDetail.RenewalDate) <= convert(date, '" + Model.EndDate + "', 101))  order by  VehicleDetail.Id desc ";
+            query += "  (  CONVERT(date, VehicleDetail.RenewalDate) >= convert(date, '" + Model.FromDate + "', 101)  and CONVERT(date, VehicleDetail.RenewalDate) <= convert(date, '" + Model.EndDate + "', 101)) ";
+
+                if (Model.LicenseId == (int)LicenseType.Insurance)
+                query += " and LicExpiryDate is null";
+            else if (Model.LicenseId == (int)LicenseType.License)
+                query += " and LicExpiryDate is not null";
+
+            if (Model.BranchId > 0 && Model.BranchId!= (int)ALMBranch.GeneCallCentre)
+                query += " and ALMBranchId=" + Model.BranchId;
+            else if(Model.BranchId > 0 && Model.BranchId == (int)ALMBranch.GeneCallCentre)
+                    query += " and ALMBranchId=0";
+
+
+            query += "    order by  VehicleDetail.Id desc ";
 
 
             var result = InsuranceContext.Query(query).Select(c => new PolicyListViewModel()
@@ -2601,6 +2633,188 @@ namespace InsuranceClaim.Controllers
             return View("RenewPolicyList", policylist);
         }
 
+
+        [Authorize(Roles = "Staff,Administrator,Team Leaders")]
+        public ActionResult RenewedPolicy()
+        {
+
+            ListPolicy policylist = new ListPolicy();
+            policylist.listpolicy = new List<PolicyListViewModel>();
+
+            ViewBag.License = GetEnumList<LicenseType>();
+            ViewBag.BranchList = InsuranceContext.Branches.All().ToList();
+
+            //(int)ALMBranch.GeneCallCentre
+
+            var query = "   select top 500 PolicyDetail.PolicyNumber as Policy_Number, VehicleDetail.ALMBranchId,  Customer.PhoneNumber, ";
+            query += " case when VehicleDetail.ALMBranchId = 0  then[dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(VehicleDetail.ALMBranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as CustomerName, ";
+            query += " VehicleDetail.CoverStartDate, VehicleDetail.CoverEndDate, VehicleDetail.LicExpiryDate, VehicleDetail.RegistrationNo, ";
+            query += " VehicleMake.MakeDescription , VehicleModel.ModelDescription, SummaryDetail.TotalPremium, ";
+            query += " VehicleDetail.TransactionDate as Transaction_date, ";
+            query += " case when Customer.id=SummaryDetail.CreatedBy then [dbo].fn_GetUserBranch(Customer.id) else [dbo].fn_GetUserBranch(SummaryDetail.CreatedBy) end as BranchName,  VehicleDetail.CoverNote as CoverNoteNum, PaymentMethod.Name as Payment_Mode, PaymentTerm.Name as Payment_Term,CoverType.Name as CoverType, Currency.Name as Currency,  VehicleDetail.Premium + VehicleDetail.StampDuty + VehicleDetail.ZTSCLevy as Premium_due, VehicleDetail.StampDuty as Stamp_duty, VehicleDetail.ZTSCLevy as ZTSC_Levy,  cast(VehicleDetail.Premium* 30 / 100 as decimal(10, 2))    as Comission_Amount, VehicleDetail.IncludeRadioLicenseCost,  CASE WHEN IncludeRadioLicenseCost = 1 THEN VehicleDetail.RadioLicenseCost else 0 end as RadioLicenseCost, VehicleDetail.VehicleLicenceFee as Zinara_License_Fee, VehicleDetail.RenewalDate as PolicyRenewalDate, VehicleDetail.IsActive, VehicleDetail.RenewPolicyNumber as RenewPolicyNumber, VehicleDetail.BusinessSourceDetailId, SummaryDetail.id as SummaryDetailId, VehicleDetail.SumInsured, VehicleDetail.RenewalDate from PolicyDetail ";
+            query += "  join Customer on PolicyDetail.CustomerId = Customer.Id ";
+            query += "     join VehicleDetail on PolicyDetail.Id = VehicleDetail.PolicyId ";
+            query += "    join SummaryVehicleDetail on VehicleDetail.id = SummaryVehicleDetail.VehicleDetailsId ";
+            query += "       join SummaryDetail on SummaryDetail.id = SummaryVehicleDetail.SummaryDetailId ";
+            query += " left join PaymentMethod on SummaryDetail.PaymentMethodId = PaymentMethod.Id";
+            query += "  join PaymentTerm on VehicleDetail.PaymentTermId = PaymentTerm.Id ";
+            query += "  left join CoverType on VehicleDetail.CoverTypeId = CoverType.Id ";
+            query += "    left join Currency on VehicleDetail.CurrencyId = Currency.Id ";
+            query += " left join VehicleMake on VehicleDetail.MakeId= VehicleMake.MakeCode ";
+            query += " left join VehicleModel on VehicleDetail.ModelId= VehicleModel.ModelCode ";
+            query += "     where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) ";
+            query += "  and SummaryDetail.isQuotation=0 and SummaryDetail.PaymentMethodId<>" + (int)paymentMethod.PayLater + " and  ";
+            query += " CONVERT(date, VehicleDetail.TransactionDate) <=  GETDATE() order by  VehicleDetail.Id desc ";
+
+            // transaction date match with search date and policy number greater then 1 it means renwed
+            // renwal date less then transaction date it's mean it's renew
+
+            var result = InsuranceContext.Query(query).Select(c => new PolicyListViewModel()
+            {
+                AgentName = c.PolicyCreatedBy,
+                CustomerName = c.CustomerName,
+                CustomerContactNumber = c.PhoneNumber,
+                TotalPremium = Convert.ToDecimal(c.TotalPremium),
+                TotalSumInsured = Convert.ToDecimal(c.SumInsured),
+                // SummaryId = c.Id,
+                // createdOn = Convert.ToDateTime(c.CreatedOn),
+                PolicyNumber = c.Policy_Number,
+                RenewPolicyNumber = c.RenewPolicyNumber,
+                CoverTypeName = c.CoverType,
+                Make = c.MakeDescription,
+                Model = c.ModelDescription,
+                RegisterationNumber = c.RegistrationNo,
+                startdate = Convert.ToDateTime(c.CoverStartDate).ToShortDateString(),
+                enddate = Convert.ToDateTime(c.CoverEndDate).ToShortDateString(),
+                LicExpDate = c.LicExpiryDate,
+                RenewalDate = Convert.ToDateTime(c.RenewalDate).ToShortDateString(),
+                TransactionDate = c.Transaction_date,
+                Currency = c.Currency
+            }).ToList();
+
+
+
+            var newList = new List<PolicyListViewModel>();
+            foreach (var item in result)
+            {
+                PolicyListViewModel details = new PolicyListViewModel();
+
+                if (item.RenewPolicyNumber != null)
+                {
+                    item.PolicyNumber = item.RenewPolicyNumber;
+                }
+                else if (item.TransactionDate < DateTime.Now && item.RenewPolicyNumber != null && Convert.ToInt16(item.RenewPolicyNumber.Split('-')[1]) > 1)
+                {
+                    item.PolicyStatus = "Renewed";
+                    newList.Add(item);
+                }
+            }
+
+
+
+            policylist.listpolicy = newList;
+
+         
+
+
+            return View(policylist);
+        }
+
+        [Authorize(Roles = "Staff,Administrator,Team Leaders")]
+        [HttpPost]
+        public ActionResult SearchRenewedPolicy(ListPolicy Model)
+        {
+
+            ListPolicy policylist = new ListPolicy();
+            policylist.listpolicy = new List<PolicyListViewModel>();
+
+            ViewBag.BranchList = InsuranceContext.Branches.All().ToList();
+
+            ViewBag.License = GetEnumList<LicenseType>();
+
+            var query = "   select  PolicyDetail.PolicyNumber as Policy_Number, VehicleDetail.ALMBranchId, Customer.PhoneNumber, ";
+            query += " case when VehicleDetail.ALMBranchId = 0  then[dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(VehicleDetail.ALMBranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as CustomerName, ";
+            query += " VehicleDetail.CoverStartDate, VehicleDetail.CoverEndDate, VehicleDetail.LicExpiryDate, VehicleDetail.RegistrationNo, ";
+            query += " VehicleMake.MakeDescription , VehicleModel.ModelDescription, SummaryDetail.TotalPremium, ";
+            query += " VehicleDetail.TransactionDate as Transaction_date, ";
+            query += " case when Customer.id=SummaryDetail.CreatedBy then [dbo].fn_GetUserBranch(Customer.id) else [dbo].fn_GetUserBranch(SummaryDetail.CreatedBy) end as BranchName,  VehicleDetail.CoverNote as CoverNoteNum, PaymentMethod.Name as Payment_Mode, PaymentTerm.Name as Payment_Term,CoverType.Name as CoverType, Currency.Name as Currency,  VehicleDetail.Premium + VehicleDetail.StampDuty + VehicleDetail.ZTSCLevy as Premium_due, ";
+            query += " VehicleDetail.StampDuty as Stamp_duty, VehicleDetail.ZTSCLevy as ZTSC_Levy,  cast(VehicleDetail.Premium* 30 / 100 as decimal(10, 2))    as Comission_Amount, VehicleDetail.IncludeRadioLicenseCost,  CASE WHEN IncludeRadioLicenseCost = 1 THEN VehicleDetail.RadioLicenseCost else 0 end as RadioLicenseCost, ";
+            query += "  VehicleDetail.VehicleLicenceFee as Zinara_License_Fee, VehicleDetail.RenewalDate as PolicyRenewalDate, VehicleDetail.IsActive, VehicleDetail.RenewPolicyNumber as RenewPolicyNumber, VehicleDetail.BusinessSourceDetailId, SummaryDetail.id as SummaryDetailId, VehicleDetail.SumInsured, VehicleDetail.RenewalDate from PolicyDetail";
+            query += "  join Customer on PolicyDetail.CustomerId = Customer.Id ";
+            query += "  join VehicleDetail on PolicyDetail.Id = VehicleDetail.PolicyId ";
+            query += "  join SummaryVehicleDetail on VehicleDetail.id = SummaryVehicleDetail.VehicleDetailsId ";
+            query += "  join SummaryDetail on SummaryDetail.id = SummaryVehicleDetail.SummaryDetailId ";
+            query += " left join PaymentMethod on SummaryDetail.PaymentMethodId = PaymentMethod.Id";
+            query += " join PaymentTerm on VehicleDetail.PaymentTermId = PaymentTerm.Id ";
+            query += " left join CoverType on VehicleDetail.CoverTypeId = CoverType.Id ";
+            query += " left join Currency on VehicleDetail.CurrencyId = Currency.Id ";
+            query += " left join VehicleMake on VehicleDetail.MakeId= VehicleMake.MakeCode ";
+            query += " left join VehicleModel on VehicleDetail.ModelId= VehicleModel.ModelCode ";
+            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) ";
+            query += " and SummaryDetail.isQuotation=0 and SummaryDetail.PaymentMethodId<>" + (int)paymentMethod.PayLater + "and  ";
+            query += "  (  CONVERT(date, VehicleDetail.RenewalDate) >= convert(date, '" + Model.FromDate + "', 101)  and CONVERT(date, VehicleDetail.RenewalDate) <= convert(date, '" + Model.EndDate + "', 101)) ";
+
+            if (Model.LicenseId == (int)LicenseType.Insurance)
+                query += " and LicExpiryDate is null";
+            else if (Model.LicenseId == (int)LicenseType.License)
+                query += " and LicExpiryDate is not null";
+
+            if (Model.BranchId > 0 && Model.BranchId != (int)ALMBranch.GeneCallCentre)
+                query += " and ALMBranchId=" + Model.BranchId;
+            else if (Model.BranchId > 0 && Model.BranchId == (int)ALMBranch.GeneCallCentre)
+                query += " and ALMBranchId=0";
+
+
+            query += "    order by  VehicleDetail.Id desc ";
+
+
+            var result = InsuranceContext.Query(query).Select(c => new PolicyListViewModel()
+            {
+                AgentName = c.PolicyCreatedBy,
+                CustomerName = c.CustomerName,
+                CustomerContactNumber = c.PhoneNumber,
+                TotalPremium = Convert.ToDecimal(c.TotalPremium),
+                TotalSumInsured = Convert.ToDecimal(c.SumInsured),
+                LicExpDate = c.LicExpiryDate,
+                // SummaryId = c.Id,
+                // createdOn = Convert.ToDateTime(c.CreatedOn),
+                PolicyNumber = c.Policy_Number,
+                RenewPolicyNumber = c.RenewPolicyNumber,
+                CoverTypeName = c.CoverType,
+                Make = c.MakeDescription,
+                Model = c.ModelDescription,
+                RegisterationNumber = c.RegistrationNo,
+                startdate = Convert.ToDateTime(c.CoverStartDate).ToShortDateString(),
+                enddate = Convert.ToDateTime(c.CoverEndDate).ToShortDateString(),
+                RenewalDate = Convert.ToDateTime(c.RenewalDate).ToShortDateString(),
+                TransactionDate = c.Transaction_date,
+                Currency = c.Currency
+            }).ToList();
+
+
+
+            var newList = new List<PolicyListViewModel>();
+            foreach (var item in result)
+            {
+                PolicyListViewModel details = new PolicyListViewModel();
+
+
+                if (item.RenewPolicyNumber != null)
+                {
+                    item.PolicyNumber = item.RenewPolicyNumber;
+                }
+
+                else if (item.RenewPolicyNumber != null && Convert.ToInt16(item.RenewPolicyNumber.Split('-')[1]) > 1)
+                {
+                    item.PolicyStatus = "Renewed";
+                    newList.Add(item);
+                }
+            }
+
+            policylist.listpolicy = newList;
+
+            return View("RenewedPolicy", policylist);
+        }
 
 
 
@@ -2965,9 +3179,9 @@ namespace InsuranceClaim.Controllers
             bool result = false;
             var details = list.FirstOrDefault(c => c.VehicleDetailsId == vehicleId);
 
-            if(details!=null)
+            if (details != null)
             {
-                 result = true;
+                result = true;
             }
 
             return result;
@@ -3300,7 +3514,7 @@ namespace InsuranceClaim.Controllers
             {
                 SummaryList = InsuranceContext.SummaryDetails.All(where: $"CreatedBy={customerID} and isQuotation = '0'  ").OrderByDescending(x => x.Id).ToList();
             }
-            else if (role == "Administrator" || role == "Renewals" )
+            else if (role == "Administrator" || role == "Renewals")
             {
                 var query = " Select SD.* from SummaryDetail SD Join PaymentInformation pa on SD.Id =pa.SummaryDetailId where SD.isQuotation=0 ";
                 SummaryList = InsuranceContext.Query(query).Select(x => new SummaryDetail()
@@ -4598,9 +4812,19 @@ namespace InsuranceClaim.Controllers
                 foreach (var item in list)
                 {
                     VehicleListModel obj = new VehicleListModel();
-                    obj.make = InsuranceContext.VehicleMakes.Single(where: $" MakeCode='{item.MakeId}'").ShortDescription;
-                    obj.model = InsuranceContext.VehicleModels.Single(where: $"ModelCode='{item.ModelId}'").ShortDescription;
-                    obj.covertype = InsuranceContext.CoverTypes.Single(item.CoverTypeId).Name;
+
+                    var makeDetial = InsuranceContext.VehicleMakes.Single(where: $" MakeCode='{item.MakeId}'");
+                    if(makeDetial!=null)
+                        obj.make = makeDetial.ShortDescription;
+
+                    var modelDetail = InsuranceContext.VehicleModels.Single(where: $"ModelCode='{item.ModelId}'");
+                    if(modelDetail!=null)
+                        obj.model = modelDetail.ShortDescription;
+
+                    var coverTypeDetail = InsuranceContext.CoverTypes.Single(item.CoverTypeId);
+                    if(coverTypeDetail!=null)
+                        obj.covertype = coverTypeDetail.Name;
+
                     obj.excess = item.Premium.ToString();
                     obj.premium = Convert.ToString(list.Sum(items => items.Premium + items.ZTSCLevy + items.StampDuty + items.VehicleLicenceFee + (items.IncludeRadioLicenseCost ? items.RadioLicenseCost : 0.00m)));
                     obj.suminsured = item.SumInsured == null ? "0" : item.SumInsured.ToString();
@@ -4843,7 +5067,7 @@ namespace InsuranceClaim.Controllers
             try
             {
                 var receiptHistory = InsuranceContext.ReceiptHistorys.Single(Id);
-                if(receiptHistory!=null)
+                if (receiptHistory != null)
                 {
                     receiptHistory.IsActive = false;
                     receiptHistory.ModifiedOn = DateTime.Now;
@@ -4851,10 +5075,10 @@ namespace InsuranceClaim.Controllers
                     if (_userLoggedin)
                     {
                         var _User = UserManager.FindById(User.Identity.GetUserId().ToString());
-                        var customer = InsuranceContext.Customers.Single(where: "UserID='" + _User.Id + "'");         
+                        var customer = InsuranceContext.Customers.Single(where: "UserID='" + _User.Id + "'");
                         receiptHistory.ModifiedBy = customer.Id;
                     }
-                    InsuranceContext.ReceiptHistorys.Update(receiptHistory);                              
+                    InsuranceContext.ReceiptHistorys.Update(receiptHistory);
                 }
 
                 return Json(true, JsonRequestBehavior.AllowGet);
@@ -4867,7 +5091,7 @@ namespace InsuranceClaim.Controllers
 
         }
 
-       
+
 
         public async Task<JsonResult> ActiveReceipt(int Id)
         {
@@ -6293,7 +6517,7 @@ namespace InsuranceClaim.Controllers
         {
             return InsuranceContext.PaymentMethods.All(where: "Id=1").ToList();
         }
-        
+
 
         // why are using this method on this controller I think plesae use customer registration 
         // controller

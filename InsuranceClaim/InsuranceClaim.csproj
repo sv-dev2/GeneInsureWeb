@@ -291,6 +291,7 @@
     <Compile Include="Controllers\ServiceProviderTypeController.cs" />
     <Compile Include="Controllers\SourceDetailController.cs" />
     <Compile Include="Controllers\GwpController.cs" />
+    <Compile Include="Controllers\USDConverterController.cs" />
     <Compile Include="Controllers\VehicleMakeController.cs" />
     <Compile Include="Controllers\VehicleModelController.cs" />
     <Compile Include="Controllers\VehicleUsageController.cs" />
@@ -1203,6 +1204,10 @@
     <Content Include="Views\License\LicenseDetail.cshtml" />
     <Content Include="Views\License\LicenseSummaryDetail.cshtml" />
     <Content Include="Views\Report\VehicleReport.cshtml" />
+    <Content Include="Views\Report\PeriodCommissionsReport.cshtml" />
+    <Content Include="Views\USDConverter\Index.cshtml" />
+    <Content Include="Views\Report\UnRecieptReport.cshtml" />
+    <Content Include="Views\Account\RenewedPolicy.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AgentLogo\" />

@@ -181,14 +181,13 @@ namespace InsuranceClaim.Models
         public bool IsMobile { get; set; }
 
         public DateTime ReceiptDate { get; set; }
+        public DateTime ExpectedDateDelivery { get; set; }
 
         public decimal CompLicenseFee { get; set; }
+
+        public int LicenseCurrencyId { get; set; }
 
     }
 
    
-
-    
-
-
 }

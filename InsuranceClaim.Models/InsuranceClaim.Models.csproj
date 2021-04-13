@@ -152,6 +152,7 @@
     <Compile Include="PayLaterPolicyModel.cs" />
     <Compile Include="PayNowModel.cs" />
     <Compile Include="PaynowResponse.cs" />
+    <Compile Include="PeriodCommission.cs" />
     <Compile Include="PolicyDetailModel.cs" />
     <Compile Include="PolicyDocumentModels.cs" />
     <Compile Include="PolicyInsurerModel.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="StampDutyReportModels.cs" />
     <Compile Include="SummaryDetailModel.cs" />
     <Compile Include="SummaryVehicleDetailsModel.cs" />
+    <Compile Include="USDConverterModel.cs" />
     <Compile Include="UserDetails.cs" />
     <Compile Include="UserManagementViewModel.cs" />
     <Compile Include="UserModel.cs" />

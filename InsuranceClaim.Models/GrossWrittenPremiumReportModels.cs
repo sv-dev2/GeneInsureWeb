@@ -110,7 +110,14 @@ namespace InsuranceClaim.Models
         public double Days { get; set; }
     }
 
-
+    public class UnRecieptDetail
+    {
+        [Required(ErrorMessage = "Please Enter Start Date.")]
+        public string FromDate { get; set; }
+        [Required(ErrorMessage = "Please Enter End Date.")]
+        public string EndDate { get; set; }
+        public  List<RecieptDetail> RecieptDetails { get; set; }
+    }
 
 
     public class ReportType

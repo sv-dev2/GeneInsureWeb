@@ -280,6 +280,8 @@
                             commissionAmountTotal += item.Comission_Amount;
                             radioLicenseCostTotal += Convert.ToDecimal(item.RadioLicenseCost);
                             ZinaraLicenseFee += Convert.ToDecimal(item.Zinara_License_Fee);
+
+                                                                                   
                             <tr>
                                 <td>  @item.PolicyCreatedBy
                                 </td>
@@ -410,6 +412,8 @@
 
                                 @*@item.SourceDetailName*@
                             </tr>
+
+                           
                         }
                     </tbody>
                     <tfoot>
@@ -424,7 +428,7 @@
                             <td></td>
                             <td></td>
                             <td></td>
-                            
+                            <td></td>
                             <td>
                                 <b> @premiumDueTotal </b>
                             </td>
@@ -437,8 +441,8 @@
                             <td><strong> @ZinaraLicenseFee </strong> </td>
                             <td></td>
                             <td><strong> @GrandPremiumtotal</strong> </td>
-                            <td></td>
-                            <td></td>
+                           
+                           
                             <td></td>
                             <td colspan="3"></td>
                             <td></td>

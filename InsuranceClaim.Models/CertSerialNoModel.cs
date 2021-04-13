@@ -9,6 +9,7 @@ namespace InsuranceClaim.Models
     public class CertSerialNoModel
     {
         public int Id { get; set; }
+        public int PolicyId { get; set; }
         public string PolicyNumber { get; set; }
         public string VRN { get; set; }
         public string CertSerialNo { get; set; }

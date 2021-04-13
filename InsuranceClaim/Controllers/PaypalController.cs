@@ -1008,7 +1008,7 @@ namespace InsuranceClaim.Controllers
                 //    }
                 //}
 
-                SummaryDetailService.WriteLog("", "start saving2", "save details");
+              
 
                 var summaryDetail = InsuranceContext.SummaryDetails.Single(id);
 
@@ -1053,15 +1053,10 @@ namespace InsuranceClaim.Controllers
                     objSaveDetailListModel.PollURL = Convert.ToString(Session["PollUrl"]); // paynow payment details url
 
                 Session["PollUrl"] = null;
-
-                SummaryDetailService.WriteLog("", "start saving3", "save details");
-
-
+             
                 List<VehicleDetail> ListOfVehicles = new List<VehicleDetail>();
-
                 //if (paymentInformations == null)
                 //{
-
 
                 string filepath = System.Configuration.ConfigurationManager.AppSettings["urlPath"];
                 Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
@@ -1123,7 +1118,6 @@ namespace InsuranceClaim.Controllers
                 detail.policyAmount = summaryDetail.TotalPremium.Value;
 
                 bool IsCallCenterAgent = false;
-
                 if (userLoggedin)
                 {
                     detail.agentID = summaryDetail.CreatedBy.ToString();
@@ -1132,13 +1126,10 @@ namespace InsuranceClaim.Controllers
 
                     if (customerDetial.BranchId == (int)ALMBranch.GeneCallCentre)
                         IsCallCenterAgent = true;
-
-
                 }
 
                 VehicleService vehicleService = new VehicleService();
                 vehicleService.SaveDeliveryAddress(detail);
-
 
                 SummaryDetailService.WriteLog("", "start saving4", "save details");
                 if (IsCallCenterAgent)
@@ -1210,7 +1201,7 @@ namespace InsuranceClaim.Controllers
                     _attachements.Add(attachementFile1);
                     //_attachements.Add(_yAtter);
 
-                    SummaryDetailService.WriteLog("", "start saving5", "save details");
+                   
 
                     if (customer.IsCustomEmail) // if customer has custom email
                     {
@@ -1519,6 +1510,7 @@ namespace InsuranceClaim.Controllers
                     .Replace("##PassengerAccidentCover##", Convert.ToString(PassengerAccidentCoverAmount)).Replace("##RoadsideAssistance##", Convert.ToString(RoadsideAssistanceAmount))
                     .Replace("##RadioLicence##", Convert.ToString(summaryDetail.TotalRadioLicenseCost)).Replace("##Discount##", Convert.ToString(ListOfVehicles.Sum(x => x.Discount)))
                     .Replace("##ExcessAmount##", Convert.ToString(ExcessAmount)).Replace("##NINumber##", customer.NationalIdentificationNumber).Replace("##VehicleLicenceFee##", Convert.ToString(ListOfVehicles.Sum(x => x.VehicleLicenceFee)));
+              
                 //var attachementFile = MiscellaneousService.EmailPdf(Body2, policy.CustomerId, policy.PolicyNumber, "Reciept Payment");
 
                 SummaryDetailService.WriteLog("", "start saving6", "save details");

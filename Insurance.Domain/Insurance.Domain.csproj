@@ -137,6 +137,7 @@
     <Compile Include="Domain\ClaimRegistrationProviderDetial.cs" />
     <Compile Include="Domain\ClaimSetting.cs" />
     <Compile Include="Domain\ClaimStatus.cs" />
+    <Compile Include="Domain\CommissionPeriods.cs" />
     <Compile Include="Domain\CoverType.cs" />
     <Compile Include="Domain\Currency.cs" />
     <Compile Include="Domain\Customer.cs" />
@@ -162,6 +163,7 @@
     <Compile Include="Domain\PolicyInsurer.cs" />
     <Compile Include="Domain\PolicyRenewReminderSetting.cs" />
     <Compile Include="Domain\PolicyStatus.cs" />
+    <Compile Include="Domain\PosInitialization.cs" />
     <Compile Include="Domain\Product.cs" />
     <Compile Include="Domain\QRCode.cs" />
     <Compile Include="Domain\ReceiptAndPayment.cs" />
@@ -246,6 +248,7 @@
     <Compile Include="Repository\PolicyInsurers.cs" />
     <Compile Include="Repository\PolicyRenewReminderSettings.cs" />
     <Compile Include="Repository\PolicyStatuses.cs" />
+    <Compile Include="Repository\PosInitializations.cs" />
     <Compile Include="Repository\Products.cs" />
     <Compile Include="Repository\QRCodes.cs" />
     <Compile Include="Repository\ReceiptAndPayments.cs" />
@@ -272,6 +275,7 @@
     <Compile Include="Repository\TokenRequests.cs" />
     <Compile Include="Repository\UniqeTransactions.cs" />
     <Compile Include="Repository\UniqueCustomer.cs" />
+    <Compile Include="Repository\USDConverter.cs" />
     <Compile Include="Repository\UserManagementViews.cs" />
     <Compile Include="Repository\VehicleCoverTypes.cs" />
     <Compile Include="Repository\VehicleDetails.cs" />

@@ -85,30 +85,20 @@
                                     <h4>Your plan</h4>
                                 </div>
                                 @if (vehicleList != null)
-                                {
-
-                                    double vehicleTotalAmount = 0;
-                                    decimal licenseFee = 0;
-                                    double vehileTotalAmontWithLicense = Math.Round(Convert.ToDouble(vehicleList.Premium + vehicleList.StampDuty + vehicleList.ZTSCLevy + vehicleList.VehicleLicenceFee + (Convert.ToBoolean(vehicleList.IncludeRadioLicenseCost) ? vehicleList.RadioLicenseCost : 0.00m)), 2);
-
-
-                                    if (vehicleList.CoverTypeId == (int)eCoverType.Comprehensive)
                                     {
-                                        vehicleTotalAmount = Math.Round(Convert.ToDouble(vehicleList.Premium + vehicleList.StampDuty + vehicleList.ZTSCLevy + (Convert.ToBoolean(vehicleList.IncludeRadioLicenseCost) ? vehicleList.RadioLicenseCost : 0.00m)), 2);
-                                    }
-                                    else
-                                    {
+
+                                        double vehicleTotalAmount = 0;
+                                        decimal licenseFee = 0;
+                                        double vehileTotalAmontWithLicense = Math.Round(Convert.ToDouble(vehicleList.Premium + vehicleList.StampDuty + vehicleList.ZTSCLevy + vehicleList.VehicleLicenceFee + (Convert.ToBoolean(vehicleList.IncludeRadioLicenseCost) ? vehicleList.RadioLicenseCost : 0.00m)), 2);
+                              
                                         vehicleTotalAmount = Math.Round(Convert.ToDouble(vehicleList.Premium + vehicleList.StampDuty + vehicleList.ZTSCLevy + vehicleList.VehicleLicenceFee + (Convert.ToBoolean(vehicleList.IncludeRadioLicenseCost) ? vehicleList.RadioLicenseCost : 0.00m)), 2);
+                                    
+                                        // licenseFee = vehicleList.VehicleLicenceFee; //  remove promotion
+                                        licenseFee = 0;
 
-                                    }
-
-                                    licenseFee = vehicleList.VehicleLicenceFee;
-
-
-
-                                    //foreach (var item in vehicleList)
-                                    //{
-                                    <div class="Choose-sections">
+                                         //foreach (var item in vehicleList)
+                                         //{
+                                         <div class="Choose-sections">
                                         <div class="col-sm-3 col-md-3 choose-plan-blocl" style="@(Convert.ToString(vehicleList.PaymentTermId) == "1" ? "display:block;" : "display:none;")">
                                             <div class="choose-plan-box active" planpurchase="1" style="cursor:pointer" onclick="SelectPlan(this);">
                                                 <h4>Annual</h4>

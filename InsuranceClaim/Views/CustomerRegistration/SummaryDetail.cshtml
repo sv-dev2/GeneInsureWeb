@@ -123,19 +123,12 @@
                                         double vehicleTotalAmount = 0;
                                         decimal licenseFee = 0;
                                         double vehileTotalAmontWithLicense =  Math.Round(Convert.ToDouble(item.Premium + item.StampDuty + item.ZTSCLevy + item.VehicleLicenceFee + (Convert.ToBoolean(item.IncludeRadioLicenseCost) ? item.RadioLicenseCost : 0.00m)), 2);
+                                
+                                       vehicleTotalAmount = Math.Round(Convert.ToDouble(item.Premium + item.StampDuty + item.ZTSCLevy + item.VehicleLicenceFee + (Convert.ToBoolean(item.IncludeRadioLicenseCost) ? item.RadioLicenseCost : 0.00m)), 2);
 
-
-                                        if (item.CoverTypeId == (int)eCoverType.Comprehensive)
-                                        {
-                                            vehicleTotalAmount = Math.Round(Convert.ToDouble(item.Premium + item.StampDuty + item.ZTSCLevy + (Convert.ToBoolean(item.IncludeRadioLicenseCost) ? item.RadioLicenseCost : 0.00m)), 2);
-                                        }
-                                        else
-                                        {
-                                            vehicleTotalAmount = Math.Round(Convert.ToDouble(item.Premium + item.StampDuty + item.ZTSCLevy + item.VehicleLicenceFee + (Convert.ToBoolean(item.IncludeRadioLicenseCost) ? item.RadioLicenseCost : 0.00m)), 2);
-
-                                        }
-
-                                        licenseFee = item.VehicleLicenceFee;
+                                       
+                                        //licenseFee = item.VehicleLicenceFee; // remove zinara promotion
+                                        licenseFee = 0;
 
                                             <div class="Choose-sections">
                                             <div class="col-sm-3 col-md-3 choose-plan-blocl" style="@(Convert.ToString(item.PaymentTermId) == "1" ? "display:block;" : "display:none;")">

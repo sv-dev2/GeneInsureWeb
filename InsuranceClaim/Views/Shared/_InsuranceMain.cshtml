@@ -134,8 +134,8 @@
                                             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                                                 <ul class="nav navbar-nav">
 
-                                                    @*<li><a href="/Individual/RegisterUser">Individual motor</a></li>
-                                                        <li><a href="/Domestic/RegisterUser">Domestic</a></li>*@
+                                                    <li><a href="/Individual/RegisterUser">Individual motor</a></li>
+                                                        <li><a href="/Domestic/RegisterUser">Domestic</a></li>
 
                                                     <li><a href="/InsuranceHome/Index">Home</a></li>
 
@@ -161,7 +161,11 @@
                                                     {
                                                         @*<li><a href="/Account/PolicyList">Policy Management</a></li>*@
                                                         <li><a href="/Account/PolicyManagement">Policy Management</a></li>
-                                                        <li><a href="/Account/CustomerManagementList">Customers</a></li>
+                                                        if (!User.IsInRole("Staff"))
+                                                        {
+                                                            <li><a href="/Account/CustomerManagementList">Customers</a></li>
+                                                        }
+
                                                         <li><a href="/CustomerRegistration/LicensePrint">License</a></li>
                                                         <li><a href="/account/PayLaterPolicy">Pay Later</a></li>
                                                     }

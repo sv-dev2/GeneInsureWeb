@@ -501,6 +501,7 @@ namespace Insurance.Domain
         public decimal? TotalStampDuty { get; set; }
         public decimal? TotalZTSCLevies { get; set; }
         public decimal? TotalRadioLicenseCost { get; set; }
+        public decimal? TotalLicenseFee { get; set; }
         public decimal? AmountPaid { get; set; }
         public string DebitNote { get; set; }
         public string ReceiptNumber { get; set; }
@@ -789,6 +790,33 @@ namespace Insurance.Domain
         public bool? IsActive { get; set; }
     }
 
+    public partial class PosInitialization : Entity<PosInitialization>
+    {
+        public PosInitialization() { }
+        public PosInitialization(bool defaults) : base(defaults) { }
+
+        public int Id { get; set; }
+        public DateTime Initializationdate { get; set; }
+      
+    }
+
+
+    
+
+    public partial class CommissionPeriod : Entity<CommissionPeriod>
+    {
+        public CommissionPeriod() { }
+        public CommissionPeriod(bool defaults) : base(defaults) { }
+
+        public int Id { get; set; }
+        public int PriodId { get; set; }
+        public DateTime? StartPeriod { get; set; }
+        public DateTime? EndPeriod { get; set; }
+        public string PeriodStatus { get; set; }
+        
+    }
+
+    //CommissionPeriod
     public partial class AccountPolicy: Entity<AccountPolicy>
     {
         public AccountPolicy() { }
@@ -804,6 +832,18 @@ namespace Insurance.Domain
         public string Status { get; set; }
 
     }
+
+    public partial class USDConverter : Entity<USDConverter>
+    {
+        public USDConverter() { }
+        public USDConverter(bool defaults) : base(defaults) { }
+        public int Id { get; set; }
+        public int CurrencyId { get; set; }
+        public decimal CurrentUsdToRtgs { get; set; }
+        public DateTime UpdatedOn { get; set; }
+
+    }
+
 
     public partial class DomesticPayment : Entity<DomesticPayment>
     {
@@ -1264,6 +1304,7 @@ namespace Insurance.Domain
         public string City { get; set; }
         public int VehicleId { get; set; }
         public DateTime ReceiptDate { get; set; }
+        public DateTime ExpectedDateDelivery { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public int? ModifiedBy { get; set; }

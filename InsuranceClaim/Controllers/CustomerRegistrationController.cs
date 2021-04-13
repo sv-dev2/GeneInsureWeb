@@ -9,7 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Insurance.Domain;
 using AutoMapper;
-using System.Configuration;
+using System.Configuration; 
 using System.Globalization;
 using Insurance.Service;
 using System.Web.Configuration;
@@ -664,7 +664,7 @@ namespace InsuranceClaim.Controllers
                     return RedirectToAction("RiskDetail", "ContactCentre", new { id = 1 });
                 else
                     return RedirectToAction("RiskDetail", new { id = 1 });
-                
+
             }
 
             int vehicleUsage = model.VehicleUsage == null ? 0 : model.VehicleUsage.Value;
@@ -735,7 +735,7 @@ namespace InsuranceClaim.Controllers
 
 
             ModelState.Remove("SumInsured");
-
+            ModelState.Remove("LicenseCurrencyId");
 
             if (model.isUpdate)
             {
@@ -1265,11 +1265,11 @@ namespace InsuranceClaim.Controllers
                 foreach (var item in vehicle)
                 {
                     decimal penalitesAmt = Convert.ToDecimal(item.PenaltiesAmt);
-                    // model.TotalPremium += item.Premium + item.ZTSCLevy + item.StampDuty + item.VehicleLicenceFee;
-                    if (item.CoverTypeId == (int)eCoverType.Comprehensive)
-                        model.TotalPremium += item.Premium + item.ZTSCLevy + item.StampDuty;
-                    else
-                        model.TotalPremium += item.Premium + item.ZTSCLevy + item.StampDuty + item.VehicleLicenceFee;
+
+                    //if (item.LicenseCurrencyId == (int)currencyType.USD) // for now commented
+                    //    item.VehicleLicenceFee = item.VehicleLicenceFee * 100;
+
+                    model.TotalPremium += item.Premium + item.ZTSCLevy + item.StampDuty + item.VehicleLicenceFee; // seprate license fee
 
                     if (item.IncludeRadioLicenseCost)
                     {
@@ -1277,7 +1277,7 @@ namespace InsuranceClaim.Controllers
                         model.TotalRadioLicenseCost += item.RadioLicenseCost;
                     }
                     model.Discount += item.Discount;
-
+                    // model.TotalLicenseFee += item.VehicleLicenceFee;
 
                     var currency = InsuranceContext.Currencies.Single(where: $" Id='{item.CurrencyId}' ");
 
@@ -1285,6 +1285,7 @@ namespace InsuranceClaim.Controllers
                         item.CurrencyName = currency.Name;
                 }
                 model.TotalRadioLicenseCost = Math.Round(Convert.ToDecimal(model.TotalRadioLicenseCost), 2);
+                // model.TotalLicenseFee = Math.Round(Convert.ToDecimal(model.TotalLicenseFee), 2);
                 model.Discount = Math.Round(Convert.ToDecimal(model.Discount), 2);
                 model.TotalPremium = Math.Round(Convert.ToDecimal(model.TotalPremium), 2);
                 model.TotalStampDuty = Math.Round(Convert.ToDecimal(vehicle.Sum(item => item.StampDuty)), 2);
@@ -1890,6 +1891,7 @@ namespace InsuranceClaim.Controllers
                                         }
 
                                         LicenseAddress.ReceiptDate = _item.ReceiptDate;
+                                        LicenseAddress.ExpectedDateDelivery = _item.ExpectedDateDelivery;
                                         InsuranceContext.LicenceDiskDeliveryAddresses.Insert(LicenseAddress);
                                     }
                                     catch (Exception ex)
@@ -3459,20 +3461,20 @@ namespace InsuranceClaim.Controllers
 
                     //  ResultRootObject quoteresponse = ICEcashService.RequestQuote(tokenObject.Response.PartnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, VehicleUsage, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate);
 
-                    VehicleService vehicleSerive = new VehicleService();
-                    var product = vehicleSerive.GetVehicleTypeByProductId(VehicleType);
-                    var tempVehicleType = VehicleType;
-                    if (product != null)
-                        tempVehicleType = product.VehicleTypeId;
+                    // VehicleService vehicleSerive = new VehicleService(); // commented for removing vehicle usage
+                    // var product = vehicleSerive.GetVehicleTypeByProductId(VehicleType);
+                    //var tempVehicleType = VehicleType;
+                    //if (product != null)
+                    //    tempVehicleType = product.VehicleTypeId;
 
-
+                    // tempVehicleType it was using for vehicle usage
 
                     if (VehilceLicense && RadioLicense)
-                        quoteresponse = ICEcashService.TPILICQuote(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, tempVehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, VehilceLicense, RadioLicense, licensePaymentTerm, radioPaymentTerm, VehicleValue);
+                        quoteresponse = ICEcashService.TPILICQuote(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, VehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, VehilceLicense, RadioLicense, licensePaymentTerm, radioPaymentTerm, VehicleValue);
                     else if (VehilceLicense)
-                        quoteresponse = ICEcashService.TPILICQuoteZinaraOnly(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, tempVehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, VehilceLicense, RadioLicense, licensePaymentTerm, VehicleValue);
+                        quoteresponse = ICEcashService.TPILICQuoteZinaraOnly(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, VehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, VehilceLicense, RadioLicense, licensePaymentTerm, VehicleValue);
                     else
-                        quoteresponse = ICEcashService.RequestQuote(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, tempVehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, Convert.ToDecimal(VehicleValue));
+                        quoteresponse = ICEcashService.RequestQuote(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, VehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, Convert.ToDecimal(VehicleValue));
 
 
                     // Invalid Partner Token. 
@@ -3486,222 +3488,12 @@ namespace InsuranceClaim.Controllers
                         //   tokenObject = (ICEcashTokenResponse)Session["ICEcashToken"];
                         //tokenObject = service.CheckSessionExpired();
                         if (VehilceLicense && RadioLicense)
-                            quoteresponse = ICEcashService.TPILICQuote(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, tempVehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, VehilceLicense, RadioLicense, licensePaymentTerm, radioPaymentTerm, VehicleValue);
+                            quoteresponse = ICEcashService.TPILICQuote(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, VehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, VehilceLicense, RadioLicense, licensePaymentTerm, radioPaymentTerm, VehicleValue);
                         else if (VehilceLicense)
-                            quoteresponse = ICEcashService.TPILICQuoteZinaraOnly(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, tempVehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, VehilceLicense, RadioLicense, licensePaymentTerm, VehicleValue);
+                            quoteresponse = ICEcashService.TPILICQuoteZinaraOnly(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, VehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, VehilceLicense, RadioLicense, licensePaymentTerm, VehicleValue);
                         else
-                            quoteresponse = ICEcashService.RequestQuote(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, tempVehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, Convert.ToDecimal(VehicleValue));
+                            quoteresponse = ICEcashService.RequestQuote(patnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, VehicleType, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate, taxClassId, Convert.ToDecimal(VehicleValue));
 
-                    }
-
-                    response.result = quoteresponse.Response.Result;
-
-                    if (response.result == 0)
-                    {
-                        response.message = quoteresponse.Response.Quotes[0].Message;
-                    }
-                    else
-                    {
-                        response.Data = quoteresponse;
-                        if (quoteresponse.Response.Quotes[0] != null)
-                        {
-                            Session["InsuranceId"] = quoteresponse.Response.Quotes[0].InsuranceID;
-
-                            int year = DateTime.Now.Year;
-                            if(quoteresponse.Response.Quotes[0].Vehicle!=null)
-                             year = quoteresponse.Response.Quotes[0].Vehicle.YearManufacture == "" ? DateTime.Now.Year : Convert.ToInt32(quoteresponse.Response.Quotes[0].Vehicle.YearManufacture);
-
-                            quoteresponse.Response.Quotes[0].Vehicle.YearManufacture = year.ToString();
-                        }
-
-
-                        if (quoteresponse.Response.Quotes[0] != null && quoteresponse.Response.Quotes[0].Licence != null)
-                        {
-                            decimal penaltiesAmt = quoteresponse.Response.Quotes[0].Licence.PenaltiesAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].Licence.PenaltiesAmt);
-                            decimal administrationAmt = quoteresponse.Response.Quotes[0].Licence.AdministrationAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].Licence.AdministrationAmt);
-
-                            if (penaltiesAmt > 0 && administrationAmt == 0)
-                            {
-                                // default administration amount
-                                decimal administratationAmt = 450;  //188;
-                                quoteresponse.Response.Quotes[0].Licence.AdministrationAmt = administratationAmt.ToString();
-                                decimal ArrearsAmt = quoteresponse.Response.Quotes[0].Licence.ArrearsAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].Licence.ArrearsAmt);
-                                decimal transactionAmt = quoteresponse.Response.Quotes[0].Licence.TransactionAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].Licence.TransactionAmt);
-
-                                decimal totalLicAmount = ArrearsAmt + transactionAmt + administratationAmt + penaltiesAmt;
-                                quoteresponse.Response.Quotes[0].Licence.TotalLicAmt = totalLicAmount.ToString();
-                            }
-
-                        }
-                    }
-                }
-                json.Data = response;
-
-            }
-            catch (Exception ex)
-            {
-                response.message = "Error occured.";
-                json.Data = new ResultResponse();
-            }
-            return json;
-        }
-
-
-        [HttpPost]
-        public JsonResult getLicenseDetailsFromICEcash(string regNo, string ProductId,  string zinaraPaymentTermId, string radioPaymentTermId,  bool VehilceLicense,   bool RadioLicense)
-        {
-            checkVRNwithICEcashResponse response = new checkVRNwithICEcashResponse();
-            JsonResult json = new JsonResult();
-            json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
-
-            //json.Data = "";
-          string  _clientIdType = "1"; // NATIONAL IDENTIFICATION
-            try
-            {
-
-                Insurance.Service.ICEcashService ICEcashService = new Insurance.Service.ICEcashService();
-                var tokenObject = new ICEcashTokenResponse();
-                #region get ICE cash token
-
-                string parternToken = SummaryDetailService.GetLatestToken();
-                if (parternToken == "")
-                {
-                    tokenObject = ICEcashService.getToken();
-                    SummaryDetailService.UpdateToken(tokenObject);
-                }
-
-                var CustomerInfo = (CustomerModel)Session["CustomerDataModal"];
-
-                #endregion
-
-
-                if (parternToken != "")
-                {
-                    ResultRootObject quoteresponse = new ResultRootObject();
-                    VehicleService vehicleSerive = new VehicleService();
-                    var product = vehicleSerive.GetVehicleTypeByProductId(Convert.ToInt32(ProductId));
-                   
-                    if (product != null)
-                        ProductId =   Convert.ToString(product.VehicleTypeId);
-
-
-
-                    if (VehilceLicense && RadioLicense)
-                        quoteresponse = ICEcashService.ZineraAndRadioLICQuote(regNo,  ProductId, CustomerInfo,  zinaraPaymentTermId, radioPaymentTermId, parternToken);
-                    else if (VehilceLicense)
-                        quoteresponse = ICEcashService.ZineraLICQuoteOnly(regNo, zinaraPaymentTermId, ProductId, CustomerInfo, parternToken);
-
-                    // Invalid Partner Token. 
-
-                    if (quoteresponse.Response != null && (quoteresponse.Response.Message.Contains("Partner Token has expired") || quoteresponse.Response.Message.Contains("Invalid Partner Token")))
-                    {
-                        tokenObject = ICEcashService.getToken();
-                        SummaryDetailService.UpdateToken(tokenObject);
-                        parternToken = tokenObject.Response.PartnerToken;
-                                             
-                        if (VehilceLicense && RadioLicense)
-                            quoteresponse = ICEcashService.ZineraAndRadioLICQuote(regNo, ProductId, CustomerInfo, zinaraPaymentTermId, radioPaymentTermId, parternToken);
-                        else if (VehilceLicense)
-                            quoteresponse = ICEcashService.ZineraLICQuoteOnly(regNo,  zinaraPaymentTermId, ProductId, CustomerInfo, parternToken);
-
-                    }
-
-                    response.result = quoteresponse.Response.Result;
-
-                    if (response.result == 0)
-                    {
-                        response.message = quoteresponse.Response.Quotes[0].Message;
-                    }
-                    else
-                    {
-                        response.Data = quoteresponse;
-
-                        if (quoteresponse.Response.Quotes[0] != null)
-                        {
-                            Session["InsuranceId"] = quoteresponse.Response.Quotes[0].InsuranceID;                 
-                            if (quoteresponse.Response.Quotes[0].Vehicle!=null)
-                            {
-                              int  year = quoteresponse.Response.Quotes[0].Vehicle.YearManufacture == "" ? DateTime.Now.Year : Convert.ToInt32(quoteresponse.Response.Quotes[0].Vehicle.YearManufacture);
-                              quoteresponse.Response.Quotes[0].Vehicle.YearManufacture = year.ToString();
-                            }                          
-                        }
-
-                        if (quoteresponse.Response.Quotes[0] != null)
-                        {
-                            decimal penaltiesAmt = quoteresponse.Response.Quotes[0].PenaltiesAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].PenaltiesAmt);
-                            decimal administrationAmt = quoteresponse.Response.Quotes[0].AdministrationAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].AdministrationAmt);
-
-                           
-                                // default administration amount
-                                decimal administratationAmt = 450;  //188;
-                                quoteresponse.Response.Quotes[0].AdministrationAmt = administratationAmt.ToString();
-                                decimal ArrearsAmt = quoteresponse.Response.Quotes[0].ArrearsAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].ArrearsAmt);
-                                decimal transactionAmt = quoteresponse.Response.Quotes[0].TransactionAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].TransactionAmt);
-
-                                decimal totalLicAmount = ArrearsAmt + transactionAmt + administratationAmt + penaltiesAmt;
-                                quoteresponse.Response.Quotes[0].TotalLicAmt = totalLicAmount.ToString();
-
-
-                            
-                          
-
-
-                        }
-                    }
-                }
-                json.Data = response;
-            }
-            catch (Exception ex)
-            {
-                response.message = "Error occured.";
-                json.Data = new ResultResponse();
-            }
-            return json;
-        }
-
-
-
-        [HttpPost]
-        public JsonResult getVehicleDetailsFromICEcash(string regNo)
-        { 
-            checkVRNwithICEcashResponse response = new checkVRNwithICEcashResponse();
-            JsonResult json = new JsonResult();
-            json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
-            //json.Data = "";
-
-            try
-            {
-
-                Insurance.Service.ICEcashService ICEcashService = new Insurance.Service.ICEcashService();
-                var tokenObject = new ICEcashTokenResponse();
-
-                #region get ICE cash token
-
-                string patnerToken = SummaryDetailService.GetLatestToken();
-
-                if (patnerToken == "")
-                {
-                    tokenObject = ICEcashService.getToken();
-                    SummaryDetailService.UpdateToken(tokenObject);
-                }
-
-                #endregion
-                List<RiskDetailModel> objVehicles = new List<RiskDetailModel>();
-                //objVehicles.Add(new RiskDetailModel { RegistrationNo = regNo });
-                objVehicles.Add(new RiskDetailModel { RegistrationNo = regNo });
-
-                if (patnerToken != "")
-                {
-                   
-                    ResultRootObject quoteresponse = new ResultRootObject();
-                    quoteresponse = ICEcashService.RequestQuoteForVrn(patnerToken, regNo);
-
-                    if (quoteresponse.Response != null && (quoteresponse.Response.Message.Contains("Partner Token has expired") || quoteresponse.Response.Message.Contains("Invalid Partner Token")))
-                    {
-                        tokenObject = ICEcashService.getToken();
-                        SummaryDetailService.UpdateToken(tokenObject);
-                        patnerToken = tokenObject.Response.PartnerToken;                      
-                        quoteresponse = ICEcashService.RequestQuoteForVrn(patnerToken, regNo);
                     }
 
                     response.result = quoteresponse.Response.Result;
@@ -3755,6 +3547,239 @@ namespace InsuranceClaim.Controllers
             }
             return json;
         }
+
+
+        [HttpPost]
+        public JsonResult getLicenseDetailsFromICEcash(string regNo, string ProductId, string zinaraPaymentTermId, string radioPaymentTermId, bool VehilceLicense, bool RadioLicense)
+        {
+            checkVRNwithICEcashResponse response = new checkVRNwithICEcashResponse();
+            JsonResult json = new JsonResult();
+            json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
+
+            //json.Data = "";
+            string _clientIdType = "1"; // NATIONAL IDENTIFICATION
+            try
+            {
+
+                Insurance.Service.ICEcashService ICEcashService = new Insurance.Service.ICEcashService();
+                var tokenObject = new ICEcashTokenResponse();
+                #region get ICE cash token
+
+                string parternToken = SummaryDetailService.GetLatestToken();
+                if (parternToken == "")
+                {
+                    tokenObject = ICEcashService.getToken();
+                    SummaryDetailService.UpdateToken(tokenObject);
+                }
+
+                var CustomerInfo = (CustomerModel)Session["CustomerDataModal"];
+
+                #endregion
+
+
+                if (parternToken != "")
+                {
+                    ResultRootObject quoteresponse = new ResultRootObject();
+                    VehicleService vehicleSerive = new VehicleService();
+                    var product = vehicleSerive.GetVehicleTypeByProductId(Convert.ToInt32(ProductId));
+
+                    if (product != null)
+                        ProductId = Convert.ToString(product.VehicleTypeId);
+
+
+
+                    if (VehilceLicense && RadioLicense)
+                        quoteresponse = ICEcashService.ZineraAndRadioLICQuote(regNo, ProductId, CustomerInfo, zinaraPaymentTermId, radioPaymentTermId, parternToken);
+                    else if (VehilceLicense)
+                        quoteresponse = ICEcashService.ZineraLICQuoteOnly(regNo, zinaraPaymentTermId, ProductId, CustomerInfo, parternToken);
+
+                    // Invalid Partner Token. 
+
+                    if (quoteresponse.Response != null && (quoteresponse.Response.Message.Contains("Partner Token has expired") || quoteresponse.Response.Message.Contains("Invalid Partner Token")))
+                    {
+                        tokenObject = ICEcashService.getToken();
+                        SummaryDetailService.UpdateToken(tokenObject);
+                        parternToken = tokenObject.Response.PartnerToken;
+
+                        if (VehilceLicense && RadioLicense)
+                            quoteresponse = ICEcashService.ZineraAndRadioLICQuote(regNo, ProductId, CustomerInfo, zinaraPaymentTermId, radioPaymentTermId, parternToken);
+                        else if (VehilceLicense)
+                            quoteresponse = ICEcashService.ZineraLICQuoteOnly(regNo, zinaraPaymentTermId, ProductId, CustomerInfo, parternToken);
+
+                    }
+
+                    response.result = quoteresponse.Response.Result;
+
+                    if (response.result == 0)
+                    {
+                        response.message = quoteresponse.Response.Quotes[0].Message;
+                    }
+                    else
+                    {
+                        response.Data = quoteresponse;
+
+                        if (quoteresponse.Response.Quotes[0] != null)
+                        {
+                            Session["InsuranceId"] = quoteresponse.Response.Quotes[0].InsuranceID;
+                            if (quoteresponse.Response.Quotes[0].Vehicle != null)
+                            {
+                                int year = quoteresponse.Response.Quotes[0].Vehicle.YearManufacture == "" ? DateTime.Now.Year : Convert.ToInt32(quoteresponse.Response.Quotes[0].Vehicle.YearManufacture);
+                                quoteresponse.Response.Quotes[0].Vehicle.YearManufacture = year.ToString();
+                            }
+                        }
+
+                        if (quoteresponse.Response.Quotes[0] != null)
+                        {
+                            decimal penaltiesAmt = quoteresponse.Response.Quotes[0].PenaltiesAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].PenaltiesAmt);
+                            decimal administrationAmt = quoteresponse.Response.Quotes[0].AdministrationAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].AdministrationAmt);
+
+
+                            // default administration amount
+                            decimal administratationAmt = 450;  //188;
+                            quoteresponse.Response.Quotes[0].AdministrationAmt = administratationAmt.ToString();
+                            decimal ArrearsAmt = quoteresponse.Response.Quotes[0].ArrearsAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].ArrearsAmt);
+                            decimal transactionAmt = quoteresponse.Response.Quotes[0].TransactionAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].TransactionAmt);
+
+                            decimal totalLicAmount = ArrearsAmt + transactionAmt + administratationAmt + penaltiesAmt;
+                            quoteresponse.Response.Quotes[0].TotalLicAmt = totalLicAmount.ToString();
+
+
+
+
+
+
+                        }
+                    }
+                }
+                json.Data = response;
+            }
+            catch (Exception ex)
+            {
+                response.message = "Error occured.";
+                json.Data = new ResultResponse();
+            }
+            return json;
+        }
+
+
+        [HttpPost]
+        public JsonResult getVehicleDetails(string regNo, string PaymentTerm)
+        {
+            checkVRNwithICEcashResponse response = new checkVRNwithICEcashResponse();
+            JsonResult json = new JsonResult();
+            json.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
+
+            try
+            {
+
+                Insurance.Service.ICEcashService ICEcashService = new Insurance.Service.ICEcashService();
+                var tokenObject = new ICEcashTokenResponse();
+
+                #region get ICE cash token
+                string format = "yyyyMMdd";
+
+
+
+                string patnerToken = SummaryDetailService.GetLatestToken();
+                if (patnerToken == "")
+                {
+                    tokenObject = ICEcashService.getToken();
+                    SummaryDetailService.UpdateToken(tokenObject);
+                }
+
+
+
+                #endregion
+                List<RiskDetailModel> objVehicles = new List<RiskDetailModel>();
+                //objVehicles.Add(new RiskDetailModel { RegistrationNo = regNo });
+                objVehicles.Add(new RiskDetailModel { RegistrationNo = regNo, PaymentTermId = Convert.ToInt32(PaymentTerm) });
+
+                if (patnerToken != "")
+                {
+                    ResultRootObject quoteresponse = new ResultRootObject();
+                    //  ResultRootObject quoteresponse = ICEcashService.RequestQuote(tokenObject.Response.PartnerToken, regNo, SumInsured, make, model, Convert.ToInt32(PaymentTerm), Convert.ToInt32(VehicleYear), CoverTypeId, VehicleUsage, tokenObject.PartnerReference, Cover_StartDate, Cover_EndDate);
+
+                    quoteresponse = ICEcashService.RequestQuoteForVrn(patnerToken, regNo, Convert.ToInt32(PaymentTerm));
+                    if (quoteresponse.Response != null && (quoteresponse.Response.Message.Contains("Partner Token has expired") || quoteresponse.Response.Message.Contains("Invalid Partner Token")))
+                    {
+                        tokenObject = ICEcashService.getToken();
+                        SummaryDetailService.UpdateToken(tokenObject);
+                        patnerToken = tokenObject.Response.PartnerToken;
+                        quoteresponse = ICEcashService.RequestQuoteForVrn(patnerToken, regNo, Convert.ToInt32(PaymentTerm));
+                    }
+
+                    response.result = quoteresponse.Response.Result;
+
+                    if (response.result == 0)
+                    {
+                        response.message = quoteresponse.Response.Quotes[0].Message;
+                    }
+                    else
+                    {
+                        response.Data = quoteresponse;
+                        if (quoteresponse.Response.Quotes[0] != null)
+                        {
+
+
+                            int year = DateTime.Now.Year;
+                            if (quoteresponse.Response.Quotes[0].Vehicle != null)
+                            {
+                                year = quoteresponse.Response.Quotes[0].Vehicle.YearManufacture == "" ? DateTime.Now.Year : Convert.ToInt32(quoteresponse.Response.Quotes[0].Vehicle.YearManufacture);
+                                var vehileType = InsuranceContext.Products.Single(where: "Id=" + Convert.ToInt32(quoteresponse.Response.Quotes[0].Vehicle.VehicleType));
+
+                                var taxClassDetail = InsuranceContext.VehicleTaxClasses.Single(where: "Id=" + Convert.ToInt32(quoteresponse.Response.Quotes[0].Vehicle.TaxClass));
+                                if (vehileType != null)
+                                    quoteresponse.Response.Quotes[0].Vehicle.VehicleType = vehileType.ProductName.ToString();
+
+                                if (taxClassDetail != null)
+                                    quoteresponse.Response.Quotes[0].Vehicle.TaxClass = taxClassDetail.Description;
+                            }
+
+
+                            if (quoteresponse.Response.Quotes[0].Policy != null)
+                                quoteresponse.Response.Quotes[0].Policy.EndDate = DateTime.ParseExact(quoteresponse.Response.Quotes[0].Policy.EndDate, format, CultureInfo.InvariantCulture).ToShortDateString();
+
+                            if (quoteresponse.Response.Quotes[0].Licence != null)
+                                quoteresponse.Response.Quotes[0].Licence.LicExpiryDate = DateTime.ParseExact(quoteresponse.Response.Quotes[0].Licence.LicExpiryDate, format, CultureInfo.InvariantCulture).ToShortDateString();
+
+
+
+                            quoteresponse.Response.Quotes[0].Vehicle.YearManufacture = year.ToString();
+                        }
+
+
+                        if (quoteresponse.Response.Quotes[0] != null && quoteresponse.Response.Quotes[0].Licence != null)
+                        {
+                            decimal penaltiesAmt = quoteresponse.Response.Quotes[0].Licence.PenaltiesAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].Licence.PenaltiesAmt);
+                            decimal administrationAmt = quoteresponse.Response.Quotes[0].Licence.AdministrationAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].Licence.AdministrationAmt);
+
+                            if (penaltiesAmt > 0 && administrationAmt == 0)
+                            {
+                                // default administration amount
+                                decimal administratationAmt = 450;  //188;
+                                quoteresponse.Response.Quotes[0].Licence.AdministrationAmt = administratationAmt.ToString();
+                                decimal ArrearsAmt = quoteresponse.Response.Quotes[0].Licence.ArrearsAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].Licence.ArrearsAmt);
+                                decimal transactionAmt = quoteresponse.Response.Quotes[0].Licence.TransactionAmt == null ? 0 : Convert.ToDecimal(quoteresponse.Response.Quotes[0].Licence.TransactionAmt);
+
+                                decimal totalLicAmount = ArrearsAmt + transactionAmt + administratationAmt + penaltiesAmt;
+                                quoteresponse.Response.Quotes[0].Licence.TotalLicAmt = totalLicAmount.ToString();
+                            }
+
+                        }
+                    }
+                }
+                json.Data = response;
+
+            }
+            catch (Exception ex)
+            {
+                response.message = "Error occured.";
+                json.Data = new ResultResponse();
+            }
+            return json;
+        }
+
+
 
 
         public JsonResult GetVehicleModel(string makeCode)
@@ -4293,7 +4318,7 @@ namespace InsuranceClaim.Controllers
 
             string renewPolicyNumber = "";
             int policyId = 0;
-            
+
 
             var policyAndRegistrationNumber = txtvalue; //Policy Number,VRN Number,Customer Name 
             var policyAndRegistrationNumberArray = policyAndRegistrationNumber.Split(',');
@@ -4302,7 +4327,7 @@ namespace InsuranceClaim.Controllers
                 policyNumber = policyAndRegistrationNumberArray[0]; //Policy Number    //  invoiceNumber = policyAndRegistrationNumberArray[2];//VRN Number        
             else
                 policyNumber = policyAndRegistrationNumberArray[0];
-            
+
 
             ReceiptModuleModel model = new ReceiptModuleModel();
 
@@ -4322,9 +4347,9 @@ namespace InsuranceClaim.Controllers
             else
                 policyId = detail.Id;
 
-            if (vehicleDetail==null)
+            if (vehicleDetail == null)
                 vehicleDetail = InsuranceContext.VehicleDetails.Single(where: $"PolicyId = '{policyId}'");
-            
+
             var currencyDetail = InsuranceContext.Currencies.Single(vehicleDetail.CurrencyId);
             if (currencyDetail != null)
                 model.CurrencyId = currencyDetail.Id;
@@ -4338,7 +4363,7 @@ namespace InsuranceClaim.Controllers
                 var invoicenumber = InsuranceContext.PaymentInformations.Single(where: $"PolicyId = '{detail.Id}'");
                 var customerdetail = InsuranceContext.Customers.Single(where: $"Id='{detail.CustomerId}'");
                 var summarydetail = InsuranceContext.SummaryDetails.Single(where: $"Id='{invoicenumber.SummaryDetailId}'");
-               // var policyId = InsuranceContext.PaymentInformations.Single(where: $"PolicyId = '{detail.Id}'");
+                // var policyId = InsuranceContext.PaymentInformations.Single(where: $"PolicyId = '{detail.Id}'");
                 var query = "SELECT  top 1 [Id] FROM ReceiptModuleHistory order by Id Desc";
 
                 //var re = InsuranceContext.ReceiptHistorys.All(x => x.Id);
@@ -4523,10 +4548,10 @@ namespace InsuranceClaim.Controllers
             //return Body2;
         }
 
-        
 
 
-     
+
+
 
         public ActionResult PreviewReceiptModule()
         {

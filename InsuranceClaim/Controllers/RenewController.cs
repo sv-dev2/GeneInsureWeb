@@ -1031,11 +1031,7 @@ namespace InsuranceClaim.Controllers
             //    model.Discount += item.Discount;
             //}
             
-
-            if(vehicle.CoverTypeId== (int)eCoverType.Comprehensive)
-                model.TotalPremium += vehicle.Premium + vehicle.ZTSCLevy + vehicle.StampDuty;
-            else
-                model.TotalPremium += vehicle.Premium + vehicle.ZTSCLevy + vehicle.StampDuty + vehicle.VehicleLicenceFee;
+            model.TotalPremium += vehicle.Premium + vehicle.ZTSCLevy + vehicle.StampDuty + vehicle.VehicleLicenceFee;
 
 
             if (vehicle.IncludeRadioLicenseCost)
@@ -1593,6 +1589,7 @@ namespace InsuranceClaim.Controllers
                                         _item.ReceiptDate = DateTime.MinValue;
                                     }
                                     LicenseAddress.ReceiptDate = _item.ReceiptDate;
+                                    LicenseAddress.ExpectedDateDelivery = _item.ExpectedDateDelivery;
 
                                     InsuranceContext.LicenceDiskDeliveryAddresses.Insert(LicenseAddress);
                                 }

@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -150,6 +151,7 @@ namespace InsuranceClaim.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Team Leaders,Staff")]
         public ActionResult LicenseDetail(int summaryId = 0)
         {
 
@@ -383,7 +385,12 @@ namespace InsuranceClaim.Controllers
                                 if (item.RadioLicenseCost > 0)  // for now 
                                     item.IncludeRadioLicenseCost = true;
 
-
+                                if (item.LicExpiryDate!="")
+                                {
+                                    DateTime LicExpiryDate = DateTime.ParseExact(item.LicExpiryDate, format, CultureInfo.InvariantCulture);
+                                    item.LicExpiryDate = LicExpiryDate.ToShortDateString();
+                                }
+                                    
                                 item.IsMobile = false;
                                 var _item = item;
 

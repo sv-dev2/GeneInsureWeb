@@ -505,21 +505,22 @@ namespace Insurance.Service
             return json;
         }
 
-        public ResultRootObject RequestQuoteForVrn(string PartnerToken, string RegistrationNo)
+
+        public ResultRootObject RequestQuoteForVrn(string PartnerToken, string RegistrationNo, int PaymentTermId)
         {
             //string PSK = "127782435202916376850511";
             string _json = "";
 
             List<VehicleObject> obj = new List<VehicleObject>();
-            obj.Add(new VehicleObject { VRN = RegistrationNo });
-            
+            obj.Add(new VehicleObject { VRN = RegistrationNo, IDNumber="1212345A12", DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId) });
+
 
             QuoteArguments objArg = new QuoteArguments();
             objArg.PartnerReference = Guid.NewGuid().ToString(); ;
             objArg.Date = DateTime.Now.ToString("yyyyMMddhhmmss");
             objArg.Version = "2.0";
             objArg.PartnerToken = PartnerToken;
-            objArg.Request = new QuoteFunctionObject { Function = "TPIQuote", Vehicles = obj };
+            objArg.Request = new QuoteFunctionObject { Function = "TPILICQuote", Vehicles = obj };
 
             _json = Newtonsoft.Json.JsonConvert.SerializeObject(objArg);
 
@@ -567,6 +568,71 @@ namespace Insurance.Service
 
             return json;
         }
+
+
+
+        //public ResultRootObject RequestQuoteForVrn(string PartnerToken, string RegistrationNo, int PaymentTermId)
+        //{
+        //    //string PSK = "127782435202916376850511";
+        //    string _json = "";
+
+        //    List<VehicleObject> obj = new List<VehicleObject>();
+        //    obj.Add(new VehicleObject { VRN = RegistrationNo, DurationMonths = (PaymentTermId == 1 ? 12 : PaymentTermId) });
+
+
+        //    QuoteArguments objArg = new QuoteArguments();
+        //    objArg.PartnerReference = Guid.NewGuid().ToString(); ;
+        //    objArg.Date = DateTime.Now.ToString("yyyyMMddhhmmss");
+        //    objArg.Version = "2.0";
+        //    objArg.PartnerToken = PartnerToken;
+        //    objArg.Request = new QuoteFunctionObject { Function = "TPIQuote", Vehicles = obj };
+
+        //    _json = Newtonsoft.Json.JsonConvert.SerializeObject(objArg);
+
+        //    //string  = json.Reverse()
+        //    string reversejsonString = new string(_json.Reverse().ToArray());
+        //    string reversepartneridString = new string(PSK.Reverse().ToArray());
+
+        //    string concatinatedString = reversejsonString + reversepartneridString;
+
+        //    byte[] toEncodeAsBytes = System.Text.ASCIIEncoding.ASCII.GetBytes(concatinatedString);
+
+        //    string returnValue = System.Convert.ToBase64String(toEncodeAsBytes);
+
+        //    string GetSHA512encrypted = SHA512(returnValue);
+
+        //    string MAC = "";
+
+        //    for (int i = 0; i < 16; i++)
+        //    {
+        //        MAC += GetSHA512encrypted.Substring((i * 8), 1);
+        //    }
+
+        //    MAC = MAC.ToUpper();
+
+        //    ICEQuoteRequest objroot = new ICEQuoteRequest();
+        //    objroot.Arguments = objArg;
+        //    objroot.MAC = MAC;
+        //    objroot.Mode = "SH";
+
+        //    var data = Newtonsoft.Json.JsonConvert.SerializeObject(objroot);
+
+        //    JObject jsonobject = JObject.Parse(data);
+
+        //    var client = new RestClient(LiveIceCashApi);
+        //    //   var client = new RestClient(LiveIceCashApi);
+        //    var request = new RestRequest(Method.POST);
+        //    request.AddHeader("cache-control", "no-cache");
+        //    request.AddHeader("content-type", "application/x-www-form-urlencoded");
+        //    request.AddParameter("application/x-www-form-urlencoded", jsonobject, ParameterType.RequestBody);
+        //    IRestResponse response = client.Execute(request);
+
+        //    ResultRootObject json = JsonConvert.DeserializeObject<ResultRootObject>(response.Content);
+
+        //    SummaryDetailService.WriteLog(data, response.Content, "RequestQuoteForVrn", RegistrationNo);
+
+        //    return json;
+        //}
 
 
 
@@ -2385,7 +2451,7 @@ namespace Insurance.Service
         public string Model { get; set; }
         public string TaxClass { get; set; }
         public string YearManufacture { get; set; }
-        public int VehicleType { get; set; }
+        public string VehicleType { get; set; }
         public string VehicleValue { get; set; }
     }
     public class ResultQuote

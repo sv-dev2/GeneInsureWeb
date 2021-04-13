@@ -115,11 +115,14 @@ namespace InsuranceClaim.Models
         StampDuty = 2,
         ZtscLevy = 3,
         RadioLicense=4,
-        ZinaraLicense=5
-        
+        ZinaraLicense=5    
     }
 
-
+    public enum LicenseType
+    {
+        Insurance = 1,
+        License = 2       
+    }
 
 
 }

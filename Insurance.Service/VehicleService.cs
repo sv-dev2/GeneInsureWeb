@@ -75,7 +75,9 @@ namespace Insurance.Service
 
         public List<AreasModel> GetAreaList()
         {
-            var client = new RestClient("http://41.190.32.215:4002/api/zoneareas/all");
+           
+            // var client = new RestClient("http://41.190.32.215:4002/api/zoneareas/all");
+            var client = new RestClient("http://41.190.32.215:5001/api/zoneareas/all");
             var request = new RestRequest(Method.GET);
             request.AddHeader("cache-control", "no-cache");
             request.AddHeader("content-type", "application/json");
