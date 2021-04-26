@@ -1542,6 +1542,12 @@ namespace InsuranceClaim.Controllers
                             customer.Id = 0;
                         }
 
+                        // Handling exception for dob 
+
+                        if (customer.DateOfBirth != null && customer.DateOfBirth.Value.Year < 1900)
+                            customer.DateOfBirth = DateTime.Now;
+                        
+               
                         //if user staff
 
                         if (role == "Staff" || role == "Renewals" || role == "Team Leaders" || role == "Administrator")

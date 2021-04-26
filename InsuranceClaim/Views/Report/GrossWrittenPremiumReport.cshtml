@@ -188,7 +188,8 @@
                             decimal ustotal = 0;
 
                             decimal GrandPremiumtotal = 0;
-                            
+                            decimal GrandAdminFee = 0;
+
                             int rtgscount = 0;
                             int uscount = 0;
                             //Renewal
@@ -280,8 +281,8 @@
                             commissionAmountTotal += item.Comission_Amount;
                             radioLicenseCostTotal += Convert.ToDecimal(item.RadioLicenseCost);
                             ZinaraLicenseFee += Convert.ToDecimal(item.Zinara_License_Fee);
+                            GrandAdminFee += Convert.ToDecimal(item.AdministrationAmt);
 
-                                                                                   
                             <tr>
                                 <td>  @item.PolicyCreatedBy
                                 </td>
@@ -408,12 +409,9 @@
                                 </td>
 
                             
-                                
-
+                               
                                 @*@item.SourceDetailName*@
-                            </tr>
-
-                           
+                            </tr>                      
                         }
                     </tbody>
                     <tfoot>
@@ -439,7 +437,7 @@
                             </td>
                             <td><strong>@radioLicenseCostTotal</strong></td>
                             <td><strong> @ZinaraLicenseFee </strong> </td>
-                            <td></td>
+                            <td><strong>  @GrandAdminFee </strong></td>
                             <td><strong> @GrandPremiumtotal</strong> </td>
                            
                            
