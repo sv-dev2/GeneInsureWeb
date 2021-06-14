@@ -832,6 +832,23 @@
                                     </div>
                                 </a>
 
+
+                                <a href="@Url.Action("Index", "ALMPrint")">
+                                    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3 width-auto hvr-grow-shadow">
+                                        <div class="color-box">
+                                            <h4>ALM RePrint</h4>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="@Url.Action("ReprintReciept", "CustomerRegistration")">
+                                    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3 width-auto hvr-grow-shadow">
+                                        <div class="color-box">
+                                            <h4>Receipt RePrint</h4>
+                                        </div>
+                                    </div>
+                                </a>
+
                               
 
                 
@@ -1154,6 +1171,32 @@
                     </div>
 
                     }
+
+
+                    @if (User.IsInRole("Zimnata"))
+                    {
+                        <div class="dashboard-section">
+                            <div class="form-title">
+                                <h4>Dashboard</h4>
+                            </div>
+
+                            <div class="admin-box">
+                                <div class="row">
+                                    <a href="@Url.Action("AccountsGrossWrittenPremuimReport", "Report")">
+                                        <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3 width-auto hvr-grow-shadow">
+                                            <div class="color-box">
+                                                <h4>Gross Written Premium Report</h4>
+                                            </div>
+                                        </div>
+                                    </a>                                                                
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+
+
 
                 </div>
             </div>

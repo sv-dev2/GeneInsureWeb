@@ -419,7 +419,7 @@ namespace InsuranceClaim.Controllers
         }
 
 
-        [Authorize(Roles = "Staff")]
+        [Authorize(Roles = "Staff,Renewals,Team Leaders")]
         public ActionResult VehicleReport()
         {
             RiskDetailModel Model = new RiskDetailModel();
@@ -427,8 +427,6 @@ namespace InsuranceClaim.Controllers
 
             return View(Model);
         }
-
-
 
 
         [Authorize(Roles = "Administrator,Reports,Finance")]
@@ -806,14 +804,14 @@ namespace InsuranceClaim.Controllers
                         Payment_Term = x.Payment_Term,
                         CoverType = x.CoverType,
                         Currency = x.Currency,
-                        Premium_due = x.Premium_due,
-                        Stamp_duty = x.Stamp_duty,
-                        ZTSC_Levy = x.ZTSC_Levy,
+                        Premium_due = x.Premium_due==null? 0 : Convert.ToDecimal(x.Premium_due),
+                        Stamp_duty = x.Stamp_duty==null? 0 : Convert.ToDecimal(x.Stamp_duty),
+                        ZTSC_Levy = x.ZTSC_Levy==null? 0 : Convert.ToDecimal(x.ZTSC_Levy),
                         ALMId = x.ALMId,
-                        Comission_Amount = x.Comission_Amount,
+                        Comission_Amount = x.Comission_Amount==null? 0 : Convert.ToDecimal(x.Comission_Amount),
                         //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
-                        RadioLicenseCost = x.RadioLicenseCost,
-                        Zinara_License_Fee = x.Zinara_License_Fee,
+                        RadioLicenseCost = x.RadioLicenseCost==null? 0 : Convert.ToDecimal(x.RadioLicenseCost),
+                        Zinara_License_Fee = x.Zinara_License_Fee==null? 0 : Convert.ToDecimal(x.Zinara_License_Fee),
                         PolicyRenewalDate = x.PolicyRenewalDate,
                         IsActive = x.IsActive,
                         RenewPolicyNumber = x.RenewPolicyNumber,
@@ -890,14 +888,14 @@ namespace InsuranceClaim.Controllers
                         Payment_Term = x.Payment_Term,
                         CoverType = x.CoverType,
                         Currency = x.Currency,
-                        Premium_due = x.Premium_due,
-                        Stamp_duty = x.Stamp_duty,
-                        ZTSC_Levy = x.ZTSC_Levy,
+                        Premium_due = x.Premium_due ==null? 0 : Convert.ToDecimal(x.Premium_due),
+                        Stamp_duty = x.Stamp_duty==null ? 0 : Convert.ToDecimal(x.Stamp_duty),
+                        ZTSC_Levy = x.ZTSC_Levy==null? 0 : Convert.ToDecimal(x.ZTSC_Levy),
                         ALMId = x.ALMId,
-                        Comission_Amount = x.Comission_Amount,
+                        Comission_Amount = x.Comission_Amount==null ? 0 : Convert.ToDecimal(x.Comission_Amount),
                         //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
-                        RadioLicenseCost = x.RadioLicenseCost,
-                        Zinara_License_Fee = x.Zinara_License_Fee,
+                        RadioLicenseCost = x.RadioLicenseCost==null? 0 : Convert.ToDecimal(x.RadioLicenseCost),
+                        Zinara_License_Fee = x.Zinara_License_Fee ==null? 0 : Convert.ToDecimal(x.Zinara_License_Fee),
                         PolicyRenewalDate = x.PolicyRenewalDate,
                         IsActive = x.IsActive,
                         RenewPolicyNumber = x.RenewPolicyNumber,
@@ -1040,7 +1038,7 @@ namespace InsuranceClaim.Controllers
                          ALMId = x.ALMId,
                          Comission_Amount = x.Comission_Amount,
                          //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
-                         RadioLicenseCost = x.RadioLicenseCost,
+                         RadioLicenseCost = x.RadioLicenseCost==null ? 0 : Convert.ToDecimal(x.RadioLicenseCost),
                          Zinara_License_Fee = x.Zinara_License_Fee,
                          PolicyRenewalDate = x.PolicyRenewalDate,
                          IsActive = x.IsActive,
@@ -1141,7 +1139,7 @@ namespace InsuranceClaim.Controllers
                     ALMId = x.ALMId,
                     Comission_Amount = x.Comission_Amount,
                     //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
-                    RadioLicenseCost = x.RadioLicenseCost,
+                    RadioLicenseCost = x.RadioLicenseCost==null? 0 : Convert.ToDecimal(x.RadioLicenseCost),
                     Zinara_License_Fee = x.Zinara_License_Fee,
                     PolicyRenewalDate = x.PolicyRenewalDate,
                     IsActive = x.IsActive,
@@ -1279,7 +1277,7 @@ namespace InsuranceClaim.Controllers
                 if (index != -1)
                 {
                     list[index].Premium_due += item.Premium_due;
-                    list[index].GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value + Convert.ToDecimal(item.AdministrationAmt) + item.ZTSC_Levy+ item.Stamp_duty;
+                    list[index].GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value  + item.ZTSC_Levy+ item.Stamp_duty;
                     list[index].Stamp_duty += item.Stamp_duty;
                     list[index].ZTSC_Levy += item.ZTSC_Levy;
                     list[index].Comission_Amount += item.Comission_Amount;
@@ -1291,7 +1289,7 @@ namespace InsuranceClaim.Controllers
                 else
                 {
                     model.Premium_due = item.Premium_due;
-                    model.GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value + Convert.ToDecimal(item.AdministrationAmt) + item.ZTSC_Levy+ item.Stamp_duty;
+                    model.GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value + item.ZTSC_Levy+ item.Stamp_duty;
                     model.Stamp_duty = item.Stamp_duty;
                     model.ZTSC_Levy = item.ZTSC_Levy;
                     model.Comission_Amount = item.Comission_Amount;
@@ -1376,8 +1374,8 @@ namespace InsuranceClaim.Controllers
             ListGrossWrittenPremiumReport = InsuranceContext.Query(query).
                 Select(x => new GrossWrittenPremiumReportModels()
                 {
-                    PaymentMethodId = x.PaymentMethodId,
-                    CreatedBy = x.CreatedBy,
+                    PaymentMethodId = x.PaymentMethodId==null ? 0 : Convert.ToInt32(x.PaymentMethodId),
+                    CreatedBy = x.CreatedBy==null ? 0  : Convert.ToInt32(x.CreatedBy),
                     Policy_Number = x.Policy_Number,
                     BranchName = x.BranchName,
                     PolicyCreatedBy = x.PolicyCreatedBy,
@@ -1410,9 +1408,7 @@ namespace InsuranceClaim.Controllers
                 if (paymentDetail == null)
                     continue;
 
-
                 GrossWrittenPremiumReportModels model = new GrossWrittenPremiumReportModels();
-
                 model.Policy_Number = item.Policy_Number;
                 model.CreatedBy = item.CreatedBy;
                 model.BranchName = item.BranchName;
@@ -2230,7 +2226,7 @@ namespace InsuranceClaim.Controllers
                     list[index].RadioLicenseCost += item.RadioLicenseCost;
                     list[index].Zinara_License_Fee += item.Zinara_License_Fee;
                     list[index].Sum_Insured += item.Sum_Insured;
-                    list[index].GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value + Convert.ToDecimal(item.AdministrationAmt) + item.Stamp_duty + item.ZTSC_Levy;
+                    list[index].GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value  + item.Stamp_duty + item.ZTSC_Levy;
                 }
                 else
                 {
@@ -2242,7 +2238,7 @@ namespace InsuranceClaim.Controllers
                     model.RadioLicenseCost = item.RadioLicenseCost;
                     model.Zinara_License_Fee = item.Zinara_License_Fee;
                     model.Sum_Insured = item.Sum_Insured;
-                    model.GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value + Convert.ToDecimal(item.AdministrationAmt) + item.Stamp_duty + item.ZTSC_Levy; 
+                    model.GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value  + item.Stamp_duty + item.ZTSC_Levy; 
                     list.Add(model);
                 }
             }
@@ -3925,12 +3921,6 @@ namespace InsuranceClaim.Controllers
             model.ListProductiviyReport = listProductiviyReport.OrderByDescending(x => x.VehicleId).ToList();
             return View("ProductivityReport", model);
         }
-
-
-
-
-
-
 
         //public ActionResult ProductivityReport()
         //{
@@ -6131,6 +6121,307 @@ namespace InsuranceClaim.Controllers
                 model.UserCommissions.Add(userComissionData);
             }
             return View(model);
+        }
+
+        [Authorize(Roles = "Zimnata")]
+        public ActionResult AccountsGrossWrittenPremuimReport()
+        {
+
+            List<GrossWrittenPremiumReportModels> ListGrossWrittenPremiumReport = new List<GrossWrittenPremiumReportModels>();
+            ListGrossWrittenPremiumReportModels _ListGrossWrittenPremiumReport = new ListGrossWrittenPremiumReportModels();
+            _ListGrossWrittenPremiumReport.ListGrossWrittenPremiumReportdata = new List<GrossWrittenPremiumReportModels>();
+
+            GrossWrittenPremiumReportSearchModels Model = new GrossWrittenPremiumReportSearchModels();
+
+            var branchList = InsuranceContext.Branches.All();
+            var paymentInformationsList = InsuranceContext.PaymentInformations.All();
+
+            ViewBag.ReportList = ReportsList();
+            ViewBag.PaymentMethod = PaymentMethodsList();
+
+            var recieptList = InsuranceContext.ReceiptHistorys.All().ToList();
+
+            // Customer.ALMId is null replace condition with SummaryDetail.CreatedBy is not null
+            var query = " select top 500 SummaryDetail.PaymentMethodId, PolicyDetail.Id as policyId, PolicyDetail.PolicyNumber as Policy_Number, Customer.ALMId, case when VehicleDetail.ALMBranchId = 0  then  [dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(VehicleDetail.ALMBranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as Customer_Name,VehicleDetail.TransactionDate as Transaction_date, ";
+            query += "  case when Customer.id=SummaryDetail.CreatedBy then [dbo].fn_GetUserBranch(Customer.id) else [dbo].fn_GetUserBranch(SummaryDetail.CreatedBy) end as BranchName, ";
+            query += " VehicleDetail.CoverNote as CoverNoteNum,VehicleDetail.AdministrationAmt, PaymentMethod.Name as Payment_Mode, PaymentTerm.Name as Payment_Term,CoverType.Name as CoverType, Currency.Name as Currency, ";
+            query += " VehicleDetail.Premium  as Premium_due, VehicleDetail.StampDuty as Stamp_duty, VehicleDetail.ZTSCLevy as ZTSC_Levy, ";
+            query += " cast(VehicleDetail.Premium * 30 / 100 as decimal(10, 2))    as Comission_Amount, VehicleDetail.IncludeRadioLicenseCost, ";
+            query += " CASE WHEN IncludeRadioLicenseCost = 1 THEN VehicleDetail.RadioLicenseCost else 0 end as RadioLicenseCost, VehicleDetail.VehicleLicenceFee as Zinara_License_Fee, ";
+            query += " VehicleDetail.RenewalDate as PolicyRenewalDate, VehicleDetail.IsActive, VehicleDetail.RenewPolicyNumber as RenewPolicyNumber, ";
+            query += " VehicleDetail.BusinessSourceDetailId,SummaryDetail.id as SummaryDetailId, BusinessSource.Source as BusinessSourceName, SourceDetail.FirstName + ' ' + SourceDetail.LastName as SourceDetailName, VehicleDetail.SumInsured from PolicyDetail ";
+            query += " join Customer on PolicyDetail.CustomerId = Customer.Id ";
+            query += "  join VehicleDetail on PolicyDetail.Id = VehicleDetail.PolicyId ";
+            query += "join SummaryVehicleDetail on VehicleDetail.id = SummaryVehicleDetail.VehicleDetailsId ";
+            query += " join SummaryDetail on SummaryDetail.id = SummaryVehicleDetail.SummaryDetailId ";
+            // query += "  join PaymentInformation on SummaryDetail.Id=PaymentInformation.SummaryDetailId ";
+            query += " left join PaymentMethod on SummaryDetail.PaymentMethodId = PaymentMethod.Id ";
+            query += "join PaymentTerm on VehicleDetail.PaymentTermId = PaymentTerm.Id ";
+            query += " left join CoverType on VehicleDetail.CoverTypeId = CoverType.Id ";
+            query += " left join Currency on VehicleDetail.CurrencyId = Currency.Id ";
+            query += " left join BusinessSource on BusinessSource.Id = VehicleDetail.BusinessSourceDetailId ";
+            query += " left   join SourceDetail on VehicleDetail.BusinessSourceDetailId = SourceDetail.Id join AspNetUsers on AspNetUsers.id=customer.UserID join AspNetUserRoles on AspNetUserRoles.UserId=AspNetUsers.Id ";
+            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0   order by  VehicleDetail.Id desc ";
+
+
+            ListGrossWrittenPremiumReport = InsuranceContext.Query(query).
+                Select(x => new GrossWrittenPremiumReportModels()
+                {
+                    PaymentMethodId = x.PaymentMethodId,
+                    Policy_Number = x.Policy_Number,
+                    BranchName = x.BranchName,
+                    PolicyCreatedBy = x.PolicyCreatedBy,
+                    Customer_Name = x.Customer_Name,
+                    Transaction_date = x.Transaction_date.ToShortDateString(),
+                    CoverNoteNum = x.CoverNoteNum,
+                    Payment_Mode = x.Payment_Mode == null ? "Cash" : x.Payment_Mode,
+                    Payment_Term = x.Payment_Term,
+                    CoverType = x.CoverType,
+                    Currency = x.Currency,
+                    Premium_due = x.Premium_due == null ? 0 : x.Premium_due,
+                    //GrandPremium = x.Premium_due + x.Zinara_License_Fee +
+                    Stamp_duty = x.Stamp_duty == null ? 0 : x.Stamp_duty,
+                    ZTSC_Levy = x.ZTSC_Levy == null ? 0 : x.ZTSC_Levy,
+                    ALMId = x.ALMId,
+                    Comission_Amount = x.Comission_Amount == null ? 0 : x.Comission_Amount,
+                    //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
+                    RadioLicenseCost = x.RadioLicenseCost == null ? 0 : x.RadioLicenseCost,
+                    Zinara_License_Fee = x.Zinara_License_Fee == null ? 0 : x.Zinara_License_Fee,
+                    PolicyRenewalDate = x.PolicyRenewalDate,
+                    IsActive = x.IsActive,
+                    RenewPolicyNumber = x.RenewPolicyNumber,
+                    BusinessSourceName = x.BusinessSourceName,
+                    //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
+                    SourceDetailName = x.SourceDetailName,
+                    SummaryDetailId = x.SummaryDetailId,
+                    Sum_Insured = x.SumInsured == null ? 0 : Convert.ToDecimal(x.SumInsured),
+                    AdministrationAmt = x.AdministrationAmt == null ? 0 : Convert.ToDecimal(x.AdministrationAmt),
+                    ReceiptNumber = RecieptNumber(x.policyId, x.RenewPolicyNumber, recieptList),
+                }).ToList();
+
+
+            List<GrossWrittenPremiumReportModels> list = new List<GrossWrittenPremiumReportModels>();
+
+            foreach (var item in ListGrossWrittenPremiumReport)
+            {
+                var paymentDetail = paymentInformationsList.Where(c => c.SummaryDetailId == item.SummaryDetailId);
+                if (paymentDetail == null)
+                    continue;
+
+                GrossWrittenPremiumReportModels model = new GrossWrittenPremiumReportModels();
+                model.Policy_Number = item.Policy_Number;
+                model.BranchName = item.BranchName;
+                model.PolicyCreatedBy = item.PolicyCreatedBy;
+                model.Customer_Name = item.Customer_Name;
+                model.Transaction_date = item.Transaction_date;
+                model.CoverNoteNum = item.CoverNoteNum;
+                model.Payment_Mode = item.Payment_Mode;
+                model.Payment_Term = item.Payment_Term;
+                model.CoverType = item.CoverType;
+                model.Currency = item.Currency;
+                model.RenewPolicyNumber = item.RenewPolicyNumber;
+                model.ALMId = item.ALMId;
+                model.IsActive = item.IsActive;
+                model.PolicyRenewalDate = item.PolicyRenewalDate;
+                model.SourceDetailName = item.SourceDetailName;
+                model.BusinessSourceName = item.BusinessSourceName;
+                model.PaymentMethodId = item.PaymentMethodId;
+                model.ReceiptNumber = item.ReceiptNumber;
+                model.AdministrationAmt = item.AdministrationAmt;
+                //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
+
+                var index = list.FindIndex(c => c.Policy_Number == item.Policy_Number);
+                if (index != -1)
+                {
+                    list[index].Premium_due += item.Premium_due;
+                    list[index].GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value + item.ZTSC_Levy + item.Stamp_duty;
+                    list[index].Stamp_duty += item.Stamp_duty;
+                    list[index].ZTSC_Levy += item.ZTSC_Levy;
+                    list[index].Comission_Amount += item.Comission_Amount;
+                    //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
+                    list[index].RadioLicenseCost += item.RadioLicenseCost;
+                    list[index].Zinara_License_Fee += item.Zinara_License_Fee;
+                    list[index].Sum_Insured += item.Sum_Insured;
+                }
+                else
+                {
+                    model.Premium_due = item.Premium_due;
+                    model.GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value + item.ZTSC_Levy + item.Stamp_duty;
+                    model.Stamp_duty = item.Stamp_duty;
+                    model.ZTSC_Levy = item.ZTSC_Levy;
+                    model.Comission_Amount = item.Comission_Amount;
+                    //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
+                    model.RadioLicenseCost = item.RadioLicenseCost;
+                    model.Zinara_License_Fee = item.Zinara_License_Fee;
+                    model.Sum_Insured = item.Sum_Insured;
+                    list.Add(model);
+                }
+            }
+
+
+
+            Model.ListGrossWrittenPremiumReportdata = list.OrderByDescending(p => p.Id).ToList();
+            var endorsmentList = GetGWPEndorsmentReport(new GrossWrittenPremiumReportSearchModels());
+            Model.ListGrossWrittenPremiumReportdata.AddRange(endorsmentList);
+
+
+            return View(Model);
+        }
+
+        [Authorize(Roles = "Zimnata")]
+        public ActionResult SearhAccountsGrossWrittenPremuimReport(GrossWrittenPremiumReportSearchModels _model)
+        {
+
+            List<GrossWrittenPremiumReportModels> ListGrossWrittenPremiumReport = new List<GrossWrittenPremiumReportModels>();
+            ListGrossWrittenPremiumReportModels _ListGrossWrittenPremiumReport = new ListGrossWrittenPremiumReportModels();
+            _ListGrossWrittenPremiumReport.ListGrossWrittenPremiumReportdata = new List<GrossWrittenPremiumReportModels>();
+            var paymentInformationsList = InsuranceContext.PaymentInformations.All();
+
+            ViewBag.ReportList = ReportsList();
+            ViewBag.PaymentMethod = PaymentMethodsList();
+            var recieptList = InsuranceContext.ReceiptHistorys.All().ToList();
+
+            var query = " select SummaryDetail.PaymentMethodId, PolicyDetail.PolicyNumber as Policy_Number,PolicyDetail.Id as policyId, Customer.ALMId, case when VehicleDetail.ALMBranchId = 0  then  [dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(VehicleDetail.ALMBranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as Customer_Name,VehicleDetail.TransactionDate as Transaction_date, ";
+            query += "  case when Customer.id=SummaryDetail.CreatedBy then [dbo].fn_GetUserBranch(Customer.id) else [dbo].fn_GetUserBranch(SummaryDetail.CreatedBy) end as BranchName, ";
+            query += " VehicleDetail.CoverNote as CoverNoteNum, PaymentMethod.Name as Payment_Mode, PaymentTerm.Name as Payment_Term,CoverType.Name as CoverType, Currency.Name as Currency, ";
+            query += " VehicleDetail.Premium  as Premium_due, VehicleDetail.StampDuty as Stamp_duty, VehicleDetail.ZTSCLevy as ZTSC_Levy, VehicleDetail.AdministrationAmt, ";
+            query += " cast(VehicleDetail.Premium * 30 / 100 as decimal(10, 2))    as Comission_Amount, VehicleDetail.IncludeRadioLicenseCost, ";
+            query += " CASE WHEN IncludeRadioLicenseCost = 1 THEN VehicleDetail.RadioLicenseCost else 0 end as RadioLicenseCost, VehicleDetail.VehicleLicenceFee as Zinara_License_Fee, ";
+            query += " VehicleDetail.RenewalDate as PolicyRenewalDate, VehicleDetail.IsActive, VehicleDetail.RenewPolicyNumber as RenewPolicyNumber, ";
+            query += " VehicleDetail.BusinessSourceDetailId, SummaryDetail.id as SummaryDetailId, BusinessSource.Source as BusinessSourceName, SourceDetail.FirstName + ' ' + SourceDetail.LastName as SourceDetailName, VehicleDetail.SumInsured from PolicyDetail ";
+            query += " join Customer on PolicyDetail.CustomerId = Customer.Id ";
+            query += " join VehicleDetail on PolicyDetail.Id = VehicleDetail.PolicyId ";
+            query += "join SummaryVehicleDetail on VehicleDetail.id = SummaryVehicleDetail.VehicleDetailsId ";
+            query += " join SummaryDetail on SummaryDetail.id = SummaryVehicleDetail.SummaryDetailId ";
+            //query += "  join PaymentInformation on SummaryDetail.Id=PaymentInformation.SummaryDetailId ";
+            query += " left join PaymentMethod on SummaryDetail.PaymentMethodId = PaymentMethod.Id ";
+            query += "join PaymentTerm on VehicleDetail.PaymentTermId = PaymentTerm.Id ";
+            query += " left join CoverType on VehicleDetail.CoverTypeId = CoverType.Id ";
+            query += " left join Currency on VehicleDetail.CurrencyId = Currency.Id ";
+            query += " left join BusinessSource on BusinessSource.Id = VehicleDetail.BusinessSourceDetailId ";
+            query += " left   join SourceDetail on VehicleDetail.BusinessSourceDetailId = SourceDetail.Id join AspNetUsers on AspNetUsers.id=customer.UserID join AspNetUserRoles on AspNetUserRoles.UserId=AspNetUsers.Id ";
+            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0  and (  CONVERT(date, VehicleDetail.TransactionDate) >= convert(date, '" + _model.FormDate + "', 101)  and CONVERT(date, VehicleDetail.TransactionDate) <= convert(date, '" + _model.EndDate + "', 101))  ";
+
+            if (_model.ReportTypeId == (int)ReportTypeEnum.ALM)
+                query += "and ALMBranchId <>0";
+
+            if (_model.PaymentStatus != null)
+                query += " and SummaryDetail.PaymentMethodId= " + _model.PaymentStatus.ToString() + " ";
+
+            //if (_model.ReportTypeId == (int)ReportTypeEnum.CallCenter)
+            //    query += "and Customer.BranchId=" + (int)ALMBranch.GeneCallCentre;
+
+
+            query += " order by  VehicleDetail.Id desc ";
+
+
+            ListGrossWrittenPremiumReport = InsuranceContext.Query(query).
+                Select(x => new GrossWrittenPremiumReportModels()
+                {
+                    PaymentMethodId = x.PaymentMethodId,
+                    Policy_Number = x.Policy_Number,
+                    BranchName = x.BranchName,
+                    PolicyCreatedBy = x.PolicyCreatedBy,
+                    Customer_Name = x.Customer_Name,
+                    Transaction_date = x.Transaction_date.ToShortDateString(),
+                    CoverNoteNum = x.CoverNoteNum,
+                    Payment_Mode = x.Payment_Mode,
+                    Payment_Term = x.Payment_Term,
+                    CoverType = x.CoverType,
+                    Currency = x.Currency,
+                    Premium_due = x.Premium_due == null ? 0 : x.Premium_due,
+                    Stamp_duty = x.Stamp_duty == null ? 0 : x.Stamp_duty,
+                    ZTSC_Levy = x.ZTSC_Levy == null ? 0 : x.ZTSC_Levy,
+                    ALMId = x.ALMId,
+                    Comission_Amount = x.Comission_Amount == null ? 0 : x.Comission_Amount,
+                    //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
+                    RadioLicenseCost = x.RadioLicenseCost == null ? 0 : x.RadioLicenseCost,
+                    Zinara_License_Fee = x.Zinara_License_Fee == null ? 0 : x.Zinara_License_Fee,
+                    PolicyRenewalDate = x.PolicyRenewalDate,
+                    IsActive = x.IsActive,
+                    RenewPolicyNumber = x.RenewPolicyNumber,
+                    BusinessSourceName = x.BusinessSourceName,
+                    //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
+                    SourceDetailName = x.SourceDetailName,
+                    SummaryDetailId = x.SummaryDetailId,
+                    Sum_Insured = x.SumInsured,
+                    AdministrationAmt = x.AdministrationAmt,
+                    ReceiptNumber = RecieptNumber(x.policyId, x.RenewPolicyNumber, recieptList)
+                }).ToList();
+
+            if (_model.ReportTypeId == (int)ReportTypeEnum.CallCenter)
+                ListGrossWrittenPremiumReport = ListGrossWrittenPremiumReport.Where(c => c.BranchName == CallCenterBranch).ToList();
+
+
+
+
+            List<GrossWrittenPremiumReportModels> list = new List<GrossWrittenPremiumReportModels>();
+
+            foreach (var item in ListGrossWrittenPremiumReport)
+            {
+                var paymentDetail = paymentInformationsList.Where(c => c.SummaryDetailId == item.SummaryDetailId);
+                if (paymentDetail == null)
+                    continue;
+
+                GrossWrittenPremiumReportModels model = new GrossWrittenPremiumReportModels();
+
+                model.Policy_Number = item.Policy_Number;
+                model.BranchName = item.BranchName;
+                model.PolicyCreatedBy = item.PolicyCreatedBy;
+                model.Customer_Name = item.Customer_Name;
+                model.Transaction_date = item.Transaction_date;
+                model.CoverNoteNum = item.CoverNoteNum;
+                model.Payment_Mode = item.Payment_Mode;
+                model.Payment_Term = item.Payment_Term;
+                model.CoverType = item.CoverType;
+                model.Currency = item.Currency;
+                model.RenewPolicyNumber = item.RenewPolicyNumber;
+                model.ALMId = item.ALMId;
+                model.IsActive = item.IsActive;
+                model.PolicyRenewalDate = item.PolicyRenewalDate;
+                model.SourceDetailName = item.SourceDetailName;
+                model.BusinessSourceName = item.BusinessSourceName;
+                model.PaymentMethodId = item.PaymentMethodId;
+                model.ReceiptNumber = item.ReceiptNumber;
+                model.AdministrationAmt = item.AdministrationAmt;
+                //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
+
+                var index = list.FindIndex(c => c.Policy_Number == item.Policy_Number);
+                if (index != -1)
+                {
+                    list[index].Premium_due += item.Premium_due;
+                    list[index].Stamp_duty += item.Stamp_duty;
+                    list[index].ZTSC_Levy += item.ZTSC_Levy;
+                    list[index].Comission_Amount += item.Comission_Amount;
+                    //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
+                    list[index].RadioLicenseCost += item.RadioLicenseCost;
+                    list[index].Zinara_License_Fee += item.Zinara_License_Fee;
+                    list[index].Sum_Insured += item.Sum_Insured;
+                    list[index].GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value + item.Stamp_duty + item.ZTSC_Levy;
+                }
+                else
+                {
+                    model.Premium_due = item.Premium_due;
+                    model.Stamp_duty = item.Stamp_duty;
+                    model.ZTSC_Levy = item.ZTSC_Levy;
+                    model.Comission_Amount = item.Comission_Amount;
+                    //IncludeRadioLicenseCost = x.IncludeRadioLicenseCost,
+                    model.RadioLicenseCost = item.RadioLicenseCost;
+                    model.Zinara_License_Fee = item.Zinara_License_Fee;
+                    model.Sum_Insured = item.Sum_Insured;
+                    model.GrandPremium = item.Premium_due + item.Zinara_License_Fee.Value + item.RadioLicenseCost.Value + item.Stamp_duty + item.ZTSC_Levy;
+                    list.Add(model);
+                }
+            }
+
+            //_model.ListGrossWrittenPremiumReportdata = ListGrossWrittenPremiumReport.OrderByDescending(p => p.Id).ToList();
+            _model.ListGrossWrittenPremiumReportdata = list.OrderByDescending(p => p.Id).ToList();
+
+
+            var endorsmentList = GetGWPEndorsmentReport(_model);
+            _model.ListGrossWrittenPremiumReportdata.AddRange(endorsmentList);
+
+            return View("AccountsGrossWrittenPremuimReport", _model);
         }
 
         class Balance

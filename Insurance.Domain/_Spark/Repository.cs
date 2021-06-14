@@ -161,6 +161,7 @@ namespace Insurance.Domain
 
         public static USDConverters USDConverters { get { return new USDConverters(); } }
 
+        public static ALMRePrints ALMRePrints { get { return new ALMRePrints(); } }
 
         //17/03/2020
         public static AspNetUsersDetails AspNetUsersDetails { get { return new AspNetUsersDetails(); } }

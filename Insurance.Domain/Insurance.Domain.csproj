@@ -197,6 +197,7 @@
     <Compile Include="Repository\AgeExcesses.cs" />
     <Compile Include="Repository\AgentCommissions.cs" />
     <Compile Include="Repository\AgentLogos.cs" />
+    <Compile Include="Repository\ALMRePrints.cs" />
     <Compile Include="Repository\AspNetUsersDetails.cs" />
     <Compile Include="Repository\AspNetUsersUpdates.cs" />
     <Compile Include="Repository\BannerImages.cs" />

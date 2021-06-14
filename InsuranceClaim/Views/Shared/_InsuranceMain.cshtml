@@ -134,16 +134,20 @@
                                             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                                                 <ul class="nav navbar-nav">
 
-                                                    <li><a href="/Individual/RegisterUser">Individual motor</a></li>
-                                                    <li><a href="/Domestic/RegisterUser">Domestic</a></li>
+                                                    @*<li><a href="/Individual/RegisterUser">Individual motor</a></li>
+                                                    <li><a href="/Domestic/RegisterUser">Domestic</a></li>*@
 
                                                     <li><a href="/InsuranceHome/Index">Home</a></li>
 
-                                                    @if (userLoggedin && (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Team Leaders")))
+                                                    @if (userLoggedin && (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Team Leaders") ))
                                                     {
-                                                        <li><a href="/CustomerRegistration/Index">Issue Quotation</a></li>
+                                                        if (User.IsInRole("Staff") || User.IsInRole("Team Leaders"))
+                                                        {
+                                                            <li><a href="/CustomerRegistration/Index">Issue Quotation</a></li>
+                                                        }
+
                                                         <li><a href="/Account/Dashboard">Dashboard</a></li>
-														  <li><a href="/Account/PolicyManagement">Policy Management</a></li>
+														 <li><a href="/Account/PolicyManagement">Policy Management</a></li>
                                                         <li><a href="/Report/VehicleReport">Vehicles </a></li>
                                                         <li><a href="/account/PayLaterPolicy">Pay Later</a></li>
                                                     }
@@ -159,7 +163,7 @@
 
                                                     @*<li><a href="/Paypal/IceCashPayment">IceCash</a></li>*@
 
-                                                    @if (User.IsInRole("Renewals") || User.IsInRole("AgentStaff") || User.IsInRole("Team Leaders") )
+                                                    @if (User.IsInRole("Renewals") || User.IsInRole("Staff") || User.IsInRole("Team Leaders") )
                                                     {
                                                         @*<li><a href="/Account/PolicyList">Policy Management</a></li>*@
                                                         <li><a href="/Account/PolicyManagement">Policy Management</a></li>
@@ -220,7 +224,7 @@
                                                         }*@
 
 
-                                                    @if (User.IsInRole("Finance"))
+                                                    @if (User.IsInRole("Finance") || User.IsInRole("Zimnata"))
                                                     {
                                                         <li><a class="DashboardButton" href="@Url.Action("Dashboard","Account")">Dashboard</a></li>
                                                     }

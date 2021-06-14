@@ -891,9 +891,6 @@ namespace InsuranceClaim.Controllers
 
                     // path = "/QRCode/" + Policyno + ".jpg";
 
-
-
-
                     Codes.PolicyNo = Policyno;
                     Codes.Qrcode = Policyno;
                     Codes.ReadBy = "";

@@ -29,4 +29,11 @@ namespace InsuranceClaim.Models
 
         public string MakeDescription { get; set; }
     }
+
+    public class VRNModel
+    {
+        public string RegistrationNum { get; set; }
+        public string PolicyNumber { get; set; }
+    }
+
 }

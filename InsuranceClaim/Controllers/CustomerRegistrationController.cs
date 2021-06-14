@@ -9,7 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Insurance.Domain;
 using AutoMapper;
-using System.Configuration; 
+using System.Configuration;
 using System.Globalization;
 using Insurance.Service;
 using System.Web.Configuration;
@@ -51,7 +51,7 @@ namespace InsuranceClaim.Controllers
         }
 
 
-        // [Authorize(Roles = "Staff,Administrator")]
+        [Authorize(Roles = "Staff,Administrator,Team Leaders")]
         public ActionResult Index(int id = 0)
         {
             // var res = MaxCustoermId();
@@ -188,9 +188,6 @@ namespace InsuranceClaim.Controllers
             }
 
         }
-
-
-
 
         public void SetCustomerValueIntoSession(int summaryId)
         {
@@ -936,7 +933,7 @@ namespace InsuranceClaim.Controllers
         {
             bool result = false;
             var query = "select VehicleDetail.RegistrationNo from VehicleDetail join SummaryVehicleDetail on VehicleDetail.Id=SummaryVehicleDetail.VehicleDetailsId ";
-            query += " join SummaryDetail on SummaryVehicleDetail.SummaryDetailId = SummaryDetail.Id where RegistrationNo = '" + vrn + "' and VehicleDetail.IsActive=1 and SummaryDetail.isQuotation <> 1";
+            query += " join SummaryDetail on SummaryVehicleDetail.SummaryDetailId = SummaryDetail.Id join PaymentInformation on SummaryDetail.id=PaymentInformation.SummaryDetailId where RegistrationNo = '" + vrn + "' and VehicleDetail.IsActive=1 and SummaryDetail.isQuotation <> 1";
 
             var list = InsuranceContext.Query(query).Select(x => new VehicleDetail()
             {
@@ -1276,6 +1273,7 @@ namespace InsuranceClaim.Controllers
                         model.TotalPremium += item.RadioLicenseCost;
                         model.TotalRadioLicenseCost += item.RadioLicenseCost;
                     }
+
                     model.Discount += item.Discount;
                     // model.TotalLicenseFee += item.VehicleLicenceFee;
 
@@ -1546,11 +1544,11 @@ namespace InsuranceClaim.Controllers
 
                         if (customer.DateOfBirth != null && customer.DateOfBirth.Value.Year < 1900)
                             customer.DateOfBirth = DateTime.Now;
-                        
-               
-                        //if user staff
 
-                        if (role == "Staff" || role == "Renewals" || role == "Team Leaders" || role == "Administrator")
+
+                        //if user staff
+                        //role == "Renewals" 
+                        if (role == "Staff" ||  role == "Team Leaders" || role == "Administrator")
                         {
                             // check if email id exist in user table
 
@@ -1737,8 +1735,6 @@ namespace InsuranceClaim.Controllers
                                             }
                                         }
                                     }
-
-
 
                                 }
                             }
@@ -2213,8 +2209,6 @@ namespace InsuranceClaim.Controllers
                                 //DbEntry.VehicleDetailId = vehicle[0].Id;
                                 //  bool _userLoggedin = (System.Web.HttpContext.Current.User != null) && System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
 
-
-
                                 // DbEntry.CustomerId = vehicle[0].CustomerId;
                                 DbEntry.CustomerId = customer.Id;
 
@@ -2320,7 +2314,6 @@ namespace InsuranceClaim.Controllers
 
                                 summarydata.CustomerId = customer.Id;
 
-
                                 if (summarydata.PaymentMethodId == (int)paymentMethod.PayLater)
                                 {
                                     summarydata.PayLaterStatus = true;
@@ -2340,10 +2333,6 @@ namespace InsuranceClaim.Controllers
                                     InsuranceContext.LogDetailTbls.Insert(log);
                                     throw;
                                 }
-
-
-
-
                             }
 
 
@@ -2890,9 +2879,6 @@ namespace InsuranceClaim.Controllers
 
             return payNowModel;
         }
-
-
-
 
         private string GetPaymentType(int? paymentMethodId)
         {
@@ -4554,9 +4540,89 @@ namespace InsuranceClaim.Controllers
             //return Body2;
         }
 
+        public ActionResult ReprintReciept()
+        {
+
+           
 
 
+            return View();
+        }
 
+        [HttpPost]
+        public ActionResult SearchRecieptPrint(VRNModel vrnModel)
+        {
+
+            string policyNumber = "";
+            string renewPolicyNumber = "";
+
+            if(!string.IsNullOrEmpty(vrnModel.PolicyNumber))
+            {
+                policyNumber = vrnModel.PolicyNumber;
+
+                var splitPolicy = vrnModel.PolicyNumber.Split('-');
+                if(splitPolicy.Length>1)
+                {
+                    if(Convert.ToInt32(splitPolicy[1])>1)
+                    {
+                        renewPolicyNumber = vrnModel.PolicyNumber;
+                    }
+                }
+            }
+            else
+            {
+                return View("ReprintReciept");
+            }
+            
+
+            PreviewReceiptListModel lstreceipt = new PreviewReceiptListModel();
+            ListReceiptModule receiptList = new ListReceiptModule();
+            string filepath = System.Configuration.ConfigurationManager.AppSettings["urlPath"];
+            lstreceipt.filepath = filepath;
+
+            string query = "select ReceiptModuleHistory.DatePosted, ReceiptModuleHistory.Id as ReceiptNumber,ReceiptModuleHistory.CustomerName as CustomerName, ";
+            query += " ReceiptModuleHistory.AmountPaid as AmountPaid, ReceiptModuleHistory.Balance, ReceiptModuleHistory.TransactionReference,";
+            query += " ReceiptModuleHistory.PaymentMethodId, Customer.AddressLine1, Customer.AddressLine2 from ReceiptModuleHistory join SummaryDetail ";
+            query += " on ReceiptModuleHistory.SummaryDetailId = SummaryDetail.Id ";
+            query += " join SummaryVehicleDetail  on SummaryVehicleDetail.SummaryDetailId = SummaryDetail.Id ";
+            query += " join VehicleDetail on VehicleDetail.Id = SummaryVehicleDetail.VehicleDetailsId ";
+            query += " join Customer on Customer.Id = VehicleDetail.CustomerId where ";
+            if (renewPolicyNumber != "")
+                query += "  ReceiptModuleHistory.RenewPolicyNumber='" + renewPolicyNumber + "' order by DatePosted desc";
+            else
+            query +="  ReceiptModuleHistory.PolicyNumber='"+ policyNumber + "' order by DatePosted desc";
+
+            var result = InsuranceContext.Query(query).Select(c=> new PreviewReceiptListModel()
+            {
+                Date= c.DatePosted==null ? "" : c.DatePosted.ToShortDateString(),
+                Id = c.ReceiptNumber ,
+                CustomerName= c.CustomerName,
+                AmountPaid= c.AmountPaid,
+                PaymentDetails = c.Balance,
+                TransactionReference= c.TransactionReference,
+                paymentMethodType = (c.PaymentMethodId == 1 ? "Cash" : (c.PaymentMethodId == 2 ? "Ecocash" : (c.PaymentMethodId == 3 ? "Swipe" : "MasterVisa Card"))),
+                Address1 = c.AddressLine1,
+                Address2= c.AddressLine2
+            }).FirstOrDefault();
+
+   
+
+            //lstreceipt.listReceipt = new List<PreviewReceiptListModel>();
+            //lstreceipt.listReceipt.Add(result);
+
+            if(result!=null)
+            {
+                return View("~/Views/CustomerRegistration/PreviewReceiptModule.cshtml", result);
+            }
+            else
+            {
+                TempData["ErrorMsg"] = "Records are not found.";
+                return View("ReprintReciept");
+            }
+            
+
+            
+        }
 
 
         public ActionResult PreviewReceiptModule()

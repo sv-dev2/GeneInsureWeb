@@ -122,6 +122,7 @@
                                     <table class="policy-table-grid policyList" style="width:100%">
                                         <tr>
                                             <th>Registration No   </th>
+                                            <th>Renew Policy Number</th>
                                             <th> Vehicle  </th>
                                             <th> Currency  </th>
                                             <th> Sum Insured  </th>
@@ -136,8 +137,9 @@
 
                                         <tr>
                                             <td>@item.RegisterationNumber </td>
+                                            <td>@item.RenewPolicyNumber </td>
                                             <td>@item.Make @item.Model </td>
-                                            <td>  @item.Currency </td>
+                                            <td>@item.Currency </td>
                                             <td>@item.VehicleSumInsured </td>
                                             <td>@item.AutoFacReinsuranceAmount</td>
                                             <td>@item.AutoFacPremium</td>
@@ -218,7 +220,11 @@
                                             }
                                             else if (DateTime.Now >= Convert.ToDateTime(item.RenewalDate).AddMonths(-2) && DateTime.Now <= Convert.ToDateTime(item.RenewalDate)) // else if (DateTime.Now >= _item.RenewalDate.AddDays(-21) && DateTime.Now <= _item.RenewalDate)
                                             {
-                                                <td class="btn-width-auto"> @Html.ActionLink("Renew", "Index", "Renew", new { vehicleid = item.VehicleDetailId }, new { @class = "btn-sm btn-primary" })</td>
+                                                if (User.IsInRole("Renewals") || User.IsInRole("Administrator") || User.IsInRole("Team Leaders"))
+                                                {
+                                                    <td class="btn-width-auto"> @Html.ActionLink("Renew", "Index", "Renew", new { vehicleid = item.VehicleDetailId }, new { @class = "btn-sm btn-primary" })</td>
+                                                }
+
                                                 <td>
                                                     <ul class="list-inline">
                                                         @if (User.IsInRole("Administrator"))
@@ -236,7 +242,14 @@
                                             else if (DateTime.Now > Convert.ToDateTime(item.RenewalDate))
                                             {
                                                 <td>Lapsed</td>
-                                                <td class="btn-width-auto"> @Html.ActionLink("Renew", "Index", "Renew", new { vehicleid = item.VehicleDetailId }, new { @class = "btn-sm btn-primary" })</td>
+
+                                                if (User.IsInRole("Renewals") || User.IsInRole("Administrator") || User.IsInRole("Team Leaders"))
+                                                {
+                                                    <td class="btn-width-auto"> @Html.ActionLink("Renew", "Index", "Renew", new { vehicleid = item.VehicleDetailId }, new { @class = "btn-sm btn-primary" })</td>
+                                                }
+
+
+
                                                 <td colspan="2">
                                                     <ul class="list-inline">
 
@@ -244,19 +257,11 @@
                                                         {
                                                             <li class="btn-width-auto"><button onclick="disableVehicle('@item.VehicleDetailId')" class="btn-sm btn-danger">Disable Policy</button></li>
                                                         }
-
-
                                                         <li class="btn-width-auto"><button type="button" class="btn-sm btn-primary" onclick="showPopupp('@item.PolicyNumber','@item.CustomerId','@item.VehicleDetailId');">View/Upload Document</button></li>
                                                         <li class="btn-width-auto">@Html.ActionLink("View RenewPolicy", "customeRenew", "Renew", new { renewvehicle = item.VehicleDetailId }, new { @class = "btn-sm btn-primary" })</li>
                                                     </ul>
-
                                                 </td>
                                             }
-
-                                           
-
-                                           
-
 
                                         </tr>
                                     </table>

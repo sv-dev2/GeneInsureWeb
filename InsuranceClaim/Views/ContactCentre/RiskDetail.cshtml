@@ -8,6 +8,8 @@
 
 <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet" />
 
+
+
 <style>
     /* Set the size of the div element that contains the map */
     #map {
@@ -818,12 +820,10 @@
 </script>
 
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
 <script src="~/Scripts/googleMap.js"></script>
-
+<script src="~/Scripts/mask.js"></script>
 
 <script>
-
     function gotoPeriviouse() {
         location.href = '@Url.Action("Index", "CustomerRegistration", new { id=-1 })';
     }
@@ -836,14 +836,11 @@
         location.href = '@Url.Action("SummaryDetail", "CustomerRegistration")';
     }
 
-
     $("#btnGenerateQuote").click(function(){
         if ($("#IsLicenseDiskNeeded").is(":checked")){
-
             $("#myAddressModal").modal('show');
             return false;
         }
-
     });
 
     $("#btnAddVehicle").click(function(){
@@ -860,7 +857,6 @@
         var isChecked = $("#inputcheckbox").is(":checked");
         if (isChecked == true)
         {
-
             $.ajax({
                 url: "@Url.Action("GetLicenseAddress", "CustomerRegistration")",
                 type: "GET",
@@ -899,7 +895,6 @@
             $("#VehicleLicenceFee").val("");
             $("#LicExpiryDate").val("");
             //$("#VehicleLicenceFee").addClass("inputDisabled");
-
             //$("#divVehicleLicense").hide();
 
         }
@@ -1313,6 +1308,29 @@
         $("#CoverStartDate").val(today);
         $("#TransactionDate").val(today).css("background-color", "lightgray");
 
+        //$.validator.addMethod("VRN", function(value, element) {
+        //    return this.optional(element) || /^[a-z][0-9]$/i.test(value);
+        //}, "Please enter correct vrn");
+
+        //$("#RegistrationNo").mask("aaa9999");
+
+
+        $("#RegistrationNo").on('keypress', function (event) {
+            var regex = new RegExp("^[a-zA-Z0-9]+$");
+            var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+            if (!regex.test(key)) {
+                event.preventDefault();
+                return false;
+            }
+        });
+   
+
+
+
+
+
+
+
 
 
         $("#PaymentTermId").change(function () {
@@ -1354,8 +1372,13 @@
                     break;
             }
 
+
             CalculatePremiumByCoverType();
             // GetRadioLicenseCost();
+
+
+
+
         });
 
 
@@ -1718,7 +1741,7 @@
 
     function CalculatePremiumByCoverType()
     {
-
+        debugger;
         if ($("#PaymentTermId").val() != "" && $("#ProductId").val() != "" && $("#RegistrationNo").val() != "" && $("#CoverTypeId").val()!="" && ($("#TaxClassId").val()!="" && $("#TaxClassId").val()!=null))
         {
             var coverytype = $('#CoverTypeId option:selected').val();
@@ -1914,7 +1937,7 @@
         var licensePaymentTerm = $("#ZinaraLicensePaymentTermId").val();
         var  radioPaymentTerm = $("#RadioLicensePaymentTermId").val();
 
-        var VehicleValue = $("#SuggestedValue").val();
+        var VehicleValue = $("#SumInsured").val();
 
         if ($("#CoverTypeId").val() == "4") {
             if($("#SumInsured").val() == "" || $("#SumInsured").val() == "0.00")

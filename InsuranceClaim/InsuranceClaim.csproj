@@ -262,6 +262,7 @@
     <Compile Include="Controllers\AgentController.cs" />
     <Compile Include="Controllers\AgentMotorController.cs" />
     <Compile Include="Controllers\AgentStaffController.cs" />
+    <Compile Include="Controllers\ALMPrintController.cs" />
     <Compile Include="Controllers\BirthdayMessageController.cs" />
     <Compile Include="Controllers\BranchController.cs" />
     <Compile Include="Controllers\BusinessSourceController.cs" />
@@ -933,6 +934,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\jspdf.debug.js" />
+    <Content Include="Scripts\mask.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\moment-with-locales.js" />
     <Content Include="Scripts\npm.js" />
@@ -943,6 +945,7 @@
     <Content Include="Scripts\toastr.js" />
     <Content Include="Scripts\WebCustomer.js" />
     <Content Include="Signature\Signature.jpg.jpg" />
+    <Content Include="test.html" />
     <Content Include="testChat.html" />
     <Content Include="Views\Account\EndorsementDetials.cshtml" />
     <Content Include="Views\Renew\Index.cshtml" />
@@ -1208,6 +1211,12 @@
     <Content Include="Views\USDConverter\Index.cshtml" />
     <Content Include="Views\Report\UnRecieptReport.cshtml" />
     <Content Include="Views\Account\RenewedPolicy.cshtml" />
+    <Content Include="Views\Account\ALMRePrint.cshtml" />
+    <Content Include="Views\ALMPrint\Index.cshtml" />
+    <Content Include="Views\ALMPrint\Create.cshtml" />
+    <Content Include="Views\ALMPrint\Edit.cshtml" />
+    <Content Include="Views\CustomerRegistration\ReprintReciept.cshtml" />
+    <Content Include="Views\Report\AccountsGrossWrittenPremuimReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AgentLogo\" />

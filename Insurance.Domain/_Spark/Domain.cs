@@ -807,7 +807,6 @@ namespace Insurance.Domain
     {
         public CommissionPeriod() { }
         public CommissionPeriod(bool defaults) : base(defaults) { }
-
         public int Id { get; set; }
         public int PriodId { get; set; }
         public DateTime? StartPeriod { get; set; }
@@ -833,6 +832,24 @@ namespace Insurance.Domain
 
     }
 
+
+    public partial class ALMRePrint : Entity<ALMRePrint>
+    {
+        public ALMRePrint() { }
+        public ALMRePrint(bool defaults) : base(defaults) { }
+        public int Id { get; set; }
+        public string VRN { get; set; }
+        public bool IsActive { get; set; }
+        public int OTP { get; set; }
+        public int PolicyId { get; set; }
+        public string PolicyNum { get; set; }
+        public string RenewPolicyNum { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public int CreatedBy { get; set; }
+
+    }
+
+    //ALMRePrint
     public partial class USDConverter : Entity<USDConverter>
     {
         public USDConverter() { }

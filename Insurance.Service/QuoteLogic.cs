@@ -39,8 +39,6 @@ namespace Insurance.Service
             var DiscountOnRenewalSettings = Setting.Where(x => x.keyname == "Discount On Renewal").FirstOrDefault();
 
             decimal ratingPremium = 0;
-
-
             var additionalchargeatp = 0.0m;
             var additionalchargepac = 0.0m;
             var additionalchargeebb = 0.0m;
@@ -723,7 +721,6 @@ namespace Insurance.Service
             return this;
         }
 
-
         public RiskDetailModel GetCalculationDetailForUsd(int paymentTermId, decimal calculatedPremium)
         {
 
@@ -833,10 +830,6 @@ namespace Insurance.Service
 
             return model;
         }
-
-
-
-
 
         public QuoteLogic CalculateDomesticPremium(decimal InsuranceRate, decimal coverAmount, int PaymentTermid)
         {

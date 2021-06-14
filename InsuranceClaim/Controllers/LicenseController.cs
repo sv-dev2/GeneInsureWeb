@@ -436,6 +436,7 @@ namespace InsuranceClaim.Controllers
                                         }
 
                                         LicenseAddress.ReceiptDate = _item.ReceiptDate;
+                                        LicenseAddress.ExpectedDateDelivery = DateTime.Now;
                                         InsuranceContext.LicenceDiskDeliveryAddresses.Insert(LicenseAddress);
                                     }
                                     catch (Exception ex)

@@ -85,7 +85,7 @@ namespace InsuranceClaim.Controllers
         //    return View(custdata);
         //}
 
-
+        [Authorize(Roles = "Renewals,Administrator,Team Leaders")]
         public ActionResult Index(int? vehicleid)
         {
 
@@ -1030,7 +1030,7 @@ namespace InsuranceClaim.Controllers
             //    }
             //    model.Discount += item.Discount;
             //}
-            
+
             model.TotalPremium += vehicle.Premium + vehicle.ZTSCLevy + vehicle.StampDuty + vehicle.VehicleLicenceFee;
 
 
@@ -1118,7 +1118,9 @@ namespace InsuranceClaim.Controllers
 
 
                     TempData["ErroMsg"] = null;
-                    if (User.IsInRole("Staff") && model.PaymentMethodId == 1)
+                    //if (User.IsInRole("Staff") && model.PaymentMethodId == 1)
+
+                    if (User.IsInRole("Renewals") && model.PaymentMethodId == 1)
                     {
                         //  ModelState.Remove("InvoiceNumber");
                         if (string.IsNullOrEmpty(model.InvoiceNumber))
@@ -1224,8 +1226,8 @@ namespace InsuranceClaim.Controllers
                         }
 
                         //if user staff
-
-                        if (role == "Staff" || role == "Renewals" || role == "Team Leaders" || role == "Administrator")
+                        //if (role == "Staff" || role == "Renewals" || role == "Team Leaders" || role == "Administrator")
+                        if (role == "Renewals" || role == "Team Leaders" || role == "Administrator")
                         {
                             // check if email id exist in user table
                             var user = UserManager.FindByEmail(customer.EmailAddress);
@@ -1497,7 +1499,9 @@ namespace InsuranceClaim.Controllers
                                 // item.Id = vehicelDetails.Id;
                                 vehicle.Id = 0;
                                 vehicelDetails.IsActive = false;
-                                vehicelDetails.RenewPolicyNumber = policy.PolicyNumber;
+
+
+                                vehicelDetails.RenewPolicyNumber = GetRenewPolicyNumber(policy.PolicyNumber, vehicelDetails.RenewPolicyNumber);
                                 vehicelDetails.isLapsed = true;
                                 InsuranceContext.VehicleDetails.Update(vehicelDetails);
 
@@ -2197,8 +2201,20 @@ namespace InsuranceClaim.Controllers
                 InsuranceContext.LogDetailTbls.Insert(log);
                 throw;
             }
+        }
 
+        private string GetRenewPolicyNumber(string policyNumber, string renewPolicyNumber)
+        {
+            string number = "";
 
+            if (string.IsNullOrEmpty(renewPolicyNumber))
+                number = policyNumber;
+            else if (policyNumber == renewPolicyNumber)
+                number = policyNumber;
+            else
+                number = renewPolicyNumber;
+
+            return number;
         }
 
 

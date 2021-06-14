@@ -127,7 +127,7 @@ namespace InsuranceClaim.Controllers
                     Session["firstname"] = customer.FirstName;
                     Session["lastname"] = customer.LastName;
 
-                    if (role == "Administrator" || role == "SuperUser" || role == "Agent" || role == "AgentStaff" || role == "Reports" || role == "Finance" || role == "Claim" || role == "Team Leaders")
+                    if (role == "Administrator" || role == "SuperUser" || role == "Agent" || role == "AgentStaff" || role == "Reports" || role == "Finance" || role == "Claim" || role == "Team Leaders" || role == "Zimnata")
                     {
                         return RedirectToAction("Dashboard", "Account");
                     }
@@ -2036,17 +2036,18 @@ namespace InsuranceClaim.Controllers
 
         [Authorize(Roles = "Staff,Administrator,Renewals, Agent, AgentStaff,Claim,Finance,Team Leaders")]
         public ActionResult PolicyManagement()
-        {
+        {           
             ClearViewSession();
+
 
             string query = "select top 100 PolicyDetail.Id as PolicyId , PolicyDetail.PolicyNumber,Customer.Id as CustomerId, Customer.FirstName +' ' + Customer.LastName as CustomerName, PaymentMethod.Name as PaymentMethod, ";
             query += " SummaryDetail.TotalSumInsured, SummaryDetail.TotalPremium, SummaryDetail.CreatedOn, SummaryDetail.Id, VehicleDetail.RegistrationNo, ";
             query += "   VehicleMake.MakeDescription as Make, VehicleModel.ModelDescription as Model, Currency.Name as currency, VehicleDetail.SumInsured, ";
-            query += " VehicleDetail.Id as VehicleId, VehicleDetail.isLapsed, VehicleDetail.IsActive, VehicleDetail.RenewalDate, VehicleDetail.LicExpiryDate, VehicleDetail.RenewPolicyNumber,ReinsuranceCommission,ReinsurancePremium, ReinsuranceAmount ";
+            query += " VehicleDetail.Id as VehicleId, VehicleDetail.isLapsed, VehicleDetail.IsActive, VehicleDetail.RenewalDate,  VehicleDetail.LicExpiryDate, VehicleDetail.RenewPolicyNumber,ReinsuranceCommission,ReinsurancePremium, ReinsuranceAmount ";
             query += " from PolicyDetail join Customer on PolicyDetail.CustomerId = Customer.Id  join VehicleDetail on VehicleDetail.PolicyId= PolicyDetail.Id ";
             query += " join  SummaryVehicleDetail on VehicleDetail.Id=SummaryVehicleDetail.VehicleDetailsId ";
             query += "  join SummaryDetail on SummaryDetail.Id = SummaryVehicleDetail.SummaryDetailId   ";
-            // query += "  join PaymentInformation on PaymentInformation.SummaryDetailId = SummaryDetail.Id   ";
+            query += "  join (select distinct SummaryDetailId from PaymentInformation) as Payment on SummaryDetail.Id= Payment.SummaryDetailId   ";
             query += " join PaymentMethod on SummaryDetail.PaymentMethodId = PaymentMethod.Id ";
             query += " left join VehicleMake on VehicleDetail.MakeId = VehicleMake.MakeCode ";
             query += " left join VehicleModel on VehicleDetail.ModelId = VehicleModel.ModelCode ";
@@ -2089,22 +2090,23 @@ namespace InsuranceClaim.Controllers
                 FacReinsuranceAmount = x.ReinsuranceAmount == null ? 0 : Convert.ToDecimal(x.ReinsuranceAmount),
                 PaymentStatus = GetPaymentStatus(recieptList, x.RenewPolicyNumber, x.PolicyId, x.PaymentMethod),
                 IsExistOnSummaryVehcile = CheckVehicleExistOnSummaryVehicle(summaryVehicleList, x.VehicleId)
+               
             }).ToList();
 
 
-            List<PolicyListViewModel> newList = new List<PolicyListViewModel>();
-            foreach (var item in list)
-            {
-                var paymentDetail = paymentInformationList.Where(c => c.SummaryDetailId == item.SummaryId).FirstOrDefault();
-                if (paymentDetail == null)
-                    continue;
+            //List<PolicyListViewModel> newList = new List<PolicyListViewModel>();
+            //foreach (var item in list)
+            //{
+            //    var paymentDetail = paymentInformationList.FirstOrDefault(c => c.SummaryDetailId == item.SummaryId);
+            //    if (paymentDetail == null)
+            //        continue;
 
-                newList.Add(item);
+            //    newList.Add(item);
 
-            }
+            //}
 
             //FacultativeCommission
-            return View(newList);
+            return View(list);
         }
 
         public string GetPaymentStatus(List<ReceiptModuleHistory> recieptList, string renewPolicyNum, int policyId, string paymentType)
@@ -2810,9 +2812,7 @@ namespace InsuranceClaim.Controllers
                     newList.Add(item);
                 }
             }
-
             policylist.listpolicy = newList;
-
             return View("RenewedPolicy", policylist);
         }
 
@@ -2834,7 +2834,7 @@ namespace InsuranceClaim.Controllers
         }
 
         // GET: Dashboard
-        [Authorize(Roles = "Administrator, AgentStaff, Agent, SuperUser,Reports,Finance,Claim,Team Leaders")]
+        [Authorize(Roles = "Administrator, AgentStaff, Agent, SuperUser,Reports,Finance,Claim,Team Leaders,Zimnata")]
         public ActionResult Dashboard()
         {
             return View();
@@ -3108,11 +3108,11 @@ namespace InsuranceClaim.Controllers
             string query = "select  PolicyDetail.Id as PolicyId , PolicyDetail.PolicyNumber,Customer.Id as CustomerId, Customer.FirstName +' ' + Customer.LastName as CustomerName, PaymentMethod.Name as PaymentMethod, ";
             query += " SummaryDetail.TotalSumInsured, SummaryDetail.TotalPremium, SummaryDetail.CreatedOn, SummaryDetail.Id, VehicleDetail.RegistrationNo, ";
             query += "   VehicleMake.MakeDescription as Make, VehicleModel.ModelDescription as Model, Currency.Name as currency, VehicleDetail.SumInsured, ";
-            query += " VehicleDetail.Id as VehicleId, VehicleDetail.isLapsed, VehicleDetail.IsActive, VehicleDetail.RenewalDate, VehicleDetail.LicExpiryDate, VehicleDetail.RenewPolicyNumber,ReinsuranceCommission,ReinsurancePremium, ReinsuranceAmount ";
+            query += " VehicleDetail.Id as VehicleId, VehicleDetail.isLapsed, VehicleDetail.IsActive, VehicleDetail.RenewalDate,  VehicleDetail.LicExpiryDate, VehicleDetail.RenewPolicyNumber,ReinsuranceCommission,ReinsurancePremium, ReinsuranceAmount ";
             query += " from PolicyDetail join Customer on PolicyDetail.CustomerId = Customer.Id  join VehicleDetail on VehicleDetail.PolicyId= PolicyDetail.Id ";
             query += " join  SummaryVehicleDetail on VehicleDetail.Id=SummaryVehicleDetail.VehicleDetailsId ";
             query += "  join SummaryDetail on SummaryDetail.Id = SummaryVehicleDetail.SummaryDetailId   ";
-            //  query += "  join PaymentInformation on PaymentInformation.SummaryDetailId = SummaryDetail.Id  ";
+            query += "  join (select distinct SummaryDetailId from PaymentInformation) as Payment on SummaryDetail.Id= Payment.SummaryDetailId   ";
             query += " join PaymentMethod on SummaryDetail.PaymentMethodId = PaymentMethod.Id ";
             query += " left join VehicleMake on VehicleDetail.MakeId = VehicleMake.MakeCode ";
             query += " left join VehicleModel on VehicleDetail.ModelId = VehicleModel.ModelCode ";
@@ -3158,20 +3158,20 @@ namespace InsuranceClaim.Controllers
             }).ToList();
 
 
-            List<PolicyListViewModel> newList = new List<PolicyListViewModel>();
-            foreach (var item in list)
-            {
-                var paymentDetail = paymentInformationList.Where(c => c.SummaryDetailId == item.SummaryId).FirstOrDefault();
-                if (paymentDetail == null)
-                    continue;
-                newList.Add(item);
+            //List<PolicyListViewModel> newList = new List<PolicyListViewModel>();
+            //foreach (var item in list)
+            //{
+            //    var paymentDetail = paymentInformationList.Where(c => c.SummaryDetailId == item.SummaryId).FirstOrDefault();
+            //    if (paymentDetail == null)
+            //        continue;
+            //    newList.Add(item);
 
-            }
+            //}
 
 
 
             //FacultativeCommission
-            return View("PolicyManagement", newList);
+            return View("PolicyManagement", list);
         }
 
         public bool CheckVehicleExistOnSummaryVehicle(List<SummaryVehicleDetail> list, int vehicleId)
@@ -3582,6 +3582,7 @@ namespace InsuranceClaim.Controllers
                     policylistviewmodel.CustomerEmail = GetCustomerEmailbyCustomerID(item.CustomerId);
                     policylistviewmodel.SummaryId = item.Id;
                     policylistviewmodel.createdOn = Convert.ToDateTime(item.CreatedOn);
+                    policylistviewmodel.LicenseId =  _vehicle.LicenseId ==null? 0 : Convert.ToInt32(_vehicle.LicenseId);
 
                     // var policy = InsuranceContext.PolicyDetails.Single(vehicle.PolicyId);
                     var policy = policy_list.FirstOrDefault(x => x.Id == vehicle.PolicyId);
@@ -3890,6 +3891,7 @@ namespace InsuranceClaim.Controllers
                         policylistviewmodel.PaymentMethodId = Convert.ToInt32(item.PaymentMethodId);
                         policylistviewmodel.CustomerId = Convert.ToInt32(item.CustomerId);
                         policylistviewmodel.SummaryId = item.Id;
+                      
 
                         var SummaryVehicleDetails = InsuranceContext.SummaryVehicleDetails.All(where: $"SummaryDetailId={item.Id}").ToList();
 
@@ -3908,6 +3910,7 @@ namespace InsuranceClaim.Controllers
                             var product = InsuranceContext.Products.Single(Convert.ToInt32(policy.PolicyName));
 
                             policylistviewmodel.PolicyNumber = policy.PolicyNumber;
+                            policylistviewmodel.LicenseId = vehicle.LicenseId==null? 0 : Convert.ToInt32( vehicle.LicenseId);
 
                             foreach (var _item in SummaryVehicleDetails)
                             {
@@ -3929,6 +3932,8 @@ namespace InsuranceClaim.Controllers
                                     obj.startdate = Convert.ToDateTime(_vehicle.CoverStartDate);
                                     obj.enddate = Convert.ToDateTime(_vehicle.CoverEndDate);
                                     obj.RenewalDate = Convert.ToDateTime(_vehicle.RenewalDate);
+                                    obj.LicenseId = _vehicle.LicenseId;
+
                                     if (_reinsurenaceTrans != null && _reinsurenaceTrans.Count > 0)
                                     {
                                         obj.BrokerCommission = Convert.ToDecimal(_reinsurenaceTrans[0].ReinsuranceCommission);
@@ -6419,9 +6424,6 @@ namespace InsuranceClaim.Controllers
             return View(model);
         }
 
-
-
-
         [HttpGet]
         public ActionResult PayLaterDetail(int SummaryDetailId, int PaymentDetailId)
         {
@@ -6510,6 +6512,11 @@ namespace InsuranceClaim.Controllers
 
             ViewBag.PaymentMethods = BindPaymentMethod();
 
+            return View();
+        }
+
+        public ActionResult ALMRePrint()
+        {
             return View();
         }
 

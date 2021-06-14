@@ -1,16 +1,16 @@
-﻿@model List<InsuranceClaim.Models.ClsVehicleModel>
+﻿
+@model List<InsuranceClaim.Models.ALMRePrintModel>
 @{
-    ViewBag.Title = "VehicleModelList";
+    ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_InsuranceMain.cshtml";
 }
-
 
 <div class="productsave-section">
     <div class="container">
         <div class="row">
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 products-top">
                 <div class="head-title">
-                    <h2>Vehicle Model List</h2>
+                    <h2>ALM RePrint List</h2>
                 </div>
             </div>
             <div class="col-sm-6 col-md-6 products-top">
@@ -18,23 +18,11 @@
                     @Html.TextBox("searchText", null, new { @class = "form-control", @placeholder = "Name" })
                 </div>
             </div>
-            
+
 
         </div>
 
-            <div class="row">
-                
-
-                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 add-btn">
-                    <div class="">
-                        <form>
-                            <input class="btn btn-primary" type="button" value="Add" onclick="window.location.href='@Url.Action("Index", "VehicleModel")'" />
-                        </form>
-
-                    </div>
-                </div>
-
-            </div>
+       
 
 
         <div class="row">
@@ -46,20 +34,19 @@
                     <strong>@TempData["errorMsg"]</strong> .
                 </div>
             }
-
         </div>
 
+        <div class="city-add-btn">
+            @Html.ActionLink("Add VRN", "Create", "ALMPrint", new { @class = "btn-sm btn-primary" })
+        </div>
 
-        
-        <div class="product-table-grid">
+        <div class="product-table-grid">     
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Make </th>
-                        <th>Model</th>
-                        <th>Model Code</th>
-                        <th>Short Description</th>
-                      
+                        <th>Registration Num </th>
+                        <th>OTP</th>
+                        <th>Created On</th>
                         <th class="action-th">Action</th>
                     </tr>
                 </thead>
@@ -67,15 +54,13 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.MakeDescription</td>
-                            <td>@item.ModelDescription</td>
-                            <td>@item.ModelCode</td>
-                            <td>@item.ShortDescription</td>
-                         
+                            <td>@item.VRN</td>
+                            <td>@item.OTP</td>
+                            <td>@item.CreatedOn</td>                         
                             <td>
                                 <div class="tbl-btn-list">
                                     <ul class="list-inline">
-                                        <li>@Html.ActionLink("Edit", "VehicleModelEdit", new { id = item.Id }, new { @class = "btn-sm btn-primary" })</li>
+                                        <li>@Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn-sm btn-primary" })</li>
                                         <li><button type="button" class="btn-sm btn-danger" onclick="ShowPopupp('@item.Id')">Delete</button></li>
                                     </ul>
                                 </div>
@@ -133,3 +118,4 @@
     });
 
 </script>
+

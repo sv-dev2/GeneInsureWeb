@@ -84,6 +84,8 @@ namespace InsuranceClaim.Models
 
         public string CreatedBy { get; set; }
 
+        public int LicenseId { get; set; }
+
     }
 
     public class ListPolicy
@@ -135,6 +137,8 @@ namespace InsuranceClaim.Models
         public string currency { get; set; }
 
         public string Vehicle { get; set; }
+
+        public string LicenseId { get; set; }
 
     }
 }

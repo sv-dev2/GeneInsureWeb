@@ -162,8 +162,10 @@ namespace Insurance.Service
                 _mailMessage.AlternateViews.Add(htmlView);
                 using (SmtpClient smtp = new SmtpClient(smtpAddress, portNumber))
                 {
-                    smtp.Credentials = new NetworkCredential(FromMailAddress, password);
                     smtp.EnableSsl = enableSSL;
+                   // smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential(FromMailAddress, password);
+                    
                     try
                     {
                         smtp.Send(_mailMessage);
