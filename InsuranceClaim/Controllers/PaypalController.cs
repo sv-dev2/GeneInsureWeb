@@ -98,13 +98,6 @@ namespace InsuranceClaim.Controllers
 
             // var res = JsonConvert.DeserializeObject<SummaryDetailModel>(response.Content);
 
-
-
-
-
-
-
-
         }
 
 
@@ -1839,17 +1832,29 @@ namespace InsuranceClaim.Controllers
                         }
 
                         // license approve
-                        //else if (vichelDetails != null && vichelDetails.LicenseId != null && vichelDetails.VehicleLicenceFee > 0)
-                        //{
-                        //    var quoteresponse = ICEcashService.LICQuoteUpdate(customerDetails, vichelDetails, PartnerToken, paymentMethod);
-                        //    if (quoteresponse.Response != null && quoteresponse.Response.Message.Contains("Partner Token has expired"))
-                        //    {
-                        //        tokenObject = iceCash.getToken();
-                        //        SummaryDetailService.UpdateToken(tokenObject);
-                        //        PartnerToken = tokenObject.Response.PartnerToken;
-                        //        ICEcashService.LICQuoteUpdate(customerDetails, vichelDetails, PartnerToken, paymentMethod);
-                        //    }
-                        //}
+                        else if (vichelDetails != null && vichelDetails.LicenseId != null && vichelDetails.VehicleLicenceFee > 0)
+                        {
+                            var quoteresponse = ICEcashService.LICQuoteUpdate(customerDetails, vichelDetails, PartnerToken, paymentMethod);
+                            if (quoteresponse.Response != null && quoteresponse.Response.Message.Contains("Partner Token has expired"))
+                            {
+                                tokenObject = iceCash.getToken();
+                                SummaryDetailService.UpdateToken(tokenObject);
+                                PartnerToken = tokenObject.Response.PartnerToken;
+                                ICEcashService.LICQuoteUpdate(customerDetails, vichelDetails, PartnerToken, paymentMethod);
+                            }
+
+
+                            res = ICEcashService.TPIPolicy(vichelDetails, PartnerToken);
+                            if (res.Response != null && res.Response.Message.Contains("Partner Token has expired"))
+                            {
+                                tokenObject = iceCash.getToken();
+                                //   tokenObject = (ICEcashTokenResponse)Session["ICEcashToken"];
+                                SummaryDetailService.UpdateToken(tokenObject);
+                                // tokenObject = service.CheckSessionExpired();
+                                PartnerToken = tokenObject.Response.PartnerToken;
+                                res = ICEcashService.TPIPolicy(vichelDetails, PartnerToken);
+                            }
+                        }
 
 
                         if (res.Response != null && res.Response.Message.Contains("Policy Retrieved"))

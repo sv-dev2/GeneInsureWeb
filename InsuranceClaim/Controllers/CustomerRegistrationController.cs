@@ -51,7 +51,7 @@ namespace InsuranceClaim.Controllers
         }
 
 
-        [Authorize(Roles = "Staff,Administrator,Team Leaders")]
+        [Authorize(Roles = "Staff,Administrator,Team Leaders,Agent")]
         public ActionResult Index(int id = 0)
         {
             // var res = MaxCustoermId();
@@ -93,7 +93,7 @@ namespace InsuranceClaim.Controllers
 
                 ViewBag.CurrentUserRole = role;
 
-                if ((role != null && (role != "Staff" && role != "Renewals" && role != "Team Leaders")))
+                if ((role != null && (role != "Staff" && role != "Renewals" && role != "Team Leaders") && role != "Agent"))
                 {
                     if (customerData != null)
                     {
@@ -227,7 +227,7 @@ namespace InsuranceClaim.Controllers
                     //    return Json(new { IsError = false, error = "Email " + model.EmailAddress + " already exists." }, JsonRequestBehavior.AllowGet);
                     //}
 
-                    if (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Team Leaders"))
+                    if (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Team Leaders") || User.IsInRole("Agent"))
                     {
                         //if (buttonUpdate != null)
                         //{
@@ -307,7 +307,6 @@ namespace InsuranceClaim.Controllers
 
         public ActionResult ProductDetail()
         {
-
             var model = new PolicyDetailModel();
             var InsService = new InsurerService();
             model.CurrencyId = InsuranceContext.Currencies.All().FirstOrDefault().Id;
@@ -318,6 +317,7 @@ namespace InsuranceClaim.Controllers
             var objList = InsuranceContext.PolicyDetails.All(orderBy: "Id desc").FirstOrDefault();
             if (objList != null)
             {
+               // string policyNumber = string.Empty;
                 string number = objList.PolicyNumber.Split('-')[0].Substring(4, objList.PolicyNumber.Length - 6);
                 long pNumber = Convert.ToInt64(number.Substring(2, number.Length - 2)) + 1;
                 string policyNumber = string.Empty;
@@ -327,7 +327,9 @@ namespace InsuranceClaim.Controllers
                 {
                     policyNumber += "0";
                 }
-                policyNumber += pNumber;
+
+                PolicyService service = new PolicyService();
+                policyNumber += Convert.ToString(service.GetUniquePolicy());
                 ViewBag.PolicyNumber = "GMCC" + DateTime.Now.Year.ToString().Substring(2, 2) + policyNumber + "-1";
                 model.PolicyNumber = ViewBag.PolicyNumber;
             }
@@ -343,7 +345,7 @@ namespace InsuranceClaim.Controllers
 
             if (User != null && User.Identity.IsAuthenticated)
             {
-                if (User.IsInRole("Staff") || User.IsInRole("Team Leaders"))
+                if (User.IsInRole("Staff") || User.IsInRole("Team Leaders") || User.IsInRole("Agent"))
                 {
                     return RedirectToAction("RiskDetail", "ContactCentre");
                 }
@@ -1241,7 +1243,7 @@ namespace InsuranceClaim.Controllers
                 model.DebitNote = "INV" + Convert.ToString(SummaryDetailServiceObj.getNewDebitNote());
 
                 //default selection 
-                if (User.IsInRole("Staff") || User.IsInRole("Renewals"))
+                if (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Agent"))
                 {
                     model.PaymentMethodId = 1;
                 }
@@ -1548,7 +1550,7 @@ namespace InsuranceClaim.Controllers
 
                         //if user staff
                         //role == "Renewals" 
-                        if (role == "Staff" ||  role == "Team Leaders" || role == "Administrator")
+                        if (role == "Staff" ||  role == "Team Leaders" || role == "Administrator" || role == "Agent")
                         {
                             // check if email id exist in user table
 
@@ -1746,28 +1748,28 @@ namespace InsuranceClaim.Controllers
 
                         // Genrate new policy number
 
-                        if (policy != null && policy.Id == 0)
-                        {
-                            string policyNumber = string.Empty;
+                        //if (policy != null && policy.Id == 0)
+                        //{
+                        //    string policyNumber = string.Empty;
 
-                            var objList = InsuranceContext.PolicyDetails.All(orderBy: "Id desc").FirstOrDefault();
-                            if (objList != null)
-                            {
-                                string number = objList.PolicyNumber.Split('-')[0].Substring(4, objList.PolicyNumber.Length - 6);
-                                long pNumber = Convert.ToInt64(number.Substring(2, number.Length - 2)) + 1;
+                        //    var objList = InsuranceContext.PolicyDetails.All(orderBy: "Id desc").FirstOrDefault();
+                        //    if (objList != null)
+                        //    {
+                        //        string number = objList.PolicyNumber.Split('-')[0].Substring(4, objList.PolicyNumber.Length - 6);
+                        //        long pNumber = Convert.ToInt64(number.Substring(2, number.Length - 2)) + 1;
 
-                                int length = 7;
-                                length = length - pNumber.ToString().Length;
-                                for (int i = 0; i < length; i++)
-                                {
-                                    policyNumber += "0";
-                                }
-                                policyNumber += pNumber;
-                                policy.PolicyNumber = "GMCC" + DateTime.Now.Year.ToString().Substring(2, 2) + policyNumber + "-1";
+                        //        int length = 7;
+                        //        length = length - pNumber.ToString().Length;
+                        //        for (int i = 0; i < length; i++)
+                        //        {
+                        //            policyNumber += "0";
+                        //        }
+                        //        policyNumber += pNumber;
+                        //        policy.PolicyNumber = "GMCC" + DateTime.Now.Year.ToString().Substring(2, 2) + policyNumber + "-1";
 
 
-                            }
-                        }
+                        //    }
+                        //}
                         // end genrate policy number
 
 
@@ -4386,7 +4388,7 @@ namespace InsuranceClaim.Controllers
                 if (receiptDetail != null)
                     model.AmountDue = receiptDetail.Balance == null ? 0 : Convert.ToDecimal(receiptDetail.Balance);
                 else
-                    model.AmountDue = Convert.ToInt32(summarydetail.TotalPremium);
+                    model.AmountDue = Convert.ToDecimal(summarydetail.TotalPremium);
 
                 model.CustomerName = customerName;
                 model.InvoiceNumber = policyNumber;

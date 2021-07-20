@@ -220,7 +220,7 @@
                                             }
                                             else if (DateTime.Now >= Convert.ToDateTime(item.RenewalDate).AddMonths(-2) && DateTime.Now <= Convert.ToDateTime(item.RenewalDate)) // else if (DateTime.Now >= _item.RenewalDate.AddDays(-21) && DateTime.Now <= _item.RenewalDate)
                                             {
-                                                if (User.IsInRole("Renewals") || User.IsInRole("Administrator") || User.IsInRole("Team Leaders"))
+                                                if (User.IsInRole("Renewals") || User.IsInRole("Administrator") || User.IsInRole("Team Leaders") || User.IsInRole("Agent"))
                                                 {
                                                     <td class="btn-width-auto"> @Html.ActionLink("Renew", "Index", "Renew", new { vehicleid = item.VehicleDetailId }, new { @class = "btn-sm btn-primary" })</td>
                                                 }
@@ -243,7 +243,7 @@
                                             {
                                                 <td>Lapsed</td>
 
-                                                if (User.IsInRole("Renewals") || User.IsInRole("Administrator") || User.IsInRole("Team Leaders"))
+                                                if (User.IsInRole("Renewals") || User.IsInRole("Administrator") || User.IsInRole("Team Leaders") || User.IsInRole("Agent"))
                                                 {
                                                     <td class="btn-width-auto"> @Html.ActionLink("Renew", "Index", "Renew", new { vehicleid = item.VehicleDetailId }, new { @class = "btn-sm btn-primary" })</td>
                                                 }

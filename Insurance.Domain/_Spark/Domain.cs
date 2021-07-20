@@ -677,8 +677,8 @@ namespace Insurance.Domain
         public Branch(bool defaults) : base(defaults) { }
         public int Id { get; set; }
         public string BranchName { get; set; }
-
         public string AlmId { get; set; }
+        public string Location_Id { get; set; }
 
     }
 
@@ -713,7 +713,6 @@ namespace Insurance.Domain
         public string IpAddress { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
-
     }
 
 
@@ -1058,6 +1057,18 @@ namespace Insurance.Domain
 
         public int Id { get; set; }
         public string CoverType { get; set; }
+
+    }
+
+
+    public partial class UniquePolicyNumber : Entity<UniquePolicyNumber>
+    {
+        public UniquePolicyNumber() { }
+        public UniquePolicyNumber(bool defaults) : base(defaults) { }
+
+        public int Id { get; set; }
+        public int PolicyNumber { get; set; }
+        public DateTime CreatedOn { get; set; }
 
     }
 

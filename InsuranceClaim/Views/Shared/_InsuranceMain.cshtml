@@ -139,9 +139,9 @@
 
                                                     <li><a href="/InsuranceHome/Index">Home</a></li>
 
-                                                    @if (userLoggedin && (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Team Leaders") ))
+                                                    @if (userLoggedin && (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Team Leaders") || User.IsInRole("Agent")))
                                                     {
-                                                        if (User.IsInRole("Staff") || User.IsInRole("Team Leaders"))
+                                                        if (User.IsInRole("Staff") || User.IsInRole("Team Leaders") || User.IsInRole("Agent"))
                                                         {
                                                             <li><a href="/CustomerRegistration/Index">Issue Quotation</a></li>
                                                         }

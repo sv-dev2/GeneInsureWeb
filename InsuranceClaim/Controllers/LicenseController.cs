@@ -151,7 +151,7 @@ namespace InsuranceClaim.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Team Leaders,Staff")]
+        [Authorize(Roles = "Team Leaders,Staff,Agent")]
         public ActionResult LicenseDetail(int summaryId = 0)
         {
 
@@ -299,6 +299,7 @@ namespace InsuranceClaim.Controllers
 
 
                         // Genrate new policy number
+                        PolicyService servicePolicy = new PolicyService();
                         if (policy != null && policy.Id == 0)
                         {
                             string policyNumber = string.Empty;
@@ -315,7 +316,7 @@ namespace InsuranceClaim.Controllers
                                 {
                                     policyNumber += "0";
                                 }
-                                policyNumber += pNumber;
+                                policyNumber += Convert.ToString(servicePolicy.GetUniquePolicy());
                                 policy.PolicyNumber = "GMCC" + DateTime.Now.Year.ToString().Substring(2, 2) + policyNumber + "-1";
 
 

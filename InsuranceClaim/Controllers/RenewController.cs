@@ -85,7 +85,7 @@ namespace InsuranceClaim.Controllers
         //    return View(custdata);
         //}
 
-        [Authorize(Roles = "Renewals,Administrator,Team Leaders")]
+        [Authorize(Roles = "Renewals,Administrator,Team Leaders,Agent")]
         public ActionResult Index(int? vehicleid)
         {
 
@@ -100,9 +100,6 @@ namespace InsuranceClaim.Controllers
             ViewBag.Countries = resultt.countries.OrderBy(x => x.code.Replace("+", ""));
 
 
-
-
-
             if (GetUpdatedCustData == null)
             {
                 var vehicledetails = InsuranceContext.VehicleDetails.Single(where: $"Id = '{vehicleid}'");
@@ -110,7 +107,6 @@ namespace InsuranceClaim.Controllers
 
                 if (customerdetail != null)
                 {
-
                     custdata = Mapper.Map<Customer, CustomerModel>(customerdetail);
 
                     // for approving 
@@ -1003,7 +999,7 @@ namespace InsuranceClaim.Controllers
 
             model.PaymentMethodId = 1;
 
-            if (User.IsInRole("Staff") || User.IsInRole("Renewals"))
+            if (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Agent"))
             {
                 model.PaymentMethodId = 1;
             }
@@ -1227,7 +1223,7 @@ namespace InsuranceClaim.Controllers
 
                         //if user staff
                         //if (role == "Staff" || role == "Renewals" || role == "Team Leaders" || role == "Administrator")
-                        if (role == "Renewals" || role == "Team Leaders" || role == "Administrator")
+                        if (role == "Renewals" || role == "Team Leaders" || role == "Administrator" || role == "Agent")
                         {
                             // check if email id exist in user table
                             var user = UserManager.FindByEmail(customer.EmailAddress);

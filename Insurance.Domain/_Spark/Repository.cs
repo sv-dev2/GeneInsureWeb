@@ -166,6 +166,9 @@ namespace Insurance.Domain
         //17/03/2020
         public static AspNetUsersDetails AspNetUsersDetails { get { return new AspNetUsersDetails(); } }
 
+        public static UniquePolicyNumbers UniquePolicyNumbers { get { return new UniquePolicyNumbers(); } }
+
+        
         // DomesticPayments
         // general purpose operations
 

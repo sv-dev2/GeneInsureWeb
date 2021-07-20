@@ -467,7 +467,7 @@
                                                     <ul class="list-inline">
 
 
-                                                        @if (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Team Leaders"))
+                                                        @if (User.IsInRole("Staff") || User.IsInRole("Renewals") || User.IsInRole("Team Leaders") || User.IsInRole("Agent"))
                                                         {
                                                             <li id="payment_1" class="payment_type active" onclick="PaymentMethod(1)">Cash</li>
                                                             // need to 1008 to 7
@@ -866,9 +866,12 @@
     function gotoPeriviouse() {
         // $("#previouselink")[0].click();
         debugger;
-        var isUserStaff = '@User.IsInRole("Staff")';
+        var isUserStaff = '@User.IsInRole("Staff,Agent,Team Leaders,Administrator")';
+        var isUserAgent=  '@User.IsInRole("Agent")';
+        var isUserTeamLeader=  '@User.IsInRole("Team Leaders")';
+        var isAdministrator=  '@User.IsInRole("Administrator")';
 
-        if(isUserStaff=='True')
+        if(isUserStaff=='True' || isUserAgent=='True' || isUserTeamLeader=='True' || isAdministrator=='True')
         {
             window.location.href  = '@Url.Action("RiskDetail", "ContactCentre", new { id= 1 })';
         }

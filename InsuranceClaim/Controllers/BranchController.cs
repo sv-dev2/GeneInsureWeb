@@ -42,13 +42,20 @@ namespace InsuranceClaim.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,BranchName")] Branch branch)
+        public ActionResult Create( Branch branch)
         {
             if (ModelState.IsValid)
             {
                 branch.AlmId = GetALMId();
-                InsuranceContext.Branches.Insert(branch);
-                return RedirectToAction("Index");
+
+                var branchDetials = InsuranceContext.Branches.All(where: "Location_Id ="+ branch.Location_Id);
+
+                if(branchDetials==null)
+                {
+                    InsuranceContext.Branches.Insert(branch);
+                    return RedirectToAction("Index");
+                }
+                
             }
 
             return View(branch);
@@ -118,12 +125,36 @@ namespace InsuranceClaim.Controllers
         {
             if (ModelState.IsValid)
             {
-              //  branch.AlmId = GetALMId();
+                //  branch.AlmId = GetALMId();
+
+               
+
                 InsuranceContext.Branches.Update(branch);
                 return RedirectToAction("Index");
+
+
             }
             return View(branch);
         }
+
+        //private bool CheckDuplicate(string newBranchId, string oldBranchId)
+        //{
+        //    bool result = false;
+
+
+        //    var branchDetials = InsuranceContext.Branches.Single(Convert.ToInt32(newBranchId));
+        //    if (branchDetials != null)
+        //    {
+        //        if (branchDetials.Location_Id == branch.Location_Id)
+        //        {
+
+        //        }
+
+        //    }
+
+
+        //    return result;
+        //}
 
         // GET: Home/Delete/5
         public ActionResult Delete(int? id)

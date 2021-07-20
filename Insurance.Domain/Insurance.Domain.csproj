@@ -185,6 +185,7 @@
     <Compile Include="Domain\SummaryDetail.cs" />
     <Compile Include="Domain\SummaryVehicleDetail.cs" />
     <Compile Include="Domain\TokenRequest.cs" />
+    <Compile Include="Domain\UniquePolicyNumbers.cs" />
     <Compile Include="Domain\UserManagementView.cs" />
     <Compile Include="Domain\VehicleCoverType.cs" />
     <Compile Include="Domain\VehicleDetail.cs" />
@@ -276,6 +277,7 @@
     <Compile Include="Repository\TokenRequests.cs" />
     <Compile Include="Repository\UniqeTransactions.cs" />
     <Compile Include="Repository\UniqueCustomer.cs" />
+    <Compile Include="Repository\UniquePolicyNumbers.cs" />
     <Compile Include="Repository\USDConverter.cs" />
     <Compile Include="Repository\UserManagementViews.cs" />
     <Compile Include="Repository\VehicleCoverTypes.cs" />

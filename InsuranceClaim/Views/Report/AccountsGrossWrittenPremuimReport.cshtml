@@ -29,7 +29,7 @@
                 <div class="form-group-section-date">
                     <div class="form-group-input">
                         <div class="row">
-                            <div class="col-sm-3 col-md-3 form-group-text">
+                            <div class="col-sm-2 col-md-2 form-group-text">
                                 <div class="form-group">
                                     @*@Html.LabelFor(x => x.FromDate, new { @class = "gender-label" })*@
                                     <div class='input-group' id='datetimenew'>
@@ -41,7 +41,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-3 col-md-3 form-group-text">
+                            <div class="col-sm-2 col-md-2 form-group-text">
                                 <div class="form-group">
                                     @*@Html.LabelFor(x => x.EndDate, new { @class = "gender-label" })*@
                                     <div class='input-group' id='datetimenew12'>
@@ -50,6 +50,24 @@
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-md-2 form-group-select">
+                                <div class="form-group">
+
+                                    <div class='input-group'>
+                                        @Html.DropDownListFor(x => x.ReportTypeId, new SelectList(ViewBag.ReportList, "Id", "ReportName"), new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-sm-2 col-md-2 form-group-select">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        @Html.DropDownListFor(x => x.CurrencyId, new SelectList(ViewBag.Currencies, "Id", "Name"), "View All", new { @class = "form-control" })
                                     </div>
                                 </div>
                             </div>

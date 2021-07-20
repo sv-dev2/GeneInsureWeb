@@ -56,7 +56,7 @@ namespace Insurance.Service
 
 
 
-            var client = new RestClient("http://41.190.32.215:5001/api/deliveries/");
+            var client = new RestClient("http://api-deliver.gene.co.zw/api/deliveries/");
             var request = new RestRequest(Method.POST);
             request.AddHeader("cache-control", "no-cache");
             request.AddHeader("content-type", "application/json");

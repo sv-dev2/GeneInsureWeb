@@ -148,6 +148,8 @@ namespace InsuranceClaim.Models
 
         public int NumOfUser { get; set; }
 
+        public int? CurrencyId { get; set; }
+
     }
 
     public class ALMParnterSearchModels

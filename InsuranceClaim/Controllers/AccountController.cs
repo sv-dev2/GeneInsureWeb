@@ -91,7 +91,7 @@ namespace InsuranceClaim.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+        public async Task<ActionResult>Login(LoginViewModel model, string returnUrl)
         {
             if (!ModelState.IsValid)
             {
@@ -113,6 +113,9 @@ namespace InsuranceClaim.Controllers
                     var customer = InsuranceContext.Customers.All(where: $"UserId ='{_user.Id.ToString()}'").OrderByDescending(c => c.Id).FirstOrDefault();
                     if (customer != null && customer.IsActive == false)
                     {
+                        var AuthenticationManager = HttpContext.GetOwinContext().Authentication;
+                        AuthenticationManager.SignOut();
+                        
                         ModelState.AddModelError("", "Your account is inactive, please contact to administrator.");
                         return View(model);
                     }
@@ -1809,11 +1812,9 @@ namespace InsuranceClaim.Controllers
         public ActionResult DeleteUserManagement(int id)
         {
             string msg = "";
-
             try
             {
                 var data = InsuranceContext.Customers.Single(id);
-
                 var userid = data.UserID;
                 data.IsActive = false;
                 InsuranceContext.Customers.Update(data);
@@ -1822,13 +1823,6 @@ namespace InsuranceClaim.Controllers
             {
 
             }
-
-
-            // InsuranceContext.Customers.Delete(data);
-
-            //  var currentUser = UserManager.FindById(userid);
-            //  UserManager.Delete(currentUser);
-
             return RedirectToAction("UserManagementList", new { msg = "1" });
         }
 
@@ -1840,10 +1834,8 @@ namespace InsuranceClaim.Controllers
             data.IsActive = Convert.ToBoolean(flag);
             InsuranceContext.Customers.Update(data);
             // InsuranceContext.Customers.Delete(data);
-
             var currentUser = UserManager.FindById(userid);
             //  UserManager.Delete(currentUser);
-
             return RedirectToAction("UserManagementList");
         }
 
@@ -1853,7 +1845,6 @@ namespace InsuranceClaim.Controllers
         {
 
             ClearRenewSession();
-
             TempData["RedirectedFrom"] = "PolicyList";
             Session["ViewlistVehicles"] = null;
             ListPolicy policylist = new ListPolicy();
@@ -1986,10 +1977,7 @@ namespace InsuranceClaim.Controllers
                                 //   var _reinsurenaceTrans = InsuranceContext.ReinsuranceTransactions.All(where: $"SummaryDetailId={item.Id} and VehicleId={_item.VehicleDetailsId}").ToList();
 
                                 var _reinsurenaceTrans = reInsuranceList.Where(c => c.SummaryDetailId == item.Id && c.VehicleId == item.VehicleDetailId).ToList();
-
                                 obj.RegistrationNo = _vehicle.RegistrationNo;
-
-
 
                                 obj.CoverType = Convert.ToInt32(_vehicle.CoverTypeId);
                                 obj.isReinsurance = (_vehicle.SumInsured > 100000 ? true : false);
@@ -2038,7 +2026,7 @@ namespace InsuranceClaim.Controllers
         public ActionResult PolicyManagement()
         {           
             ClearViewSession();
-
+            ClearRenewSession();
 
             string query = "select top 100 PolicyDetail.Id as PolicyId , PolicyDetail.PolicyNumber,Customer.Id as CustomerId, Customer.FirstName +' ' + Customer.LastName as CustomerName, PaymentMethod.Name as PaymentMethod, ";
             query += " SummaryDetail.TotalSumInsured, SummaryDetail.TotalPremium, SummaryDetail.CreatedOn, SummaryDetail.Id, VehicleDetail.RegistrationNo, ";
@@ -2139,6 +2127,8 @@ namespace InsuranceClaim.Controllers
         {
             Session["SummaryDetailIdView"] = null;
         }
+
+    
 
         //public string GetRenewalDate(string renewDate)
         //{
@@ -3087,6 +3077,7 @@ namespace InsuranceClaim.Controllers
         [Authorize(Roles = "Staff,Administrator,Renewals, Agent, AgentStaff,Finance,Claim,Team Leaders")]
         public ActionResult SearchPolicy(string searchText)
         {
+            ClearRenewSession();
 
             //string query = "select top 100 PolicyDetail.PolicyNumber,Customer.Id as CustomerId, Customer.FirstName +' ' + Customer.LastName as CustomerName, PaymentMethod.Name as PaymentMethod, ";
             //query += " SummaryDetail.TotalSumInsured, SummaryDetail.TotalPremium, SummaryDetail.CreatedOn, SummaryDetail.Id, VehicleDetail.RegistrationNo, ";
@@ -3510,13 +3501,13 @@ namespace InsuranceClaim.Controllers
 
             var SummaryList = new List<SummaryDetail>();
 
-            if (role == "Staff" || role == "Team Leaders")
+            if (role == "Staff" || role == "Team Leaders" || role == "Agent")
             {
                 SummaryList = InsuranceContext.SummaryDetails.All(where: $"CreatedBy={customerID} and isQuotation = '0'  ").OrderByDescending(x => x.Id).ToList();
             }
             else if (role == "Administrator" || role == "Renewals")
             {
-                var query = " Select SD.* from SummaryDetail SD Join PaymentInformation pa on SD.Id =pa.SummaryDetailId where SD.isQuotation=0 ";
+                var query = " Select SD.* from SummaryDetail SD Join PaymentInformation pa on SD.Id =pa.SummaryDetailId where SD.isQuotation=0  ";
                 SummaryList = InsuranceContext.Query(query).Select(x => new SummaryDetail()
                 {
                     TotalPremium = x.TotalPremium,
@@ -3524,13 +3515,9 @@ namespace InsuranceClaim.Controllers
                     PaymentMethodId = x.PaymentMethodId,
                     CustomerId = x.CustomerId,
                     Id = x.Id,
-                    CreatedOn = x.CreatedOn
+                    CreatedOn = x.CreatedOn,
                 }).OrderByDescending(x => x.Id).ToList();
                 //   SummaryList = InsuranceContext.SummaryDetails.All(where: $"isQuotation = '0'  ").OrderByDescending(x => x.Id).ToList();
-            }
-            else if (role == "Agent")
-            {
-                SummaryList = InsuranceContext.SummaryDetails.All(where: $"AgentId={customerID} and isQuotation = '0'  ").OrderByDescending(x => x.Id).ToList();
             }
             else if (role == "AgentStaff")
             {

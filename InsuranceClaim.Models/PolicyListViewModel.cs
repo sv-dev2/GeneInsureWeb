@@ -86,6 +86,8 @@ namespace InsuranceClaim.Models
 
         public int LicenseId { get; set; }
 
+        public string BranchName { get; set; }
+
     }
 
     public class ListPolicy
