@@ -425,9 +425,7 @@
 
                                                         </li>
                                                     </ul>
-
                                                 </div>
-
                                             </div>
                                             <div class="col-sm-6 col-md-6 form-group-text" id="Containernumberofpersons">
                                                 <div class="form-group">
@@ -845,7 +843,6 @@
 
     $("#btnAddVehicle").click(function(){
         if ($("#IsLicenseDiskNeeded").is(":checked")){
-
             $("#myAddressModal").modal('show');
             return false;
         }
@@ -885,6 +882,54 @@
         }
     });
 
+
+        $(function(){
+            $('#ZinaraLicensePaymentTermId').change(function(){
+            var selectedMinValue = Number($(this).val());
+            var selectedMaxValue = Number($('#PaymentTermId').val());
+        
+            if(selectedMaxValue==4 && selectedMinValue==1 )
+            {
+                alert('!!Vehicle license payment Term always will be equal or less then Payment term!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }
+
+          else  if( selectedMaxValue > 0  && selectedMinValue > selectedMaxValue ) {
+                alert('!!Vehicle license payment Term always will be equal or less then Payment term!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }
+            else if( selectedMinValue > 0 && selectedMaxValue === 0) {
+                alert('Please select Payment Term First!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }       
+       
+        });
+    });
+
+
+    $(function(){
+        
+        $('#RadioLicensePaymentTermId').change(function(){
+            var selectedMinValue = Number($(this).val());
+            var selectedMaxValue = Number($('#PaymentTermId').val());
+
+            if(selectedMaxValue==4 && selectedMinValue==1 )
+            {
+                alert('!!Vehicle license payment Term always will be equal or less then Payment term!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }
+        
+           else if( selectedMaxValue > 1  && selectedMinValue > selectedMaxValue ) {
+                alert('!!Radio license payment Term always will be equal or less then Payment term!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }
+            else if( selectedMinValue > 0 && selectedMaxValue === 0) {
+                alert('Please select Payment Term First!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }       
+       
+        });
+    });
 
 
     function ClearLicenseIfNotChek()
@@ -2414,16 +2459,11 @@
         var IncludeRadioLicenseCost = $("#IncludeRadioLicenseCost").is(":checked");
         var policytermid = $("#PaymentTermId").val();
 
-
-
-
         if (NumberofPersons == undefined || NumberofPersons == null || NumberofPersons == "") {
             NumberofPersons = 0;
         }
 
         var ProductId =$("#ProductId").val();
-
-
         $(".loading-area").show();
 
         $.ajax({

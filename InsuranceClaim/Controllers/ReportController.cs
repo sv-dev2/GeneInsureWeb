@@ -21,6 +21,7 @@ using System.Data.SqlClient;
 
 namespace InsuranceClaim.Controllers
 {
+    [HandleError]
     public class ReportController : Controller
     {
 
@@ -1204,7 +1205,8 @@ namespace InsuranceClaim.Controllers
             query += " left join Currency on VehicleDetail.CurrencyId = Currency.Id ";
             query += " left join BusinessSource on BusinessSource.Id = VehicleDetail.BusinessSourceDetailId ";
             query += " left   join SourceDetail on VehicleDetail.BusinessSourceDetailId = SourceDetail.Id join AspNetUsers on AspNetUsers.id=customer.UserID join AspNetUserRoles on AspNetUserRoles.UserId=AspNetUsers.Id ";
-            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0   order by  VehicleDetail.Id desc ";
+            query += " left join Branch on VehicleDetail.ALMBranchId=Branch.Id ";
+            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0 and Branch.[Status]=1   order by  VehicleDetail.Id desc ";
 
 
             ListGrossWrittenPremiumReport = InsuranceContext.Query(query).
@@ -1307,6 +1309,7 @@ namespace InsuranceClaim.Controllers
             var endorsmentList = GetGWPEndorsmentReport(new GrossWrittenPremiumReportSearchModels());
             Model.ListGrossWrittenPremiumReportdata.AddRange(endorsmentList);
 
+          //  var res = Convert.ToDateTime("dd");
 
             return View(Model);
         }
@@ -2128,7 +2131,8 @@ namespace InsuranceClaim.Controllers
             query += " left join Currency on VehicleDetail.CurrencyId = Currency.Id ";
             query += " left join BusinessSource on BusinessSource.Id = VehicleDetail.BusinessSourceDetailId ";
             query += " left   join SourceDetail on VehicleDetail.BusinessSourceDetailId = SourceDetail.Id join AspNetUsers on AspNetUsers.id=customer.UserID join AspNetUserRoles on AspNetUserRoles.UserId=AspNetUsers.Id ";
-            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0  and (  CONVERT(date, VehicleDetail.TransactionDate) >= convert(date, '" + _model.FormDate + "', 101)  and CONVERT(date, VehicleDetail.TransactionDate) <= convert(date, '" + _model.EndDate + "', 101))  ";
+            query += "  left join Branch on VehicleDetail.ALMBranchId=Branch.Id ";
+            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0 and Branch.[Status]=1  and (  CONVERT(date, VehicleDetail.TransactionDate) >= convert(date, '" + _model.FormDate + "', 101)  and CONVERT(date, VehicleDetail.TransactionDate) <= convert(date, '" + _model.EndDate + "', 101))  ";
 
             if (_model.ReportTypeId == (int)ReportTypeEnum.ALM)
                 query += "and ALMBranchId <>0";

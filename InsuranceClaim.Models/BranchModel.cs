@@ -16,5 +16,11 @@ namespace InsuranceClaim.Models
         public string BranchName { get; set; }
 
         public string AlmId { get; set; }
+
+        public string Location_Id { get; set; }
+        public bool Status { get; set; }
+
+        public bool StatusActive { get; set; }
+        public bool StatusDeActive { get; set; }
     }
 }

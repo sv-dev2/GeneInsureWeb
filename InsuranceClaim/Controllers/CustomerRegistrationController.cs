@@ -27,12 +27,13 @@ using Webdev.Payments;
 
 namespace InsuranceClaim.Controllers
 {
+    [HandleError]
     public class CustomerRegistrationController : Controller
     {
         private ApplicationUserManager _userManager;
         string AdminEmail = WebConfigurationManager.AppSettings["AdminEmail"];
         string ZimnatEmail = WebConfigurationManager.AppSettings["ZimnatEmail"];
-        decimal _InflationFactorAmt = 25;
+        decimal _InflationFactorAmt = 150; // early was 25
 
         public CustomerRegistrationController()
         {
@@ -317,7 +318,7 @@ namespace InsuranceClaim.Controllers
             var objList = InsuranceContext.PolicyDetails.All(orderBy: "Id desc").FirstOrDefault();
             if (objList != null)
             {
-               // string policyNumber = string.Empty;
+                // string policyNumber = string.Empty;
                 string number = objList.PolicyNumber.Split('-')[0].Substring(4, objList.PolicyNumber.Length - 6);
                 long pNumber = Convert.ToInt64(number.Substring(2, number.Length - 2)) + 1;
                 string policyNumber = string.Empty;
@@ -1550,7 +1551,7 @@ namespace InsuranceClaim.Controllers
 
                         //if user staff
                         //role == "Renewals" 
-                        if (role == "Staff" ||  role == "Team Leaders" || role == "Administrator" || role == "Agent")
+                        if (role == "Staff" || role == "Team Leaders" || role == "Administrator" || role == "Agent")
                         {
                             // check if email id exist in user table
 
@@ -3294,6 +3295,11 @@ namespace InsuranceClaim.Controllers
 
             }
 
+
+            //if (vehicleUsage != null)
+            //    amount = vehicleUsage.USDBenchmark == null ? 0 : vehicleUsage.USDBenchmark.Value * _InflationFactorAmt;
+
+
             return amount;
 
 
@@ -3430,8 +3436,6 @@ namespace InsuranceClaim.Controllers
                     tokenObject = ICEcashService.getToken();
                     SummaryDetailService.UpdateToken(tokenObject);
                 }
-
-
 
                 #endregion
                 List<RiskDetailModel> objVehicles = new List<RiskDetailModel>();
@@ -4000,66 +4004,81 @@ namespace InsuranceClaim.Controllers
         public ActionResult LicensePrint(LicenseModel model)
         {
 
-            ModelState.Remove("SerialNumber");
-
-            //string file1 = "/Documents/License/KJVV456456/License20200204153919.pdf";
-            //ViewBag.file = ConfigurationManager.AppSettings["urlPath"] + file1;
-            //TempData["filePath"] = ConfigurationManager.AppSettings["urlPath"] + file1;
-            //return RedirectToAction("CertificateSerialNumber");
-
-            var tokenObject = new ICEcashTokenResponse();
-            ICEcashService iceCash = new ICEcashService();
-
-            var query = "select  top  1  * from VehicleDetail where RegistrationNo='" + model.VRN + "' order by id desc";
-
-            var vehicle = InsuranceContext.Query(query).Select(x => new VehicleDetail()
+            try
             {
-                Id = x.Id,
-                CombinedID = x.CombinedID
-            }).FirstOrDefault();
+
+                ModelState.Remove("SerialNumber");
+
+                //string file1 = "/Documents/License/KJVV456456/License20200204153919.pdf";
+                //ViewBag.file = ConfigurationManager.AppSettings["urlPath"] + file1;
+                //TempData["filePath"] = ConfigurationManager.AppSettings["urlPath"] + file1;
+                //return RedirectToAction("CertificateSerialNumber");
+
+                var tokenObject = new ICEcashTokenResponse();
+                ICEcashService iceCash = new ICEcashService();
+
+                var query = "select  top  1  * from VehicleDetail where RegistrationNo='" + model.VRN + "' order by id desc";
+
+                var vehicle = InsuranceContext.Query(query).Select(x => new VehicleDetail()
+                {
+                    Id = x.Id,
+                    CombinedID = x.CombinedID
+                }).FirstOrDefault();
 
 
-            if (vehicle == null)
-            {
-                TempData["ErroMessage"] = "Pdf not found.";
-                return View(model);
-            }
+                if (vehicle == null)
+                {
+                    TempData["ErroMessage"] = "Pdf not found.";
+                    return View(model);
+                }
 
-            VehicleDetail detail = new VehicleDetail { CombinedID = vehicle.CombinedID };
+                VehicleDetail detail = new VehicleDetail { CombinedID = vehicle.CombinedID };
 
-            tokenObject = iceCash.getToken();
-            //  SummaryDetailService.UpdateToken(tokenObject);
-            string PartnerToken = tokenObject.Response.PartnerToken;
-
-            var res = ICEcashService.TPILICResult(detail, PartnerToken);
-            string file = "";
-
-            if (res.Response != null && (res.Response.Message.Contains("Partner Token has expired") || res.Response.Message.Contains("Invalid Partner Token")))
-            {
                 tokenObject = iceCash.getToken();
-                SummaryDetailService.UpdateToken(tokenObject);
-                res = ICEcashService.TPILICResult(detail, tokenObject.Response.PartnerToken);
-            }
+                //  SummaryDetailService.UpdateToken(tokenObject);
+                string PartnerToken = tokenObject.Response.PartnerToken;
 
-            if (res.Response != null && res.Response.LicenceCert != null)
+                var res = ICEcashService.TPILICResult(detail, PartnerToken);
+                string file = "";
+                SummaryDetailService.WriteLog("LicensePrint", model.VRN, "LicensePrint");
+
+                if (res.Response != null && (res.Response.Message.Contains("Partner Token has expired") || res.Response.Message.Contains("Invalid Partner Token")))
+                {
+                    tokenObject = iceCash.getToken();
+                    SummaryDetailService.UpdateToken(tokenObject);
+                    res = ICEcashService.TPILICResult(detail, tokenObject.Response.PartnerToken);
+                    SummaryDetailService.WriteLog(res.Response.Message, model.VRN, "LicensePrint1");
+                }
+
+                
+
+                if (res.Response != null && res.Response.LicenceCert != null)
+                {
+                   
+                    file = SavePdf(res.Response.LicenceCert, Convert.ToString(vehicle.Id));
+                    SummaryDetailService.WriteLog(res.Response.Message, model.VRN, "LicensePrint2");
+                }
+                else
+                {
+                    TempData["ErroMessage"] = "Pdf not found.";
+                    return View(model);
+                }
+                if (file != "")
+                {
+                    TempData["Message"] = "Sucesfully pdf has been downloaded.";
+                }
+
+                model.FilePath = ConfigurationManager.AppSettings["urlPath"] + file;
+                model.VehicleId = vehicle.Id;
+
+                SummaryDetailService.WriteLog("Success", model.VRN, "LicensePrint2");
+                // return RedirectToAction("CertificateSerialNumber");
+
+            }
+            catch (Exception ex)
             {
-
-                file = SavePdf(res.Response.LicenceCert, Convert.ToString(vehicle.Id));
+                TempData["ErroMessage"] = ex.Message;
             }
-            else
-            {
-                TempData["ErroMessage"] = "Pdf not found.";
-                return View(model);
-            }
-            if (file != "")
-            {
-                TempData["Message"] = "Sucesfully pdf has been downloaded.";
-            }
-
-            model.FilePath = ConfigurationManager.AppSettings["urlPath"] + file;
-            model.VehicleId = vehicle.Id;
-
-            // return RedirectToAction("CertificateSerialNumber");
 
             return View(model);
         }
@@ -4545,7 +4564,7 @@ namespace InsuranceClaim.Controllers
         public ActionResult ReprintReciept()
         {
 
-           
+
 
 
             return View();
@@ -4558,14 +4577,14 @@ namespace InsuranceClaim.Controllers
             string policyNumber = "";
             string renewPolicyNumber = "";
 
-            if(!string.IsNullOrEmpty(vrnModel.PolicyNumber))
+            if (!string.IsNullOrEmpty(vrnModel.PolicyNumber))
             {
                 policyNumber = vrnModel.PolicyNumber;
 
                 var splitPolicy = vrnModel.PolicyNumber.Split('-');
-                if(splitPolicy.Length>1)
+                if (splitPolicy.Length > 1)
                 {
-                    if(Convert.ToInt32(splitPolicy[1])>1)
+                    if (Convert.ToInt32(splitPolicy[1]) > 1)
                     {
                         renewPolicyNumber = vrnModel.PolicyNumber;
                     }
@@ -4575,7 +4594,7 @@ namespace InsuranceClaim.Controllers
             {
                 return View("ReprintReciept");
             }
-            
+
 
             PreviewReceiptListModel lstreceipt = new PreviewReceiptListModel();
             ListReceiptModule receiptList = new ListReceiptModule();
@@ -4592,27 +4611,27 @@ namespace InsuranceClaim.Controllers
             if (renewPolicyNumber != "")
                 query += "  ReceiptModuleHistory.RenewPolicyNumber='" + renewPolicyNumber + "' order by DatePosted desc";
             else
-            query +="  ReceiptModuleHistory.PolicyNumber='"+ policyNumber + "' order by DatePosted desc";
+                query += "  ReceiptModuleHistory.PolicyNumber='" + policyNumber + "' order by DatePosted desc";
 
-            var result = InsuranceContext.Query(query).Select(c=> new PreviewReceiptListModel()
+            var result = InsuranceContext.Query(query).Select(c => new PreviewReceiptListModel()
             {
-                Date= c.DatePosted==null ? "" : c.DatePosted.ToShortDateString(),
-                Id = c.ReceiptNumber ,
-                CustomerName= c.CustomerName,
-                AmountPaid= c.AmountPaid,
+                Date = c.DatePosted == null ? "" : c.DatePosted.ToShortDateString(),
+                Id = c.ReceiptNumber,
+                CustomerName = c.CustomerName,
+                AmountPaid = c.AmountPaid,
                 PaymentDetails = c.Balance,
-                TransactionReference= c.TransactionReference,
+                TransactionReference = c.TransactionReference,
                 paymentMethodType = (c.PaymentMethodId == 1 ? "Cash" : (c.PaymentMethodId == 2 ? "Ecocash" : (c.PaymentMethodId == 3 ? "Swipe" : "MasterVisa Card"))),
                 Address1 = c.AddressLine1,
-                Address2= c.AddressLine2
+                Address2 = c.AddressLine2
             }).FirstOrDefault();
 
-   
+
 
             //lstreceipt.listReceipt = new List<PreviewReceiptListModel>();
             //lstreceipt.listReceipt.Add(result);
 
-            if(result!=null)
+            if (result != null)
             {
                 return View("~/Views/CustomerRegistration/PreviewReceiptModule.cshtml", result);
             }
@@ -4621,9 +4640,9 @@ namespace InsuranceClaim.Controllers
                 TempData["ErrorMsg"] = "Records are not found.";
                 return View("ReprintReciept");
             }
-            
 
-            
+
+
         }
 
 

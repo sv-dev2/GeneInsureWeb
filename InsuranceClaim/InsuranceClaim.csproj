@@ -276,6 +276,7 @@
     <Compile Include="Controllers\CustomerRegistrationController.cs" />
     <Compile Include="Controllers\DomesticController.cs" />
     <Compile Include="Controllers\EndorsementController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IndividualController.cs" />
     <Compile Include="Controllers\InsuranceHomeController.cs" />
@@ -1217,6 +1218,8 @@
     <Content Include="Views\ALMPrint\Edit.cshtml" />
     <Content Include="Views\CustomerRegistration\ReprintReciept.cshtml" />
     <Content Include="Views\Report\AccountsGrossWrittenPremuimReport.cshtml" />
+    <Content Include="Views\Error\Error.cshtml" />
+    <Content Include="Views\Error\NotFound.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AgentLogo\" />

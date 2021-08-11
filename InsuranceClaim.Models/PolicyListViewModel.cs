@@ -12,6 +12,7 @@ namespace InsuranceClaim.Models
 
         public List<VehicleReinsuranceViewModel> Vehicles { get; set; }
         public string PolicyNumber { get; set; }
+      
         public int PolicyId { get; set; }
         public int CustomerId { get; set; }
         public int PaymentMethodId { get; set; }

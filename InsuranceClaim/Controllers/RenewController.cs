@@ -25,6 +25,7 @@ using Webdev.Payments;
 
 namespace InsuranceClaim.Controllers
 {
+    [HandleError]
     public class RenewController : Controller
     {
         private ApplicationUserManager _userManager;
@@ -1397,8 +1398,6 @@ namespace InsuranceClaim.Controllers
 
 
                         // Genrate new policy number
-
-
                         // end genrate policy number
 
 

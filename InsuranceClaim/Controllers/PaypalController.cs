@@ -1509,7 +1509,7 @@ namespace InsuranceClaim.Controllers
                 var attacehmetnFile = MiscellaneousService.EmailPdf(Bodyy, policy.CustomerId, policy.PolicyNumber, "Schedule-motor");
 
 
-                var Atter = "~/Pdf/14809 Gene Insure Motor Policy Book.pdf";
+                //var Atter = "~/Pdf/14809 Gene Insure Motor Policy Book.pdf";
 
 
                 #endregion
@@ -1531,7 +1531,7 @@ namespace InsuranceClaim.Controllers
                 __attachements.Add(attacehmetnFile);
                 //if (!userLoggedin)
                 //{
-                __attachements.Add(Atter);
+               // __attachements.Add(Atter);
                 //}
 
                 #region Invoice EMail

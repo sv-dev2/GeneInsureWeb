@@ -1,4 +1,5 @@
 ﻿using Insurance.Domain;
+using InsuranceClaim.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,22 +43,20 @@ namespace InsuranceClaim.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create( Branch branch)
+        public ActionResult Create(Branch branch)
         {
             if (ModelState.IsValid)
             {
                 branch.AlmId = GetALMId();
-
-                var branchDetials = InsuranceContext.Branches.All(where: "Location_Id ="+ branch.Location_Id);
+                var branchDetials = InsuranceContext.Branches.All(where: "Location_Id ='"+ branch.Location_Id+"'").FirstOrDefault();
 
                 if(branchDetials==null)
                 {
+                    branch.Status = true;
                     InsuranceContext.Branches.Insert(branch);
                     return RedirectToAction("Index");
-                }
-                
+                }         
             }
-
             return View(branch);
         }
 
@@ -98,12 +97,10 @@ namespace InsuranceClaim.Controllers
             return almId;
         }
 
-
-
-
         // GET: Home/Edit/5
         public ActionResult Edit(int? id)
         {
+            var branchModel = new BranchModel();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -113,7 +110,18 @@ namespace InsuranceClaim.Controllers
             {
                 return HttpNotFound();
             }
-            return View(branch);
+            else
+            {             
+                branchModel.Id = branch.Id;
+                branchModel.BranchName = branch.BranchName;
+                branchModel.Location_Id = branch.Location_Id;
+                branchModel.Status = branch.Status;
+                branchModel.AlmId = branch.AlmId;
+
+
+            }
+
+            return View(branchModel);
         }
 
         // POST: Home/Edit/5
@@ -126,13 +134,8 @@ namespace InsuranceClaim.Controllers
             if (ModelState.IsValid)
             {
                 //  branch.AlmId = GetALMId();
-
-               
-
                 InsuranceContext.Branches.Update(branch);
                 return RedirectToAction("Index");
-
-
             }
             return View(branch);
         }

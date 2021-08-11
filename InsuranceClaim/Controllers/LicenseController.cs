@@ -1045,7 +1045,9 @@ namespace InsuranceClaim.Controllers
         {
             var summaryDetail = InsuranceContext.SummaryDetails.Single(summaryId);
             var SummaryVehicleDetails = InsuranceContext.SummaryVehicleDetails.All(where: $"SummaryDetailId={summaryId}").ToList();
-            var list = InsuranceContext.VehicleDetails.All(where: "id=" + SummaryVehicleDetails[0].VehicleDetailsId + " and IsActive=1").ToList();
+            var vehicleDetail = InsuranceContext.VehicleDetails.Single(SummaryVehicleDetails[0].VehicleDetailsId);
+
+            var list = InsuranceContext.VehicleDetails.All(where: "PolicyId=" + vehicleDetail.PolicyId + " and IsActive=1").ToList();
 
             return list;
         }

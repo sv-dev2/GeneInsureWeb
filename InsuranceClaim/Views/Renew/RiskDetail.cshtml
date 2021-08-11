@@ -953,6 +953,55 @@
         });
     }
 
+
+    $(function(){
+        $('#ZinaraLicensePaymentTermId').change(function(){
+            var selectedMinValue = Number($(this).val());
+            var selectedMaxValue = Number($('#PaymentTermId').val());
+        
+            if(selectedMaxValue==4 && selectedMinValue==1 )
+            {
+                alert('!!Vehicle license payment Term always will be equal or less then Payment term!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }
+
+            else  if( selectedMaxValue > 0  && selectedMinValue > selectedMaxValue ) {
+                alert('!!Vehicle license payment Term always will be equal or less then Payment term!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }
+            else if( selectedMinValue > 0 && selectedMaxValue === 0) {
+                alert('Please select Payment Term First!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }       
+       
+        });
+    });
+
+
+    $(function(){
+     
+        $('#RadioLicensePaymentTermId').change(function(){
+            var selectedMinValue = Number($(this).val());
+            var selectedMaxValue = Number($('#PaymentTermId').val());
+
+            if(selectedMaxValue==4 && selectedMinValue==1 )
+            {
+                alert('!!Vehicle license payment Term always will be equal or less then Payment term!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }
+        
+            else if( selectedMaxValue > 1  && selectedMinValue > selectedMaxValue ) {
+                alert('!!Radio license payment Term always will be equal or less then Payment term!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }
+            else if( selectedMinValue > 0 && selectedMaxValue === 0) {
+                alert('Please select Payment Term First!!');
+                $(this).find('option:first').attr('selected', 'selected'); //reset the second dropdown list
+            }       
+       
+        });
+    });
+
     function ClearLicenseIfNotChek()
     {
         if (!$("#IncludeLicenseFee").is(":checked"))
